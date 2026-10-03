@@ -3,6 +3,7 @@ import { canSplit, cardValue, dealerShouldHit, evaluateHand, settleHand, type Ca
 import { advise } from './strategy';
 import { loadSave, resetSave, saveGame, DEFAULT_SAVE, type BlackjackSave } from './storage';
 import { needsShuffle, shuffledShoe } from './shoe';
+import { playCue } from './audio';
 import './royal-palace-blackjack.css';
 
 type Phase='betting'|'player'|'dealer'|'settled';
@@ -28,12 +29,12 @@ export default function RoyalPalaceBlackjackWorkspace(){
  useEffect(()=>{if(phase!=='betting')return;const ok=saveGame(window.localStorage,save);if(!ok)setPersistent(false)},[save,phase]);
 
  function drawFrom(cards:Card[]):[Card,Card[]]{const copy=[...cards];const card=copy.pop();if(!card)throw new Error('Shoe unexpectedly empty');return[card,copy]}
- function addChip(v:number){if(phase!=='betting'||v>save.bankroll)return;setSave(s=>({...s,bankroll:s.bankroll-v}));setBet(x=>x+v);setBetStack(x=>[...x,v])}
+ function addChip(v:number){if(phase!=='betting'||v>save.bankroll)return;playCue('chip',save.preferences.sound);setSave(s=>({...s,bankroll:s.bankroll-v}));setBet(x=>x+v);setBetStack(x=>[...x,v])}
  function undo(){const v=betStack.at(-1);if(!v)return;setBetStack(x=>x.slice(0,-1));setBet(x=>x-v);setSave(s=>({...s,bankroll:s.bankroll+v}))}
  function clear(){setSave(s=>({...s,bankroll:s.bankroll+bet}));setBet(0);setBetStack([])}
  function setExactBet(amount:number){const available=save.bankroll+bet;const next=Math.min(available,Math.max(0,amount));setSave(s=>({...s,bankroll:available-next}));setBet(next);setBetStack([])}
  function deal(){
-  if(phase!=='betting'||bet<5)return;
+  if(phase!=='betting'||bet<5)return;playCue('card',save.preferences.sound);
   let deck=needsShuffle(shoe.length)?shuffledShoe():[...shoe];let p1,p2,d1,d2;
   [p1,deck]=drawFrom(deck);[d1,deck]=drawFrom(deck);[p2,deck]=drawFrom(deck);[d2,deck]=drawFrom(deck);
   const hand={...freshHand(),cards:[p1,p2],wager:bet};setShoe(deck);setHands([hand]);setDealer([d1,d2]);setHoleHidden(true);setActive(0);
@@ -85,7 +86,7 @@ export default function RoyalPalaceBlackjackWorkspace(){
   for(const h of playerHands){if(h.surrendered)continue;const outcome=settleHand(h.cards,dealerCards,h.fromSplit);
    if(outcome==='blackjack'){returned+=h.wager*2.5;net+=h.wager*1.5;w++}else if(outcome==='win'){returned+=h.wager*2;net+=h.wager;w++}else if(outcome==='push'){returned+=h.wager;p++}else{net-=h.wager;l++}}
   setSave(s=>({...s,bankroll:s.bankroll+returned,sessionNet:s.sessionNet+net,stats:{wins:s.stats.wins+w,losses:s.stats.losses+l,pushes:s.stats.pushes+p}}));
-  setPhase('settled');setShoe(deck);setStatus(net>0?`Round won: +${money(net)} virtual credits.`:net<0?`Round result: −${money(Math.abs(net))} virtual credits.`:'Round is a push.');
+  playCue(net>0?'win':net<0?'loss':'push',save.preferences.sound);setPhase('settled');setShoe(deck);setStatus(net>0?`Round won: +${money(net)} virtual credits.`:net<0?`Round result: −${money(Math.abs(net))} virtual credits.`:'Round is a push.');
  }
  function nextRound(){setDealer([]);setHands([freshHand()]);setActive(0);setHoleHidden(true);setInsurance(false);setPhase('betting');setStatus('Place virtual chips for the next round.')}
  function resetAll(){resetSave(window.localStorage);setSave(structuredClone(DEFAULT_SAVE));setBet(0);setBetStack([]);setShoe(shuffledShoe());setDealer([]);setHands([freshHand()]);setActive(0);setPhase('betting');setPersistent(true);setStatus('Saved game reset. You have 1,000 virtual credits.')}
@@ -111,9 +112,9 @@ export default function RoyalPalaceBlackjackWorkspace(){
     {phase==='player'&&!insurance&&<><button disabled={!!current?.splitAces||!!value?.bust} onClick={hit}>Hit</button><button onClick={stand}>Stand</button><button disabled={!canD} onClick={doubleDown}>Double</button><button disabled={!canS} onClick={split}>Split</button><button disabled={!canR} onClick={surrender}>Surrender</button></>}
     {phase==='settled'&&<button className="primary" onClick={nextRound}>Next round</button>}
    </div>
-   <div className="rp-prefs"><button aria-pressed={save.preferences.hints} onClick={()=>setSave(s=>({...s,preferences:{...s.preferences,hints:!s.preferences.hints}}))}>Strategy hints {save.preferences.hints?'on':'off'}</button><button onClick={resetAll}>Reset saved game</button></div>
+   <div className="rp-prefs"><button aria-pressed={save.preferences.sound} onClick={()=>{const next=!save.preferences.sound;setSave(s=>({...s,preferences:{...s.preferences,sound:next}}));if(next)playCue('chip',true)}}>Sound {save.preferences.sound?'on':'off'}</button><button aria-pressed={save.preferences.hints} onClick={()=>setSave(s=>({...s,preferences:{...s.preferences,hints:!s.preferences.hints}}))}>Strategy hints {save.preferences.hints?'on':'off'}</button><button onClick={resetAll}>Reset saved game</button></div>
   </div>
-  {insurance&&<div className="rp-modal" role="dialog" aria-modal="true" aria-labelledby="insurance-title"><div><h2 id="insurance-title">Dealer shows an Ace</h2><p>Insurance costs {money(Math.floor(hands[0].wager/2))} virtual credits and pays 2:1 profit if the dealer has blackjack.</p><div><button disabled={save.bankroll<Math.floor(hands[0].wager/2)} onClick={takeInsurance}>Take insurance</button><button className="primary" onClick={declineInsurance}>No insurance</button></div></div></div>}
+  {insurance&&<div className="rp-modal" role="dialog" aria-modal="true" aria-labelledby="insurance-title"><div><h2 id="insurance-title">Dealer shows an Ace</h2><p>Insurance costs {money(Math.floor(hands[0].wager/2))} virtual credits and pays 2:1 profit if the dealer has blackjack.</p><p className="rp-dialog-note">Choose one option to continue the round.</p><div><button disabled={save.bankroll<Math.floor(hands[0].wager/2)} onClick={takeInsurance}>Take insurance</button><button className="primary" onClick={declineInsurance}>No insurance</button></div></div></div>}
  </section>
 }
 function HandView({label,cards,hiddenIndex=-1,active=false,fromSplit=false}:{label:string;cards:Card[];hiddenIndex?:number;active?:boolean;fromSplit?:boolean}){

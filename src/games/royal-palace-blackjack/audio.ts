@@ -1,0 +1,5 @@
+export type SoundCue='chip'|'card'|'win'|'loss'|'push';
+let context:AudioContext|null=null;
+function getContext():AudioContext|null{try{const C=globalThis.AudioContext;if(!C)return null;context??=new C();if(context.state==='suspended')void context.resume();return context}catch{return null}}
+function tone(ctx:AudioContext,f:number,duration:number,delay=0){const t=ctx.currentTime+delay,o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(.055,t);g.gain.exponentialRampToValueAtTime(.001,t+duration);o.connect(g).connect(ctx.destination);o.start(t);o.stop(t+duration)}
+export function playCue(cue:SoundCue,enabled:boolean):boolean{if(!enabled)return false;const ctx=getContext();if(!ctx)return false;try{if(cue==='chip'){tone(ctx,1100,.045);tone(ctx,700,.05,.025)}else if(cue==='card'){tone(ctx,520,.035)}else if(cue==='win'){[523,659,784].forEach((f,i)=>tone(ctx,f,.18,i*.065))}else if(cue==='push'){tone(ctx,440,.11);tone(ctx,440,.11,.14)}else tone(ctx,220,.2);return true}catch{return false}}
