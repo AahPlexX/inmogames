@@ -23,12 +23,8 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
-      - run: pnpm install --no-frozen-lockfile
-      - name: Bootstrap lockfile snapshot
-        run: |
-          echo "__INMOGAMES_LOCKFILE_BEGIN__"
-          cat pnpm-lock.yaml
-          echo "__INMOGAMES_LOCKFILE_END__"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm game:check
       - run: pnpm test:unit
