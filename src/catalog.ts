@@ -1,4 +1,2 @@
-import type { GameMeta } from './game-meta';
-
-// Register each game by importing its meta from src/games/<slug>/<slug>.meta.ts.
-export const games: readonly GameMeta[] = [];
+import type { GameMeta } from './game-meta';import { threefoldMeta } from './games/threefold/threefold.meta';import { royalPalaceBlackjackMeta } from './games/royal-palace-blackjack/royal-palace-blackjack.meta';
+export const games: readonly GameMeta[]=[threefoldMeta,royalPalaceBlackjackMeta];
