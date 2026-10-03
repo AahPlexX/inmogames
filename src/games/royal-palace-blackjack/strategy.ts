@@ -7,14 +7,14 @@ export function advise(context: StrategyContext): StrategyAdvice {
   const { player, dealerUp } = context;
   const value = evaluateHand(player);
   const up = cardValue(dealerUp);
-  if (context.canSurrender && player.length === 2 && !value.soft && ((value.total === 16 && up >= 9) || (value.total === 15 && up === 10))) {
-    return { action: 'surrender', reason: 'Late surrender limits the loss against this strong dealer up-card.' };
-  }
   if (context.canSplit && player.length === 2 && cardValue(player[0]) === cardValue(player[1])) {
     const pair = cardValue(player[0]);
     if (pair === 11 || pair === 8 || (pair === 9 && ![7,10,11].includes(up)) || ([2,3,7].includes(pair) && up <= 7) || (pair === 6 && up <= 6) || (pair === 4 && [5,6].includes(up))) {
       return { action: 'split', reason: 'Splitting this pair improves the available play against the dealer up-card.' };
     }
+  }
+  if (context.canSurrender && player.length === 2 && !value.soft && ((value.total === 16 && up >= 9) || (value.total === 15 && up === 10))) {
+    return { action: 'surrender', reason: 'Late surrender limits the loss against this strong dealer up-card.' };
   }
   if (value.soft) {
     if (value.total >= 19) return { action: 'stand', reason: 'This soft total is already strong.' };

@@ -24,7 +24,8 @@ describe('Royal Palace persistence',()=>{
 
 describe('Royal Palace strategy',()=>{
  it('covers representative pair, soft, hard and surrender choices',()=>{
-  expect(advise({player:[c('8'),c('8')],dealerUp:c('10'),canDouble:true,canSplit:true,canSurrender:true}).action).toBe('surrender');
+  expect(advise({player:[c('8'),c('8')],dealerUp:c('10'),canDouble:true,canSplit:true,canSurrender:true}).action).toBe('split');
+  expect(advise({player:[c('10'),c('5')],dealerUp:c('10'),canDouble:true,canSplit:false,canSurrender:true}).action).toBe('surrender');
   expect(advise({player:[c('A'),c('7')],dealerUp:c('6'),canDouble:true,canSplit:false,canSurrender:false}).action).toBe('double');
   expect(advise({player:[c('10'),c('6')],dealerUp:c('6'),canDouble:false,canSplit:false,canSurrender:false}).action).toBe('stand');
   expect(advise({player:[c('10'),c('6')],dealerUp:c('10'),canDouble:false,canSplit:false,canSurrender:false}).action).toBe('hit');

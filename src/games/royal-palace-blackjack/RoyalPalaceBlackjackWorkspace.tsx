@@ -44,11 +44,11 @@ export default function RoyalPalaceBlackjackWorkspace(){
   if(pv.blackjack){setHoleHidden(false);finishRound([hand],[d1,d2],deck);return}
   setPhase('player');setStatus('Your move.');
  }
- function declineInsurance(){setInsurance(false);const d=evaluateHand(dealer);if(d.blackjack){setHoleHidden(false);finishRound(hands,dealer,shoe)}else setStatus('No insurance. Your move.')}
+ function declineInsurance(){setInsurance(false);const d=evaluateHand(dealer);if(d.blackjack||evaluateHand(hands[0].cards).blackjack){setHoleHidden(false);finishRound(hands,dealer,shoe)}else setStatus('No insurance. Your move.')}
  function takeInsurance(){
   const cost=Math.floor(hands[0].wager/2);if(save.bankroll<cost)return;setInsurance(false);
   const d=evaluateHand(dealer);setSave(s=>({...s,bankroll:s.bankroll-cost+(d.blackjack?cost*3:0),sessionNet:s.sessionNet-cost+(d.blackjack?cost*3:0)}));
-  if(d.blackjack){setHoleHidden(false);finishRound(hands,dealer,shoe)}else setStatus('Insurance lost. Your move.');
+  if(d.blackjack||evaluateHand(hands[0].cards).blackjack){setHoleHidden(false);finishRound(hands,dealer,shoe)}else setStatus('Insurance lost. Your move.');
  }
  function mutateActive(fn:(h:Hand)=>Hand){setHands(list=>list.map((h,i)=>i===active?fn(h):h))}
  function hit(){
