@@ -20,11 +20,11 @@
 | Defensive versioned local persistence | verified | Storage unit tests |
 | Saved-game reset | started | Storage/UI verification |
 | Optional exact-table strategy hints | verified | Strategy unit tests |
-| Local procedural sound preference | planned | Browser review |
-| Responsive casino-table presentation | started | 320px/zoom/large viewport review |
-| Keyboard/touch parity and visible focus | started | Accessibility review |
-| Accessible cards/status/dialogs | started | Accessibility review |
-| Reduced-motion presentation | started | CSS/browser review |
+| Local procedural sound preference | started | Unit/source verification green; browser review pending Pages |
+| Responsive casino-table presentation | started | 320px CSS hardening landed; live viewport/zoom review pending Pages |
+| Keyboard/touch parity and visible focus | started | Native controls/focus CSS present; live keyboard/touch review pending Pages |
+| Accessible cards/status/dialogs | started | Semantic/static audit improved; live assistive-tech review pending Pages |
+| Reduced-motion presentation | started | Reduced-motion CSS present; live browser review pending Pages |
 | Catalog + lazy workspace integration | verified | game-check + build |
 | No runtime external requests/assets | verified | Source/build review |
 | Documentation/task synchronization | started | Updated with implementation commits |
