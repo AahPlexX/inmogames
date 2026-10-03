@@ -5,11 +5,11 @@
 
 | Capability | Status | Verification |
 | --- | --- | --- |
-| Pure deterministic engine | planned | Engine unit tests |
-| Guaranteed-solvable 9-tile rounds | planned | Generation/property-style unit coverage |
-| Five-round run progression | planned | Engine unit tests |
-| 100-point round scoring with 20-point miss penalty and 20-point floor | planned | Engine unit tests |
-| Accept any valid three-tile solution | planned | Engine unit tests |
+| Pure deterministic engine | verified | Engine unit tests |
+| Guaranteed-solvable 9-tile rounds | verified | Generation/property-style unit coverage |
+| Five-round run progression | verified | Engine unit tests |
+| 100-point round scoring with 20-point miss penalty and 20-point floor | verified | Engine unit tests |
+| Accept any valid three-tile solution | verified | Engine unit tests |
 | Responsive 3 × 3 native-button board | planned | Build + viewport review |
 | Pointer/touch and keyboard parity | planned | Native-button interaction review |
 | Visible focus and non-color selection state | planned | Accessibility review |
