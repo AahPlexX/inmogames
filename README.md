@@ -32,7 +32,7 @@ InMo Games is a local-first collection of focused browser games. Every game runs
 
 ## Deployment
 
-In the repository settings, set Pages > Source to "GitHub Actions" once. After that, every push to `main` that passes validation is published.
+In the repository settings, set Pages > Source to "GitHub Actions" once. The Vite production base is `/inmogames/`, matching the repository project-site path. After Pages is enabled, every push to `main` that passes validation is published.
 
 ## Status
 

@@ -31,3 +31,7 @@ Direct runtime and development dependencies are pinned to exact versions, matchi
 ## D-008 Pages bootstrap remains a one-time repository setting (2026-10-03)
 
 The deployment workflow uses the default `GITHUB_TOKEN` only. Current `actions/configure-pages` documentation requires a different token with elevated repository permissions when `enablement: true` is used. InMo Games will not add a privileged token just to automate a one-time setting, so Pages must be enabled once in Settings > Pages with GitHub Actions as the source.
+
+## D-009 Vite Pages base path (2026-10-03)
+
+The production base is `/inmogames/`, matching Vite's current GitHub Pages guidance for a project site hosted at `<owner>.github.io/<repo>/`. Hash routing remains under that static project path. If the site later moves to a custom domain or an owner-level Pages repository, this base decision must be revisited.
