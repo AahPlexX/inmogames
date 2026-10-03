@@ -5,28 +5,28 @@
 
 | Capability | Status | Verification |
 | --- | --- | --- |
-| Six-deck shoe and cut-card lifecycle | planned | Shoe unit tests |
-| Pure hand scoring and natural-blackjack semantics | planned | Engine unit tests |
-| S17 dealer behavior | planned | Engine unit tests |
-| Hit / stand / double | planned | Engine + UI verification |
-| One split / DAS / split-Ace restrictions | planned | Engine + UI verification |
-| Late surrender after dealer check | planned | Engine + UI verification |
-| Insurance at half wager, 2:1 profit | planned | Engine + UI verification |
-| 3:2 natural blackjack payout | planned | Engine settlement tests |
-| Independent split-hand settlement | planned | Engine settlement tests |
-| Virtual bankroll and chip betting controls | planned | UI verification |
-| Re-bet / 2× / all-in / undo / clear | planned | UI verification |
-| W/L/P and session-net statistics | planned | Engine/UI verification |
-| Defensive versioned local persistence | planned | Storage unit tests |
-| Saved-game reset | planned | Storage/UI verification |
-| Optional exact-table strategy hints | planned | Strategy unit tests |
+| Six-deck shoe and cut-card lifecycle | verified | Shoe unit tests |
+| Pure hand scoring and natural-blackjack semantics | verified | Engine unit tests |
+| S17 dealer behavior | verified | Engine unit tests |
+| Hit / stand / double | started | Engine + UI verification |
+| One split / DAS / split-Ace restrictions | started | Engine + UI verification |
+| Late surrender after dealer check | verified | Engine + UI verification |
+| Insurance at half wager, 2:1 profit | verified | Engine + UI verification |
+| 3:2 natural blackjack payout | verified | Engine settlement tests |
+| Independent split-hand settlement | verified | Engine settlement tests |
+| Virtual bankroll and chip betting controls | started | UI verification |
+| Re-bet / 2× / all-in / undo / clear | started | UI verification |
+| W/L/P and session-net statistics | started | Engine/UI verification |
+| Defensive versioned local persistence | verified | Storage unit tests |
+| Saved-game reset | started | Storage/UI verification |
+| Optional exact-table strategy hints | verified | Strategy unit tests |
 | Local procedural sound preference | planned | Browser review |
-| Responsive casino-table presentation | planned | 320px/zoom/large viewport review |
-| Keyboard/touch parity and visible focus | planned | Accessibility review |
-| Accessible cards/status/dialogs | planned | Accessibility review |
-| Reduced-motion presentation | planned | CSS/browser review |
-| Catalog + lazy workspace integration | planned | game-check + build |
-| No runtime external requests/assets | planned | Source/build review |
+| Responsive casino-table presentation | started | 320px/zoom/large viewport review |
+| Keyboard/touch parity and visible focus | started | Accessibility review |
+| Accessible cards/status/dialogs | started | Accessibility review |
+| Reduced-motion presentation | started | CSS/browser review |
+| Catalog + lazy workspace integration | verified | game-check + build |
+| No runtime external requests/assets | verified | Source/build review |
 | Documentation/task synchronization | started | Updated with implementation commits |
 
 ## Assets and licences
