@@ -19,3 +19,7 @@ No branches or pull requests. Validation runs on every push to `main` and deploy
 ## D-005 Lockfile bootstrap (2026-10-03)
 
 The first commit has no `pnpm-lock.yaml`, so CI installs with `--no-frozen-lockfile`. After the first local `pnpm install`, commit the lockfile and switch CI to `--frozen-lockfile`.
+
+## D-006 Dependency maintenance follows the direct-main rule (2026-10-03)
+
+Automated version-update pull requests are disabled because this repository does not use pull requests. Dependency updates are researched, validated and committed directly to `main` under the same evidence and CI requirements as other changes. Major-version updates are never merged automatically.
