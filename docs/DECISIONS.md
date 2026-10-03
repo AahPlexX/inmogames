@@ -27,3 +27,7 @@ Automated version-update pull requests are disabled because this repository does
 ## D-007 Exact direct dependencies (2026-10-03)
 
 Direct runtime and development dependencies are pinned to exact versions, matching the reproducibility model used by InMo Tools. The lockfile remains authoritative for the full transitive graph. Dependency upgrades are deliberate main-branch changes that must pass frozen install and the full validation workflow.
+
+## D-008 Pages bootstrap remains a one-time repository setting (2026-10-03)
+
+The deployment workflow uses the default `GITHUB_TOKEN` only. Current `actions/configure-pages` documentation requires a different token with elevated repository permissions when `enablement: true` is used. InMo Games will not add a privileged token just to automate a one-time setting, so Pages must be enabled once in Settings > Pages with GitHub Actions as the source.
