@@ -38,7 +38,9 @@ describe('Royal Palace Blackjack rules', () => {
   it('uses exact table payouts', () => {
     expect(naturalBlackjackPayout(100)).toBe(250);
     expect(insurancePayout(50, true)).toBe(150);
+    expect(insurancePayout(2.5, true)).toBe(7.5);
     expect(insurancePayout(50, false)).toBe(0);
     expect(surrenderReturn(100)).toBe(50);
+    expect(surrenderReturn(5)).toBe(2.5);
   });
 });

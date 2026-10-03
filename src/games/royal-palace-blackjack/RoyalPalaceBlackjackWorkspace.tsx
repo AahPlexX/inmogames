@@ -10,7 +10,7 @@ type Phase='betting'|'player'|'dealer'|'settled';
 interface Hand { cards:Card[]; wager:number; fromSplit:boolean; splitAces:boolean; doubled:boolean; surrendered:boolean }
 const chips=[5,25,100,500,1000];
 const suit:Record<Card['suit'],string>={spades:'♠',hearts:'♥',diamonds:'♦',clubs:'♣'};
-const money=(n:number)=>Math.round(n).toLocaleString();
+const money=(n:number)=>n.toLocaleString(undefined,{minimumFractionDigits:Number.isInteger(n)?0:1,maximumFractionDigits:1});
 const freshHand=():Hand=>({cards:[],wager:0,fromSplit:false,splitAces:false,doubled:false,surrendered:false});
 
 export default function RoyalPalaceBlackjackWorkspace(){
@@ -47,7 +47,7 @@ export default function RoyalPalaceBlackjackWorkspace(){
  }
  function declineInsurance(){setInsurance(false);const d=evaluateHand(dealer);if(d.blackjack||evaluateHand(hands[0].cards).blackjack){setHoleHidden(false);finishRound(hands,dealer,shoe)}else setStatus('No insurance. Your move.')}
  function takeInsurance(){
-  const cost=Math.floor(hands[0].wager/2);if(save.bankroll<cost)return;setInsurance(false);
+  const cost=hands[0].wager/2;if(save.bankroll<cost)return;setInsurance(false);
   const d=evaluateHand(dealer);setSave(s=>({...s,bankroll:s.bankroll-cost+(d.blackjack?cost*3:0),sessionNet:s.sessionNet-cost+(d.blackjack?cost*3:0)}));
   if(d.blackjack||evaluateHand(hands[0].cards).blackjack){setHoleHidden(false);finishRound(hands,dealer,shoe)}else setStatus('Insurance lost. Your move.');
  }
@@ -114,7 +114,7 @@ export default function RoyalPalaceBlackjackWorkspace(){
    </div>
    <div className="rp-prefs"><button aria-pressed={save.preferences.sound} onClick={()=>{const next=!save.preferences.sound;setSave(s=>({...s,preferences:{...s.preferences,sound:next}}));if(next)playCue('chip',true)}}>Sound {save.preferences.sound?'on':'off'}</button><button aria-pressed={save.preferences.hints} onClick={()=>setSave(s=>({...s,preferences:{...s.preferences,hints:!s.preferences.hints}}))}>Strategy hints {save.preferences.hints?'on':'off'}</button><button onClick={resetAll}>Reset saved game</button></div>
   </div>
-  {insurance&&<div className="rp-modal" role="dialog" aria-modal="true" aria-labelledby="insurance-title"><div><h2 id="insurance-title">Dealer shows an Ace</h2><p>Insurance costs {money(Math.floor(hands[0].wager/2))} virtual credits and pays 2:1 profit if the dealer has blackjack.</p><p className="rp-dialog-note">Choose one option to continue the round.</p><div><button disabled={save.bankroll<Math.floor(hands[0].wager/2)} onClick={takeInsurance}>Take insurance</button><button className="primary" onClick={declineInsurance}>No insurance</button></div></div></div>}
+  {insurance&&<div className="rp-modal" role="dialog" aria-modal="true" aria-labelledby="insurance-title" onKeyDown={event=>{if(event.key==='Escape')declineInsurance()}}><div><h2 id="insurance-title">Dealer shows an Ace</h2><p>Insurance costs {money(hands[0].wager/2)} virtual credits and pays 2:1 profit if the dealer has blackjack.</p><p className="rp-dialog-note">Choose one option to continue the round.</p><div><button disabled={save.bankroll<hands[0].wager/2} onClick={takeInsurance}>Take insurance</button><button className="primary" autoFocus onClick={declineInsurance}>No insurance</button></div></div></div>}
  </section>
 }
 function HandView({label,cards,hiddenIndex=-1,active=false,fromSplit=false}:{label:string;cards:Card[];hiddenIndex?:number;active?:boolean;fromSplit?:boolean}){
