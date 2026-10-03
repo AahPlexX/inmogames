@@ -23,3 +23,7 @@ The first commit has no `pnpm-lock.yaml`, so CI installs with `--no-frozen-lockf
 ## D-006 Dependency maintenance follows the direct-main rule (2026-10-03)
 
 Automated version-update pull requests are disabled because this repository does not use pull requests. Dependency updates are researched, validated and committed directly to `main` under the same evidence and CI requirements as other changes. Major-version updates are never merged automatically.
+
+## D-007 Exact direct dependencies (2026-10-03)
+
+Direct runtime and development dependencies are pinned to exact versions, matching the reproducibility model used by InMo Tools. The lockfile remains authoritative for the full transitive graph. Dependency upgrades are deliberate main-branch changes that must pass frozen install and the full validation workflow.

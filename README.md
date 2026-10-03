@@ -11,7 +11,7 @@ InMo Games is a local-first collection of focused browser games. Every game runs
 ## Stack
 
 - React + TypeScript + Vite
-- pnpm
+- pnpm with exact dependency versions and a frozen lockfile
 - Vitest for unit tests
 - GitHub Actions validates and deploys to GitHub Pages from `main`
 
@@ -27,7 +27,8 @@ InMo Games is a local-first collection of focused browser games. Every game runs
 ## Commands
 
 - `pnpm dev` - local development server.
-- `pnpm validate` - typecheck, game check, unit tests and production build.
+- `pnpm dependency:check` - reject dependency ranges so installs remain reproducible.
+- `pnpm validate` - dependency policy, typecheck, game check, unit tests and production build.
 
 ## Deployment
 
