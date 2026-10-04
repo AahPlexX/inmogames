@@ -32,6 +32,7 @@ Work on `origin/main` only. Commit directly to `main`; do not leave branches or 
 - `src/games/<slug>/` - one folder per game: `<slug>.meta.ts`, `<Name>Workspace.tsx`, engine modules, `TRACKER.md`.
 - `src/games/workspaces.tsx` - lazy workspace registry keyed by slug.
 - `src/platform/` - shared platform concerns such as Firebase bootstrap, authentication and game-save repositories.
+- `DESIGN.md` - durable visual identity, semantic token intent and cross-game design rules.
 - `docs/FIREBASE_ARCHITECTURE.md` - authoritative account/save platform contract.
 - `docs/FIREBASE_SETUP.md` - Console/build configuration and live verification requirements.
 - `docs/DOCUMENTATION_STANDARD.md` - naming, required docs, definition of done.
@@ -56,6 +57,14 @@ Work on `origin/main` only. Commit directly to `main`; do not leave branches or 
 - Before changing a dependency, verify the stable release against the package/project's authoritative release documentation and corroborate the exact version on npmjs.com. Record the evidence in `docs/DEPENDENCY_POLICY.md` and update `.tasks/dependency-refresh-request.json`.
 - `pnpm dependency:check` enforces exact pins. `pnpm dependency:current` verifies the manifest matches `package.json` and rechecks every direct package against npm's live `latest` tag. Both are mandatory integration gates.
 - A prerelease (`alpha`, `beta`, `rc`, `next`, canary, experimental) is never substituted for stable `latest` unless a separate explicit repository decision changes this rule.
+
+## Design integration
+
+- Read `DESIGN.md` before creating or materially changing any product/game UI.
+- `src/styles.css` is the canonical runtime owner for shared product tokens; `DESIGN.md` mirrors those accepted values and rationale. Change both in the same changeset for durable system decisions.
+- Shared chrome (catalog, navigation, account/save UI, focus language) must remain consistent. Individual games may use scoped local palettes/material metaphors when they reinforce gameplay, but must not redefine shared account/navigation behavior.
+- No runtime third-party fonts or decorative assets are required by the design system. Prefer system typography and repository-authored CSS/art.
+- `pnpm design:check` is a mandatory integration gate and uses the pinned Google Labs DESIGN.md validator.
 
 ## Code standards
 

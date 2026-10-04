@@ -23,11 +23,11 @@
 | Guest-to-account save seeding without cloud overwrite | verified | Atomic migration unit tests + browser emulator |
 | Saved-game reset | verified | Scoped guest/account repository tests + browser emulator; defaults prevent guest reseeding |
 | Optional exact-table strategy hints | verified | Strategy unit tests |
-| Local procedural sound preference | started | Unit/source verification green; browser review pending Pages |
-| Responsive casino-table presentation | started | 320px CSS hardening landed; live viewport/zoom review pending Pages |
-| Keyboard/touch parity and visible focus | started | Native controls/focus CSS present; live keyboard/touch review pending Pages |
-| Accessible cards/status/dialogs | started | Semantic/static audit improved; live assistive-tech review pending Pages |
-| Reduced-motion presentation | started | Reduced-motion CSS present; live browser review pending Pages |
+| Local procedural sound preference | started | Unit/source verification green; live browser review pending final design pass |
+| Responsive casino-table presentation | started | Private-table redesign + 320px hardening landed; browser/zoom verification in progress |
+| Keyboard/touch parity and visible focus | started | Native controls/shared + table-local focus treatment present; browser review in progress |
+| Accessible cards/status/dialogs | started | Semantic/static audit improved; live browser/accessibility review in progress |
+| Reduced-motion presentation | started | Reduced-motion CSS present; live browser review in progress |
 | Catalog + lazy workspace integration | verified | game-check + build |
 | No runtime third-party assets | verified | Source/build review |
 | Runtime network restricted to shared Firebase account/save traffic | verified | Game workspaces have no Firebase imports; browser emulator traffic confined to local services |

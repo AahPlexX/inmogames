@@ -11,7 +11,7 @@ InMo Games is a local-first collection of focused browser games. The frontend is
 - Runtime network access is limited to site assets plus approved Firebase authentication/save traffic.
 - No privileged credentials or service-account material may be shipped to the browser.
 
-See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract.
+See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract. See `DESIGN.md` for the shared visual language and game-specific design boundaries.
 
 ## Stack
 
@@ -23,6 +23,7 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract.
 
 ## Layout
 
+- `DESIGN.md` - durable visual identity and semantic design contract.
 - `AGENTS.md` - rules every contributor and agent follows.
 - `GOVERNANCE.md` - binding repository-mutation rules.
 - `docs/` - documentation standard, decision log, platform architecture and game index.
@@ -36,6 +37,7 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract.
 - `pnpm dev` - local development server.
 - `pnpm dependency:check` - reject dependency ranges so installs remain reproducible.
 - `pnpm dependency:current` - require every direct dependency/devDependency to match the researched manifest and npm's current stable `latest` tag.
+- `pnpm design:check` - validate the durable `DESIGN.md` contract with the exact pinned validator.
 - `pnpm validate` - dependency policy, typecheck, game check, unit tests, rules/browser emulator tests and both production builds.
 - `pnpm test:rules` / `pnpm test:browser` - isolated Firebase rules and browser account/save checks.
 - `pnpm build:firebase` - optional root-base static build for the existing Firebase Hosting compatibility path.

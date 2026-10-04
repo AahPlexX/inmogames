@@ -82,3 +82,12 @@ GitHub Pages is enabled with GitHub Actions as its source. `.github/workflows/pa
 ## D-017 Latest-stable direct dependency gate (2026-10-04)
 
 Every direct `dependencies` and `devDependencies` package must be the stable npm `latest` release when integrated, pinned exactly with no caret/range. Before integration, its target version is checked against the project's authoritative release source and npmjs.com and recorded in `docs/DEPENDENCY_POLICY.md` plus `.tasks/dependency-refresh-request.json`. CI additionally queries npm's live `latest` endpoint on each `main` validation. If a stable release appears before a later integration, validation blocks until the dependency set is deliberately refreshed and the full suite passes.
+
+
+## D-018 Shared game-cabinet design system (2026-10-04)
+
+InMo Games uses a shared product-shell visual system documented in `DESIGN.md`, with runtime shared tokens owned by `src/styles.css`. The shell uses a restrained blue-enamel/ivory/brick/brass language and system fonts only. Catalog, navigation, account/save surfaces, focus treatment and spacing remain shared.
+
+Individual games may use scoped material identities when they support the game itself. Threefold uses a tactile paper/tile puzzle-board language; Royal Palace Blackjack uses a private felt/card-table language. Game-local styling must not redefine shared navigation, account, save, accessibility or responsive contracts.
+
+`pnpm design:check` validates DESIGN.md on every normal Pages integration and through aggregate validation.
