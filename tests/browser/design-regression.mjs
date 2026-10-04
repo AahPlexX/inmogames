@@ -76,6 +76,14 @@ async function assertContrast(foreground, background, label, minimum = 4.5) {
   assert.ok(ratio >= minimum, `${label} contrast is ${ratio.toFixed(2)}:1, expected at least ${minimum}:1 (${foregroundColor} on ${backgroundColor}).`);
 }
 
+async function assertCatalogContrast(page, theme) {
+  await assertContrast(page.locator('.eyebrow').first(), page.locator('body'), `${theme} catalog eyebrow`);
+  await assertContrast(page.locator('.catalog-hero > p').last(), page.locator('body'), `${theme} catalog supporting copy`);
+  const accountButton = page.getByRole('button', { name: 'Sign in / create account', exact: true });
+  await accountButton.waitFor();
+  await assertContrast(accountButton, accountButton, `${theme} account primary action`);
+}
+
 try {
   await waitForServer();
   browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || undefined });
@@ -89,11 +97,7 @@ try {
   await catalogSkip.waitFor();
   await assertNoOverflow(page, 'catalog at 320px');
   assert.equal(await page.locator('.game-card').count(), 2);
-  await assertContrast(page.locator('.eyebrow').first(), page.locator('body'), 'Catalog eyebrow');
-  await assertContrast(page.locator('.catalog-hero > p').last(), page.locator('body'), 'Catalog supporting copy');
-  const accountButton = page.getByRole('button', { name: 'Sign in / create account', exact: true });
-  await accountButton.waitFor();
-  await assertContrast(accountButton, accountButton, 'Account primary action');
+  await assertCatalogContrast(page, 'Light');
   const phoneCards = await page.locator('.game-card').evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().toJSON()));
   assert.ok(phoneCards[1].top > phoneCards[0].top, 'Phone catalog cards should stack vertically.');
   await catalogSkip.focus();
@@ -132,6 +136,15 @@ try {
   await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
   await phone.close();
 
+  const dark = await browser.newContext({ viewport: { width: 320, height: 900 }, colorScheme: 'dark' });
+  const darkPage = await dark.newPage();
+  darkPage.on('pageerror', (error) => errors.push(error.message));
+  await darkPage.goto(base);
+  await darkPage.getByRole('button', { name: 'Skip to games', exact: true }).waitFor();
+  await assertNoOverflow(darkPage, 'dark catalog at 320px');
+  await assertCatalogContrast(darkPage, 'Dark');
+  await dark.close();
+
   const desktop = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'light' });
   const desktopPage = await desktop.newPage();
   desktopPage.on('pageerror', (error) => errors.push(error.message));
@@ -153,10 +166,16 @@ try {
   await reducedPage.locator('.rp-card').first().waitFor();
   assert.equal(await reducedPage.locator('.rp-card').first().evaluate((element) => getComputedStyle(element).animationName), 'none');
   await assertNoOverflow(reducedPage, 'Royal Palace with reduced motion');
+  await reducedPage.goto(base + '#/games/threefold');
+  const reducedTile = reducedPage.locator('.threefold-board button').first();
+  await reducedTile.waitFor();
+  await reducedTile.click();
+  assert.equal(await reducedTile.evaluate((element) => getComputedStyle(element).transform), 'none');
+  await assertNoOverflow(reducedPage, 'Threefold with reduced motion');
   await reduced.close();
 
   assert.deepEqual(errors, []);
-  console.log('Design regression checks passed: catalog composition/contrast, skip controls, 320px/200% reflow, Threefold keyboard/non-color selection, Blackjack touch targets/help, desktop layout and reduced motion.');
+  console.log('Design regression checks passed: light/dark catalog contrast, skip controls, 320px/200% reflow, Threefold keyboard/non-color/reduced-motion behavior, Blackjack touch targets/help, desktop layout and reduced motion.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');
