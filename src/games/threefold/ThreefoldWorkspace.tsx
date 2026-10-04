@@ -53,13 +53,13 @@ function ThreefoldBoard({ initial, persist, reset }: { initial: ThreefoldSave; p
       <button className="tf-primary" onClick={start}>Play another run</button>
     </div> : <>
       <div className="tf-roundline"><span>Round {run.roundIndex + 1} of 5</span><span>{selection.length} of 3 selected</span></div>
-      <div className="tf-target" aria-label={'Target ' + round.target}><span>Make</span><strong>{round.target}</strong></div>
+      <h2 className="tf-target"><span>Make</span><strong>{round.target}</strong></h2>
       <div className="threefold-board">
         {round.tiles.map(tile => <button key={tile} aria-pressed={selection.includes(tile)} onClick={() => setSelection(current => current.includes(tile) ? current.filter(value => value !== tile) : current.length < 3 ? [...current, tile] : current)}>{tile}</button>)}
       </div>
       <div className="tf-feedback"><p role="status" aria-live="polite">{message}</p><button className="tf-primary" disabled={selection.length !== 3} onClick={check}>Check three</button></div>
     </>}
 
-    <div className="tf-footer"><span>Best score is saved after a completed run.</span><button className="tf-reset" onClick={() => { setBest(0); start(); reset(); }}>Reset best score</button></div>
+    <div className="tf-footer"><span>Best completed score: <b>{best}</b> / 500 · saved after a completed run.</span><button className="tf-reset" onClick={() => { setBest(0); start(); reset(); }}>Reset best score</button></div>
   </section>;
 }
