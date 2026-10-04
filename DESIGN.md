@@ -53,24 +53,31 @@ components:
   page-shell:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
-    borderColor: "{colors.line}"
-    mutedTextColor: "{colors.muted}"
+  muted-copy:
+    textColor: "{colors.muted}"
+  divider:
+    backgroundColor: "{colors.line}"
+    height: "1px"
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-brand}"
-    hoverColor: "{colors.brand-strong}"
     rounded: "{rounded.sm}"
     padding: "0.6rem 0.9rem"
     height: "44px"
+  button-primary-hover:
+    backgroundColor: "{colors.brand-strong}"
+    textColor: "{colors.on-brand}"
   button-secondary:
     backgroundColor: "{colors.surface-soft}"
     textColor: "{colors.muted}"
-    borderColor: "{colors.line}"
     rounded: "{rounded.sm}"
   site-brand:
     backgroundColor: "{colors.brand}"
     textColor: "{colors.on-brand}"
-    accentColor: "{colors.accent}"
+  accent-marker:
+    backgroundColor: "{colors.accent}"
+    width: "0.5rem"
+    height: "0.5rem"
   focus-ring:
     backgroundColor: "{colors.focus}"
     textColor: "{colors.on-brand}"
@@ -97,9 +104,10 @@ components:
     padding: "0.72rem 0.78rem"
   dark-shell:
     backgroundColor: "{colors.dark-canvas}"
-    surfaceColor: "{colors.dark-surface}"
     textColor: "{colors.dark-ink}"
-    mutedTextColor: "{colors.dark-muted}"
+  dark-panel:
+    backgroundColor: "{colors.dark-surface}"
+    textColor: "{colors.dark-muted}"
 ---
 
 ## Overview
