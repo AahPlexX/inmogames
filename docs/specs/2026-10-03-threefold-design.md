@@ -45,8 +45,6 @@ The primary board is nine native buttons in a responsive 3 × 3 grid. Native con
 
 Storage key: `inmogames:threefold:v1`.
 
-Storage key: `inmogames:threefold:v1`.
-
 Only the best completed score is durable. Guests use localStorage. Once the shared Firebase save platform is implemented, authenticated players sync that best score to `users/{uid}/games/threefold` through the shared save repository. Active runs remain intentionally ephemeral: reload starts a fresh run.
 
 Storage/network failure must never prevent play. Threefold must not make game-specific third-party requests; Firebase account/save traffic is owned by the shared platform layer.
