@@ -2,10 +2,15 @@
 
 ## Platform rules (apply to every game and every spec)
 
-- **No user accounts or authentication.** No sign-in, sessions, tokens or identity.
-- **No server and no server-side database.** Static files on GitHub Pages or Firebase Hosting only.
-- **Everything runs in the browser.** Saves, settings and scores live only in that browser (IndexedDB, localStorage) and are never uploaded.
-- **Network use is limited** to the site's own static files.
+- **Static frontend.** React/Vite remains deployed on GitHub Pages; no custom application server is part of the application architecture.
+- **Optional accounts are supported.** Firebase Authentication is the approved identity provider.
+- **Account-bound persistence is supported.** Cloud Firestore is the approved cloud save store.
+- **Guest play remains local-first.** Browser-local storage remains the guest/offline cache path where the game has persistent data.
+- **Shared platform layer.** Games do not embed ad hoc Firebase calls. Authentication and account saves go through shared `src/platform/` modules.
+- **Restricted runtime network.** Runtime calls may reach the site's static assets and the approved Firebase authentication/save services only unless a later repository decision says otherwise.
+- **No privileged client credentials.** Service accounts, Admin credentials, private keys and secret tokens are forbidden in browser code or the repository.
+
+The canonical account/save contract is `docs/FIREBASE_ARCHITECTURE.md`.
 
 ## Naming convention
 
@@ -16,15 +21,25 @@
 
 ## Required documents per game
 
-- Spec: `docs/specs/YYYY-MM-DD-<slug>-design.md` (rules, controls, scoring, storage keys, accessibility).
+- Spec: `docs/specs/YYYY-MM-DD-<slug>-design.md` (rules, controls, scoring, persistence/schema behavior, accessibility).
 - Tracker: `src/games/<slug>/TRACKER.md` (capability list with status `planned`, `started`, `verified`, `blocked`, `excluded`; asset licences).
 - Index row: `docs/GAME_INDEX.md`.
+
+If a game has persistent data, its spec must state:
+- local storage key/cache behavior;
+- cloud game slug/document identity;
+- save schema version;
+- which state is durable versus intentionally transient;
+- reset behavior;
+- guest-to-account migration behavior;
+- behavior when Firebase is unavailable or the user is signed out.
 
 ## Definition of done for a game
 
 - Playable start to finish on desktop and touch.
 - Engine unit tests pass.
 - No horizontal overflow at 320 CSS px; keyboard operable; reduced motion respected.
-- Local save and reset work and are described in the spec.
+- Any persistent game data has verified guest-local behavior and, once the platform integration is available, verified authenticated account-save behavior.
+- Save/reset/migration behavior is described in the spec and does not bypass the shared repository abstraction.
 - Tracker has no capability left `planned` or `started`.
 - `pnpm validate` green and Pages deployment successful.

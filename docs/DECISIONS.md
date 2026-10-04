@@ -36,6 +36,22 @@ The deployment workflow uses the default `GITHUB_TOKEN` only. Current `actions/c
 
 The production base is `/inmogames/`, matching Vite's current GitHub Pages guidance for a project site hosted at `<owner>.github.io/<repo>/`. Hash routing remains under that static project path. If the site later moves to a custom domain or an owner-level Pages repository, this base decision must be revisited.
 
-## D-010 Firebase Hosting integration (2026-10-04)
+## D-010 Firebase account and save platform (2026-10-04)
 
-Firebase integration defaults to static Hosting under the user's request. `build:firebase` overrides Vite's base to `/` while the Pages build keeps `/inmogames/`. Both hosts serve the same browser-only app and hash routes. `firebase.json` serves `dist` with immutable caching for hashed assets and revalidation for the HTML entry point. No runtime Firebase SDK, authentication, database or analytics is introduced. A live Firebase deployment requires a project ID and an authenticated deployment identity; these have not been supplied.
+InMo Games retains a static React/Vite frontend on GitHub Pages but now supports optional user accounts and cross-device persistent game data through Firebase Authentication and Cloud Firestore. This supersedes the original no-auth/no-database/no-runtime-network platform restriction.
+
+No custom application server is introduced. Runtime network access is restricted to the site's static assets and the Firebase services required by the shared authentication/save layer unless a later decision explicitly expands the platform boundary.
+
+## D-011 Guest-first hybrid persistence (2026-10-04)
+
+Account creation is optional. Guests continue to play with browser-local persistence. Authenticated players use Cloud Firestore as the authoritative account save with a browser-local mirror/cache.
+
+Games must not call Firestore directly from their workspaces or engines. Shared platform repositories own cloud/local selection, serialization, migration and error handling. Each persistent game owns a versioned game-state schema.
+
+When a user signs in and no cloud save exists for a game, eligible local progress may seed the account save. When a cloud save already exists, it is authoritative; implementations must not silently overwrite it with unrelated guest progress.
+
+## D-012 Firebase security boundary (2026-10-04)
+
+Firebase Web configuration is public browser configuration and is not an authorization secret. Privileged credentials—including service-account JSON, private keys and Firebase Admin credentials—must never enter the repository or client bundle.
+
+Firestore Security Rules must deny access by default and permit a signed-in user to read/write only their own account-save documents. Initial account saves use the path `users/{uid}/games/{gameSlug}`. Security enforcement belongs in Firestore rules, not merely in React route/UI checks.
