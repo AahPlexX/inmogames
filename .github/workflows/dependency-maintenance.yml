@@ -1,0 +1,50 @@
+name: Refresh pinned dependencies
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .tasks/dependency-refresh-request.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dependency-maintenance
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.12.0
+          cache: pnpm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: node scripts/apply-dependency-request.mjs
+      - run: pnpm install --no-frozen-lockfile
+      - run: node scripts/verify-dependency-latest.mjs
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm validate
+      - name: Commit verified dependency refresh
+        run: |
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
+          git add package.json pnpm-lock.yaml
+          if git diff --cached --quiet; then
+            echo "No dependency changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh latest stable dependencies"
+          git push origin HEAD:main
