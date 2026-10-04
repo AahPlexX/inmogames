@@ -11,10 +11,11 @@
     "test:unit": "vitest run",
     "build": "vite build",
     "build:firebase": "vite build --base=/",
-    "validate": "pnpm dependency:check && pnpm dependency:current && pnpm design:check && pnpm typecheck && pnpm game:check && pnpm test:unit && pnpm test:rules && pnpm test:browser && pnpm build:firebase && pnpm build",
+    "validate": "pnpm dependency:check && pnpm dependency:current && pnpm design:check && pnpm typecheck && pnpm game:check && pnpm test:unit && pnpm test:rules && pnpm test:browser && pnpm test:design-browser && pnpm build:firebase && pnpm build",
     "dependency:check": "node scripts/dependency-check.mjs",
     "test:rules": "firebase emulators:exec --only firestore --project demo-inmogames \"node --test tests/rules/firestore.test.mjs\"",
     "test:browser": "firebase emulators:exec --only auth,firestore --project demo-inmogames \"node tests/browser/account-persistence.mjs\"",
+    "test:design-browser": "node tests/browser/design-regression.mjs",
     "dependency:current": "node scripts/verify-dependency-latest.mjs",
     "design:check": "npx --yes --package=@google/design.md@0.4.0 designmd lint DESIGN.md"
   },

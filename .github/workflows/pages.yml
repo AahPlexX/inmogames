@@ -43,6 +43,7 @@ jobs:
       - run: pnpm test:rules
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:browser
+      - run: pnpm test:design-browser
       - run: pnpm build:firebase
       - run: pnpm build
       - uses: actions/upload-pages-artifact@v5
