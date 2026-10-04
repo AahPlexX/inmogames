@@ -13,7 +13,7 @@ colors:
   brand: "#204F7C"
   brand-strong: "#163B5F"
   on-brand: "#FFFFFF"
-  accent: "#B84833"
+  accent: "#B44732"
   focus: "#0A66C2"
   success: "#276749"
   danger: "#A33A2B"
@@ -118,7 +118,7 @@ The product register is product-first with restrained brand expression. Global U
 
 The runtime token source is `src/styles.css` (Model B). This file mirrors accepted shared values and explains their use. Game-specific palettes remain scoped to their game stylesheets. `primary` mirrors the runtime `--brand` role so the machine-readable design contract and runtime semantic naming remain interoperable.
 
-`pnpm design:check` validates this file. `pnpm test:design-browser` is the rendered contract for responsive composition, 200% text reflow, keyboard focus/selection, minimum game touch targets and reduced-motion behavior.
+`pnpm design:check` validates this file. `pnpm test:design-browser` is the rendered contract for responsive composition, 200% text reflow, keyboard focus/selection, representative color contrast, minimum game touch targets and reduced-motion behavior.
 
 ## Colors
 
@@ -126,6 +126,7 @@ The global palette is blue-enamel, ivory-paper, brick-red and brass. Blue carrie
 
 - Body text uses `ink` on `canvas` or `surface`.
 - `muted` is for explanatory copy and metadata, not disabled controls.
+- `accent` is the accessible brick-red label color and must maintain at least 4.5:1 contrast against the light canvas for normal-size eyebrow text.
 - `focus` is a dedicated high-contrast keyboard ring.
 - Semantic success/danger colors must be paired with text or structure, never hue alone.
 - Dark mode remaps global semantic roles while preserving hierarchy.
@@ -178,7 +179,7 @@ Game shapes may follow their physical metaphor: Threefold uses squared tiles and
 - Do let each game express its own material world inside shared product chrome.
 - Do keep the first useful viewport focused on choosing or playing a game.
 - Do use semantic tokens for product UI and scope game-specific literals to game stylesheets.
-- Do preserve visible keyboard focus, 44px+ important targets, reduced motion, 320px reflow and 200% text reflow.
+- Do preserve visible keyboard focus, normal-text contrast, 44px+ important targets, reduced motion, 320px reflow and 200% text reflow.
 - Do use the rendered design-browser gate for material UI changes instead of relying on source inspection alone.
 - Don't turn the catalog into a generic equal-card feature grid; the game art face carries identity.
 - Don't use glass blur as a general style, neon gradients, excessive pills, floating blobs or decorative KPI cards.
