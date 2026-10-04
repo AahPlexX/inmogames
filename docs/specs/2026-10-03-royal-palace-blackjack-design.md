@@ -36,7 +36,7 @@ The local practice bankroll starts at 1,000 virtual credits. Chip denominations 
 
 Bet controls: add chip, undo last chip, clear, re-bet, double current wager, and all-in. Bets become immutable after deal.
 
-When the bankroll reaches zero after settlement, the player may reset the practice bankroll to 1,000. This is explicitly described as resetting virtual practice credits, not as an advance, loan or real-money transaction.
+When the durable bankroll falls below the 5-credit table minimum, the betting screen offers **Restore 1,000 practice credits**. This changes only the bankroll to 1,000; W/L/P statistics, cumulative session net, preferences and last completed wager are retained. The restore is an explicit durable checkpoint and survives reload/account sync. It is described as restoring virtual practice credits, never as an advance, loan or real-money transaction.
 
 ## Session state
 
