@@ -32,6 +32,24 @@ export function dealerShouldHit(cards: readonly Card[]): boolean {
   return evaluateHand(cards).total < 17;
 }
 
+export function canHit(_cards: readonly Card[], _splitAces: boolean): boolean {
+  return false;
+}
+
+export function canDouble(
+  _cards: readonly Card[],
+  _options: { splitAces: boolean; bankroll: number; wager: number },
+): boolean {
+  return false;
+}
+
+export function canSurrender(
+  _cards: readonly Card[],
+  _options: { fromSplit: boolean; dealerChecked: boolean },
+): boolean {
+  return false;
+}
+
 export function canSplit(cards: readonly Card[], alreadySplit: boolean): boolean {
   return !alreadySplit && cards.length === 2 && cardValue(cards[0]) === cardValue(cards[1]);
 }
