@@ -79,9 +79,8 @@ async function assertContrast(foreground, background, label, minimum = 4.5) {
 async function assertCatalogContrast(page, theme) {
   await assertContrast(page.locator('.eyebrow').first(), page.locator('body'), `${theme} catalog eyebrow`);
   await assertContrast(page.locator('.catalog-hero > p').last(), page.locator('body'), `${theme} catalog supporting copy`);
-  const accountButton = page.getByRole('button', { name: 'Sign in / create account', exact: true });
-  await accountButton.waitFor();
-  await assertContrast(accountButton, accountButton, `${theme} account primary action`);
+  const skipButton = page.locator('.skip-link').first();
+  await assertContrast(skipButton, skipButton, `${theme} primary brand action`);
 }
 
 try {
