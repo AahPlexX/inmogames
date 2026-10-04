@@ -17,6 +17,8 @@ async function overflowReport(page) {
   return page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     innerWidth,
+    bodyScrollWidth: document.body.scrollWidth,
+    rootClientWidth: document.documentElement.clientWidth,
     offenders: [...document.querySelectorAll('body *')].map(element => {
       const rect = element.getBoundingClientRect();
       return {
@@ -26,8 +28,11 @@ async function overflowReport(page) {
         left: Math.round(rect.left),
         right: Math.round(rect.right),
         width: Math.round(rect.width),
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        overflowX: getComputedStyle(element).overflowX,
       };
-    }).filter(item => item.left < -1 || item.right > innerWidth + 1).slice(0, 20),
+    }).filter(item => item.left < -1 || item.right > innerWidth + 1 || item.scrollWidth > item.clientWidth + 1).slice(0, 30),
   }));
 }
 async function signIn(page, email, password, register=false) {
