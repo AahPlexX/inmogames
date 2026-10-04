@@ -32,6 +32,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm dependency:check
       - run: pnpm dependency:current
+      - run: pnpm design:check
       - run: pnpm typecheck
       - run: pnpm game:check
       - uses: actions/setup-java@v6
