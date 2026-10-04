@@ -17,7 +17,7 @@
     "test:browser": "firebase emulators:exec --only auth,firestore --project demo-inmogames \"node tests/browser/account-persistence.mjs\"",
     "test:design-browser": "node tests/browser/design-regression.mjs",
     "dependency:current": "node scripts/verify-dependency-latest.mjs",
-    "design:check": "npx --yes --package=@google/design.md@0.4.0 designmd lint DESIGN.md"
+    "design:check": "pnpm dlx --package=@google/design.md@0.4.0 designmd lint DESIGN.md"
   },
   "dependencies": {
     "firebase": "12.19.0",
