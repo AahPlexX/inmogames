@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { useAccount, usePlatform } from '../PlatformProvider';
 import './account.css';
 type Mode = 'signin' | 'register' | 'reset';
@@ -15,8 +15,16 @@ export function AccountControls() {
   useEffect(() => {
     if (account.user) { dialog.current?.close(); setPassword(''); }
   }, [account.user?.uid]);
-  function changeMode(next: Mode) { setMode(next); setPassword(''); setFeedback(null); }
+  function changeMode(next: Mode) { setMode(next); setPassword(''); setFeedback(null); emailInput.current?.focus(); }
   function open() { setFeedback(null); dialog.current?.showModal(); emailInput.current?.focus(); }
+  function keepDialogFocus(event: KeyboardEvent<HTMLDialogElement>) {
+    if (event.key !== 'Tab') return;
+    const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('input:not(:disabled), button:not(:disabled)'));
+    const first = controls[0];
+    const last = controls.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+  }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setFeedback(null);
     try {
@@ -35,7 +43,7 @@ export function AccountControls() {
     </> : <><p>Play as a guest, or sign in to save progress across devices.</p><button onClick={open}>Sign in / create account</button></>}
     {account.error && <p role="alert">{account.error}</p>}
     {account.notice && <p role="status">{account.notice}</p>}
-    <dialog ref={dialog} className="account-dialog" aria-labelledby={`${id}-title`} onClose={() => setPassword('')}>
+    <dialog ref={dialog} className="account-dialog" aria-labelledby={`${id}-title`} onClose={() => setPassword('')} onKeyDown={keepDialogFocus}>
       <h2 id={`${id}-title`}>{mode === 'register' ? 'Create account' : mode === 'reset' ? 'Reset password' : 'Sign in'}</h2>
       <p>Accounts are optional. Signing in loads account progress and starts a fresh game session. Completed progress follows your account; guest progress stays in this browser.</p>
       <form onSubmit={submit}>

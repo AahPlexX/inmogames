@@ -44,7 +44,7 @@ export class SaveSession<T> implements GameSaveRepository<T> {
   private async hydrate(epoch: number): Promise<T | null> {
     const cached = await this.local.load(this.definition.slug);
     if (!this.active || epoch !== this.loadEpoch) return null;
-    this.publish({ state: cached ?? structuredClone(this.definition.initial), ready: !this.cloud, error: this.local.warning });
+    this.publish({ state: cached ?? structuredClone(this.definition.initial), ready: !this.cloud, revision: this.snapshot.revision + 1, error: this.local.warning });
     if (!this.cloud) { this.hydrated = true; this.publish({ status: 'Guest progress saved in this browser.' }); return cached; }
     const timer = setTimeout(() => { if (epoch === this.loadEpoch) this.publish({ ready: true, status: 'Account progress is taking longer to load. You can keep playing.', error: 'Cloud progress has not loaded. Check your connection and retry. When it loads, the account save takes precedence.' }); }, 8000);
     try {
@@ -60,7 +60,7 @@ export class SaveSession<T> implements GameSaveRepository<T> {
       this.publish({ state: value, ready: true, revision: this.snapshot.revision + 1, status: 'Account progress loaded.', error: this.local.warning });
       return state;
     } catch {
-      if (this.active && epoch === this.loadEpoch) this.publish({ ready: true, status: 'Playing with this account’s browser cache.', error: 'Cloud progress could not load. Check your connection, sign-in and project permissions, then retry. Account progress will take precedence when it loads.' });
+      if (this.active && epoch === this.loadEpoch) this.publish({ ready: true, status: 'Playing with this account’s browser cache.', error: 'Cloud progress could not load. Check your connection and retry. If this continues, contact the site owner. Account progress will take precedence when it loads.' });
       return cached;
     } finally { clearTimeout(timer); }
   }
@@ -98,7 +98,7 @@ export class SaveSession<T> implements GameSaveRepository<T> {
           this.publish({ status: operation === 'delete' ? 'Account game progress reset.' : 'Account progress saved.', error: this.local.warning });
         }
       } catch {
-        if (sequence === this.sequence) this.publish({ status: 'Account progress is waiting to sync.', error: 'Cloud sync failed. This account’s changes remain in this browser session. Check your connection and project permissions, then retry before leaving.' });
+        if (sequence === this.sequence) this.publish({ status: 'Account progress is waiting to sync.', error: 'Cloud sync failed. This account’s changes remain in this browser session. Check your connection and retry before leaving. If this continues, contact the site owner.' });
       }
     });
     return this.queue;

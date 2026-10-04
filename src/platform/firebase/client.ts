@@ -6,7 +6,7 @@ export function createFirebaseClient(config: WebConfig, useEmulators = false) {
   const app = initializeApp(config);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  if (useEmulators) {
+  if (import.meta.env.DEV && useEmulators) {
     connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
     connectFirestoreEmulator(db, '127.0.0.1', 8080);
   }

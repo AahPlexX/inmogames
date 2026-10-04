@@ -69,3 +69,10 @@ describe('account/guest orchestration',()=>{
   vi.mocked(cloud.save).mockRejectedValueOnce(Error('offline'));await session.delete(game.slug);expect(session.getSnapshot().state).toEqual(game.initial);expect(session.getSnapshot().error).toBeTruthy();await session.retry();expect(cloud.save).toHaveBeenCalledTimes(2);expect(cloud.save).toHaveBeenLastCalledWith(game.slug,1,game.initial);expect(cloud.delete).not.toHaveBeenCalled();expect(await mirror.load(game.slug)).toBeNull();expect(await guest.load(game.slug)).toEqual({best:55});
  });
 });
+it('publishes cached account hydration as a new game revision before a slow server read resolves',async()=>{
+ const s=memory();const mirror=new LocalRepository(game,s,'alice');await mirror.save(game.slug,1,{best:20});
+ const d=deferred<{best:number}|null>();const cloud=account(null);cloud.loadOrSeed=()=>d.promise;
+ const session=new SaveSession(game,mirror,cloud,new LocalRepository(game,s));const initialRevision=session.getSnapshot().revision;const loading=session.load(game.slug);await Promise.resolve();await Promise.resolve();
+ expect(session.getSnapshot().state.best).toBe(20);expect(session.getSnapshot().revision).toBeGreaterThan(initialRevision);
+ d.resolve({best:40});await loading;expect(session.getSnapshot().state.best).toBe(40);
+});

@@ -60,6 +60,12 @@ try {
   await page.getByRole('button',{name:'Add 25 virtual-credit chip',exact:true}).click();await page.getByRole('button',{name:'Deal',exact:true}).click();await page.getByRole('button',{name:'Hit',exact:true}).waitFor();
   await page.getByRole('button',{name:'Sound off',exact:true}).click();await page.reload();await page.getByRole('button',{name:'Sound on',exact:true}).waitFor();assert.equal(await readBank(page),725);
   await page.getByRole('button',{name:'Sign in / create account',exact:true}).click();await page.getByRole('dialog').waitFor();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.keyboard.press('Escape');assert.equal(await page.getByRole('dialog').count(),0);
+  const zoomPage=await context.newPage();zoomPage.on('pageerror',error=>errors.push(error.message));await zoomPage.goto(base);await zoomPage.getByRole('button',{name:'Sign in / create account',exact:true}).waitFor();
+  await zoomPage.evaluate(()=>{document.documentElement.style.fontSize='200%';});await zoomPage.getByRole('button',{name:'Sign in / create account',exact:true}).click();
+  assert.ok(await zoomPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  assert.ok(await zoomPage.getByRole('dialog').getByLabel('Email',{exact:true}).evaluate(element=>element===document.activeElement));
+  for(let tab=0;tab<8;tab++){await zoomPage.keyboard.press('Tab');assert.ok(await zoomPage.getByRole('dialog').evaluate(element=>element.contains(document.activeElement)));}
+  await zoomPage.keyboard.press('Escape');assert.ok(await zoomPage.getByRole('button',{name:'Sign in / create account',exact:true}).evaluate(element=>element===document.activeElement));await zoomPage.close();
   const email=`player-${Date.now()}@example.test`;const password='Test-password-928!';
   await signIn(page,email,password,true);await accountReady(page);assert.equal(await readBank(page),725);
   await page.getByRole('button',{name:'Strategy hints on',exact:true}).click();await visibleText(page,'Account progress saved');
