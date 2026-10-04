@@ -1,9 +1,9 @@
 # Next
 
-## TASK-003: Connect Firebase Hosting project
-**Priority:** P1 | **Tags:** deployment, firebase | **Status:** blocked
+## TASK-004: Optional Firebase Hosting deployment
+**Priority:** P2 | **Tags:** deployment, firebase-hosting | **Status:** blocked
 
-Hosting configuration and a root-base build are implemented. Live deployment remains blocked on selecting a Firebase project ID and authenticating an identity with Hosting deployment access. Follow `docs/FIREBASE_HOSTING.md`; do not invent project identifiers or commit credentials. Game status in `docs/GAME_INDEX.md` is unchanged by this hosting integration.
+Optional Firebase Hosting compatibility and a root-base build are implemented. GitHub Pages remains the canonical deployment target, and Firebase Hosting is not required for Firebase Authentication or Cloud Firestore. Live Hosting deployment remains blocked on selecting a Firebase project ID and authenticating an identity with Hosting deployment access. Follow `docs/FIREBASE_HOSTING.md`; do not invent project identifiers or commit credentials.
 
 After incorporating the concurrent Blackjack fix `207c458`, all 21 unit tests pass. Dependency policy, typecheck, game structure, and both host builds pass. Live Hosting verification remains pending the project and deployment identity.
 

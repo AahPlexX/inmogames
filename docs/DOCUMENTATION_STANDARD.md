@@ -2,7 +2,7 @@
 
 ## Platform rules (apply to every game and every spec)
 
-- **Static frontend.** React/Vite remains deployed on GitHub Pages; no custom application server is part of the application architecture.
+- **Static frontend.** React/Vite uses GitHub Pages as the canonical deployment target. Optional Firebase Hosting compatibility may exist as a secondary static host, but auth/save features must not depend on it. No custom application server is part of the application architecture.
 - **Optional accounts are supported.** Firebase Authentication is the approved identity provider.
 - **Account-bound persistence is supported.** Cloud Firestore is the approved cloud save store.
 - **Guest play remains local-first.** Browser-local storage remains the guest/offline cache path where the game has persistent data.

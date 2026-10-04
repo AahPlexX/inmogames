@@ -16,7 +16,7 @@ Before a change is final, test it for syntax errors, semantic errors, dependency
 
 ## Platform boundary
 
-The deployable application remains a static GitHub Pages frontend. Firebase Authentication and Cloud Firestore are the only approved managed backend services for account identity and account-bound save data unless a later decision explicitly expands this boundary.
+The application remains a static frontend, with GitHub Pages as the canonical deployment target. Optional Firebase Hosting compatibility may remain as a secondary static host and is not required for account/save functionality. Firebase Authentication and Cloud Firestore are the only approved managed backend services for account identity and account-bound save data unless a later decision explicitly expands this boundary.
 
 Game code must use the shared platform abstraction rather than introducing independent backend clients.
 

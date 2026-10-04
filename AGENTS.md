@@ -6,7 +6,7 @@ Rules for every contributor and agent working in InMo Games.
 
 These are binding defaults. Change them only through an explicit repository decision recorded in `docs/DECISIONS.md`.
 
-- The frontend remains a static React/Vite application deployed on GitHub Pages. Do not add a custom application server.
+- The frontend remains a static React/Vite application. GitHub Pages is the canonical deployment target. Optional Firebase Hosting compatibility may remain as a secondary static target, but it must not become a prerequisite for authentication, saves or ordinary development. Do not add a custom application server.
 - Firebase Authentication and Cloud Firestore are the approved managed backend services for optional user accounts and account-bound game persistence.
 - Guest play remains supported. Guest saves use browser-local storage; authenticated saves use the shared Firebase save layer and may keep a browser-local cache.
 - Runtime network access is limited to the site's own static files plus the Firebase endpoints required by the shared authentication/save platform. Games must not add arbitrary third-party APIs, telemetry, ads or runtime assets without a new explicit decision.

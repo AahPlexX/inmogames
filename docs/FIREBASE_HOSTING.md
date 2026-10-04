@@ -1,6 +1,11 @@
 # Firebase Hosting
 
-Firebase Hosting serves the static InMo Games build. Games continue to run in the browser with local saves. The app needs no Firebase SDK or web API key.
+**Status:** Optional secondary static-host compatibility  
+**Canonical deployment:** GitHub Pages
+
+Firebase Hosting support is retained as an optional alternate static deployment path. It is not required for Firebase Authentication, Cloud Firestore, account saves, or ordinary InMo Games development.
+
+The shared account/save architecture is defined in `docs/FIREBASE_ARCHITECTURE.md` and must work from the canonical GitHub Pages build.
 
 ## Build and preview
 
@@ -15,11 +20,11 @@ npx --yes firebase-tools@15.32.1 emulators:start --only hosting --project demo-i
 
 Open `http://127.0.0.1:5000`. Check the catalog and game routes, including a reload on `/#/games/royal-palace-blackjack`.
 
-`build:firebase` sets the asset base to `/`, matching Firebase's root URL. The regular `build` retains `/inmogames/` for GitHub Pages. Both write to `dist`, so always rebuild for the intended host immediately before deployment.
+`build:firebase` sets the asset base to `/`, matching a root Firebase Hosting URL. The regular `build` retains `/inmogames/` for GitHub Pages. Both write to `dist`, so rebuild for the intended host immediately before deployment.
 
 ## Deploy
 
-Create or select a Firebase project in the Firebase console and enable Hosting. Sign in with an account that can deploy to that project:
+A live Firebase Hosting deployment is optional. If it is intentionally used, select a real Firebase project and authenticate an identity with Hosting deployment access:
 
 ```sh
 npx --yes firebase-tools@15.32.1 login
@@ -29,10 +34,14 @@ pnpm build:firebase
 npx --yes firebase-tools@15.32.1 deploy --only hosting --project YOUR_PROJECT_ID
 ```
 
-Replace `YOUR_PROJECT_ID` with the actual project ID. The CLI prints the Hosting URL when deployment succeeds. No project ID is assumed or committed, and credentials stay in the CLI's local credential store.
+Do not invent or commit a project ID or credentials. CLI credentials stay outside the repository.
 
 ## Routing and caching
 
-The existing hash routes work with static hosting, so no SPA catch-all rewrite is needed. Missing static files return 404. Vite's hashed `/assets/` files are cached for one year; `index.html` is revalidated so new releases load the current asset names.
+The existing hash routes work with static hosting, so no SPA catch-all rewrite is required. Missing static files return 404. Vite hashed `/assets/` files use immutable caching; `index.html` revalidates so new releases load current asset names.
 
-The GitHub Pages workflow remains available. Firebase deployment is manual until a project and deployment identity are configured; deploying to Firebase does not enable GitHub Pages.
+## Separation from Auth and Firestore
+
+Firebase Hosting itself does not provide the account/save behavior. The account/save implementation uses the modular Firebase Web SDK for Authentication and Cloud Firestore and must function when the app is served from GitHub Pages.
+
+Configuring optional Firebase Hosting does not satisfy `PLATFORM-001` or `TASK-003`.

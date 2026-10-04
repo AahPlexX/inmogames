@@ -55,3 +55,10 @@ When a user signs in and no cloud save exists for a game, eligible local progres
 Firebase Web configuration is public browser configuration and is not an authorization secret. Privileged credentials—including service-account JSON, private keys and Firebase Admin credentials—must never enter the repository or client bundle.
 
 Firestore Security Rules must deny access by default and permit a signed-in user to read/write only their own account-save documents. Initial account saves use the path `users/{uid}/games/{gameSlug}`. Security enforcement belongs in Firestore rules, not merely in React route/UI checks.
+
+
+## D-013 Firebase Hosting is optional and separate from account persistence (2026-10-04)
+
+The repository already contains a secondary Firebase Hosting build/configuration path. It is retained as optional static-host compatibility only. GitHub Pages remains the canonical deployment target.
+
+Firebase Authentication and Cloud Firestore must work from the GitHub Pages build and must not require Firebase Hosting. Hosting project selection/deployment is a separate lower-priority task and must not block account/save implementation.

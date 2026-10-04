@@ -9,6 +9,8 @@ Provide optional user accounts and account-bound game persistence while keeping 
 
 Firebase Authentication provides identity. Cloud Firestore stores authenticated game saves. Browser-local storage remains the guest path and local cache/fallback.
 
+GitHub Pages is the canonical static host. Existing Firebase Hosting compatibility is optional and is not a dependency of this architecture; Auth/Firestore integration must work from the GitHub Pages build.
+
 ## Non-goals
 
 - No custom application server.

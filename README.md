@@ -4,7 +4,7 @@ InMo Games is a local-first collection of focused browser games. The frontend is
 
 ## Platform rules
 
-- Static frontend on GitHub Pages; no custom application server.
+- Static frontend with GitHub Pages as the canonical deployment target; optional Firebase Hosting compatibility is secondary and not required for accounts/saves. No custom application server.
 - Firebase Authentication + Cloud Firestore are the approved account/save backend.
 - Guest mode remains available with local browser persistence.
 - Authenticated persistent game data goes through a shared account-save layer rather than game-specific Firebase calls.
@@ -36,6 +36,7 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract.
 - `pnpm dev` - local development server.
 - `pnpm dependency:check` - reject dependency ranges so installs remain reproducible.
 - `pnpm validate` - dependency policy, typecheck, game check, unit tests and production build.
+- `pnpm build:firebase` - optional root-base static build for the existing Firebase Hosting compatibility path.
 
 ## Deployment
 
