@@ -35,6 +35,7 @@ Work on `origin/main` only. Commit directly to `main`; do not leave branches or 
 - `docs/FIREBASE_ARCHITECTURE.md` - authoritative account/save platform contract.
 - `docs/FIREBASE_SETUP.md` - Console/build configuration and live verification requirements.
 - `docs/DOCUMENTATION_STANDARD.md` - naming, required docs, definition of done.
+- `docs/DEPENDENCY_POLICY.md` - authoritative direct-dependency freshness and evidence requirements.
 - `docs/DECISIONS.md` - decision log.
 - `docs/GAME_INDEX.md` - one row per game.
 - `.tasks/` - task state.
@@ -47,6 +48,14 @@ Work on `origin/main` only. Commit directly to `main`; do not leave branches or 
 4. Add a row to `docs/GAME_INDEX.md` and unit tests for the engine.
 5. If the game persists data, define its save schema/version and guest/account behavior without bypassing the shared save repository.
 6. Run `pnpm validate`, then update `.tasks/` and `docs/GAME_INDEX.md`.
+
+## Dependency integration
+
+- Every direct `dependencies` and `devDependencies` entry must be the latest stable npm `latest` release at the time it is integrated to `main`.
+- Direct dependency specifications are exact semver only. Never use `^`, `~`, `*`, tags, URLs or ranges in `package.json`.
+- Before changing a dependency, verify the stable release against the package/project's authoritative release documentation and corroborate the exact version on npmjs.com. Record the evidence in `docs/DEPENDENCY_POLICY.md` and update `.tasks/dependency-refresh-request.json`.
+- `pnpm dependency:check` enforces exact pins. `pnpm dependency:current` verifies the manifest matches `package.json` and rechecks every direct package against npm's live `latest` tag. Both are mandatory integration gates.
+- A prerelease (`alpha`, `beta`, `rc`, `next`, canary, experimental) is never substituted for stable `latest` unless a separate explicit repository decision changes this rule.
 
 ## Code standards
 

@@ -22,11 +22,11 @@ The first commit has no `pnpm-lock.yaml`, so CI installs with `--no-frozen-lockf
 
 ## D-006 Dependency maintenance follows the direct-main rule (2026-10-03)
 
-Automated version-update pull requests are disabled because this repository does not use pull requests. Dependency updates are researched, validated and committed directly to `main` under the same evidence and CI requirements as other changes. Major-version updates are never merged automatically.
+Automated version-update pull requests are disabled because this repository does not use pull requests. Dependency updates are researched against authoritative release documentation, corroborated with npmjs.com, expressed as explicit exact targets, fully validated, and committed directly to `main`. The maintenance workflow may apply an explicit researched target set and commit it only after full validation; it never chooses a prerelease or blindly upgrades to an unreviewed target.
 
 ## D-007 Exact direct dependencies (2026-10-03)
 
-Direct runtime and development dependencies are pinned to exact versions, matching the reproducibility model used by InMo Tools. The lockfile remains authoritative for the full transitive graph. Dependency upgrades are deliberate main-branch changes that must pass frozen install and the full validation workflow.
+Direct runtime and development dependencies are pinned to exact versions and must equal npm's stable `latest` tag at integration time. The lockfile remains authoritative for the full transitive graph. `dependency:check` enforces exact syntax; `dependency:current` compares the researched target manifest to `package.json` and npm's live stable tag. Dependency upgrades are deliberate main-branch changes that must pass frozen install and the full validation workflow.
 
 ## D-008 Pages bootstrap remains a one-time repository setting (2026-10-03)
 
@@ -74,3 +74,11 @@ Blackjack persists only completed settlements and preferences merged into the la
 ## D-015 Validation precedes Pages configuration (2026-10-04)
 
 The build job validates both host builds plus unit/rules/browser tests and uploads the Pages artifact without requiring an enabled Pages site. The deployment job configures Pages immediately before deploying. This keeps exact-revision validation independent of the known external Pages-enable task while retaining deployment gating and the default GitHub token. No privileged enablement workaround is added.
+
+## D-016 Automatic Pages deployment after validated main integration (2026-10-04)
+
+GitHub Pages is enabled with GitHub Actions as its source. `.github/workflows/pages.yml` runs on every ordinary push to `main` and on manual dispatch; the deploy job depends on successful validation/build. A commit created by a workflow with `GITHUB_TOKEN` does not recursively emit another push workflow, so the dependency-maintenance workflow explicitly dispatches `pages.yml` after a successful bot commit. This preserves automatic deployment for every supported `main` integration path without adding a privileged external token.
+
+## D-017 Latest-stable direct dependency gate (2026-10-04)
+
+Every direct `dependencies` and `devDependencies` package must be the stable npm `latest` release when integrated, pinned exactly with no caret/range. Before integration, its target version is checked against the project's authoritative release source and npmjs.com and recorded in `docs/DEPENDENCY_POLICY.md` plus `.tasks/dependency-refresh-request.json`. CI additionally queries npm's live `latest` endpoint on each `main` validation. If a stable release appears before a later integration, validation blocks until the dependency set is deliberately refreshed and the full suite passes.
