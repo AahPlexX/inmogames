@@ -20,7 +20,7 @@
 | Catalog registration and lazy workspace loading | verified | Structural check + both builds |
 | 320 CSS-px no-overflow behavior | planned | Viewport review |
 | Completion/results state | verified | Five-round browser completion and persisted best score |
-| Authenticated best-score account sync | blocked | Shared repository + cross-browser emulator verified; real project/Pages requires TASK-003/TASK-001 |
+| Authenticated best-score account sync | blocked | Shared repository + cross-browser emulator verified; real Firebase project verification requires TASK-003 |
 | Runtime network restricted to shared Firebase account/save traffic | verified | No game Firebase calls; browser emulator traffic restricted to local services |
 | Spec/tracker/index/task synchronization | started | Updated with each implementation commit |
 

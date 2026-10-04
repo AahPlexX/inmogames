@@ -19,7 +19,7 @@
 | Re-bet / 2× / all-in / undo / clear | started | UI verification |
 | W/L/P and session-net statistics | started | Engine/UI verification |
 | Defensive versioned guest-local persistence | verified | Storage unit tests |
-| Authenticated account-bound durable save | blocked | Shared repository + browser emulator verified; real project/Pages verification requires TASK-003/TASK-001 |
+| Authenticated account-bound durable save | blocked | Shared repository + browser emulator verified; real Firebase project verification requires TASK-003 |
 | Guest-to-account save seeding without cloud overwrite | verified | Atomic migration unit tests + browser emulator |
 | Saved-game reset | verified | Scoped guest/account repository tests + browser emulator; defaults prevent guest reseeding |
 | Optional exact-table strategy hints | verified | Strategy unit tests |
@@ -37,4 +37,4 @@
 
 No third-party visual, audio, font or gameplay assets. Card faces, table treatment, icons/symbols, sounds and copy are repository-authored or rendered from Unicode/system capabilities; no Google Fonts request from the prototype is retained.
 
-Persistence schema version 1 and its committed balance/preference boundary are defined in the spec. Unit coverage preserves all engine/strategy cases. Live Firebase/email/Pages checks remain external; no production project has been claimed as verified.
+Persistence schema version 1 and its committed balance/preference boundary are defined in the spec. Unit coverage preserves all engine/strategy cases. Live Firebase/email account-save checks remain external; Pages deployment is verified. No production Firebase project has been claimed as verified.

@@ -72,10 +72,10 @@ Before Threefold can be marked verified:
 7. The tracker contains no `planned` or `started` capability.
 8. The game index, tracker, spec and task records match shipped behavior.
 9. Guest best-score persistence is verified and authenticated best-score sync is verified once the shared Firebase platform is available.
-10. GitHub Pages deployment succeeds after the repository-level Pages bootstrap task is completed.
+10. GitHub Pages deployment succeeds through the repository's automatic validated-main workflow.
 
 ## Explicit exclusions for v1
 
 No timer, hints, undo history, sound, online leaderboard, daily challenge, sharing, multiplayer, external assets or analytics. Shared helpers are not extracted until a second game proves reuse.
 
-Repository best-score persistence, migration, reset and cross-browser Auth/save behavior are verified with unit and Chromium emulator tests. Real Firebase/deployed-site verification remains blocked by TASK-003/TASK-001. Pending sync can be retried before leaving; after reload/sign-out, successfully loaded cloud state wins.
+Repository best-score persistence, migration, reset and cross-browser Auth/save behavior are verified with unit and Chromium emulator tests. Real Firebase account/save verification remains blocked by TASK-003; Pages deployment itself is verified. Pending sync can be retried before leaving; after reload/sign-out, successfully loaded cloud state wins.
