@@ -49,7 +49,7 @@ function ThreefoldBoard({ initial, persist, reset }: { initial: ThreefoldSave; p
     </header>
 
     {done ? <div className="tf-complete">
-      <p className="tf-kicker">Run complete</p><strong>{run.totalScore}</strong><span>points out of 500</span>
+      <p className="tf-kicker">Final score</p><h2>Run complete</h2><strong>{run.totalScore}</strong><span>points out of 500</span>
       <button className="tf-primary" onClick={start}>Play another run</button>
     </div> : <>
       <div className="tf-roundline"><span>Round {run.roundIndex + 1} of 5</span><span>{selection.length} of 3 selected</span></div>
