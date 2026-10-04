@@ -13,8 +13,8 @@
     "build:firebase": "vite build --base=/",
     "validate": "pnpm dependency:check && pnpm typecheck && pnpm game:check && pnpm test:unit && pnpm test:rules && pnpm test:browser && pnpm build:firebase && pnpm build",
     "dependency:check": "node scripts/dependency-check.mjs",
-    "test:rules": "npx --yes firebase-tools@15.32.1 emulators:exec --only firestore --project demo-inmogames \"node --test tests/rules/firestore.test.mjs\"",
-    "test:browser": "npx --yes firebase-tools@15.32.1 emulators:exec --only auth,firestore --project demo-inmogames \"node tests/browser/account-persistence.mjs\""
+    "test:rules": "firebase emulators:exec --only firestore --project demo-inmogames \"node --test tests/rules/firestore.test.mjs\"",
+    "test:browser": "firebase emulators:exec --only auth,firestore --project demo-inmogames \"node tests/browser/account-persistence.mjs\""
   },
   "dependencies": {
     "firebase": "12.19.0",
@@ -25,10 +25,14 @@
     "@firebase/rules-unit-testing": "5.0.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@vitejs/plugin-react": "5.2.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "firebase-tools": "15.32.1",
     "playwright": "1.63.0",
-    "typescript": "5.9.3",
-    "vite": "7.3.6",
-    "vitest": "3.2.7"
+    "typescript": "7.0.2",
+    "vite": "8.3.2",
+    "vitest": "5.0.3"
+  },
+  "engines": {
+    "node": ">=24.12.0"
   }
 }
