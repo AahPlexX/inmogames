@@ -43,7 +43,7 @@ try {
   await visibleText(guestPage,'Accounts are not available');await guestPage.getByRole('button',{name:'Add 25 virtual-credit chip',exact:true}).click();assert.equal(await readBank(guestPage),975);
   assert.ok(await guestPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await guest.close();
   const recovery=await browser.newContext({viewport:{width:320,height:900}});
-  await recovery.addInitScript(()=>localStorage.setItem('inmogames:royal-palace-blackjack:v1',JSON.stringify({bankroll:2.5,lastBet:25,stats:{wins:9,losses:8,pushes:2},sessionNet:-997.5,preferences:{sound:true,hints:true}})));
+  await recovery.addInitScript(()=>{const key='inmogames:royal-palace-blackjack:v1';if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify({bankroll:2.5,lastBet:25,stats:{wins:9,losses:8,pushes:2},sessionNet:-997.5,preferences:{sound:true,hints:true}}));});
   const recoveryPage=await recovery.newPage();recoveryPage.on('pageerror',error=>errors.push(error.message));
   await recoveryPage.goto(`http://127.0.0.1:${ports[1]}/inmogames/#/games/royal-palace-blackjack`);
   await recoveryPage.getByRole('button',{name:'Restore 1,000 practice credits',exact:true}).waitFor();assert.equal(await readBank(recoveryPage),2.5);
