@@ -114,6 +114,11 @@ try {
   await firstTile.waitFor();
   await assertNoOverflow(page, 'Threefold at 320px');
   assert.equal(await page.locator('.threefold-board button').count(), 9);
+  await assertContrast(page.locator('.tf-scoreboard dt').first(), page.locator('.tf-scoreboard div').first(), 'Threefold scoreboard label');
+  await assertContrast(page.locator('.tf-scoreboard dd span').first(), page.locator('.tf-scoreboard div').first(), 'Threefold score suffix');
+  await assertContrast(page.locator('.tf-roundline'), page.locator('.tf'), 'Threefold round metadata');
+  await assertContrast(page.locator('.tf-selection'), page.locator('.tf-selection'), 'Threefold selection metadata');
+  await assertContrast(page.locator('.tf-footer'), page.locator('.tf-footer'), 'Threefold footer copy');
   await page.getByLabel('Selected tiles', { exact: true }).waitFor();
   await firstTile.focus();
   await page.keyboard.press('Enter');
@@ -175,7 +180,7 @@ try {
   await reduced.close();
 
   assert.deepEqual(errors, []);
-  console.log('Design regression checks passed: light/dark catalog contrast, skip controls, 320px/200% reflow, Threefold keyboard/non-color/reduced-motion behavior, Blackjack touch targets/help, desktop layout and reduced motion.');
+  console.log('Design regression checks passed: light/dark catalog contrast, Threefold secondary contrast, skip controls, 320px/200% reflow, Threefold keyboard/non-color/reduced-motion behavior, Blackjack touch targets/help, desktop layout and reduced motion.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');
