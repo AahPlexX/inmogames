@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: dependency-maintenance
@@ -48,3 +49,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore: refresh latest stable dependencies"
           git push origin HEAD:main
+          gh workflow run pages.yml --ref main

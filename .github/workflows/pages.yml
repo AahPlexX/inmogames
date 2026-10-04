@@ -27,10 +27,11 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24.12.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm dependency:check
+      - run: pnpm dependency:current
       - run: pnpm typecheck
       - run: pnpm game:check
       - uses: actions/setup-java@v6
