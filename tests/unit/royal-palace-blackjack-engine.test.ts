@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  canDouble,
+  canHit,
   canSplit,
+  canSurrender,
   dealerShouldHit,
   evaluateHand,
   insurancePayout,
@@ -33,6 +36,20 @@ describe('Royal Palace Blackjack rules', () => {
     expect(canSplit([c('K'), c('10')], false)).toBe(true);
     expect(canSplit([c('8'), c('8')], false)).toBe(true);
     expect(canSplit([c('8'), c('8')], true)).toBe(false);
+  });
+
+  it('keeps action legality in the rules engine', () => {
+    expect(canHit([c('10'), c('A')], false)).toBe(false);
+    expect(canHit([c('5'), c('6')], true)).toBe(false);
+    expect(canHit([c('5'), c('6')], false)).toBe(true);
+
+    expect(canDouble([c('5'), c('6')], { splitAces: false, bankroll: 10, wager: 10 })).toBe(true);
+    expect(canDouble([c('A'), c('A')], { splitAces: true, bankroll: 10, wager: 10 })).toBe(false);
+    expect(canDouble([c('5'), c('6')], { splitAces: false, bankroll: 5, wager: 10 })).toBe(false);
+
+    expect(canSurrender([c('10'), c('6')], { fromSplit: false, dealerChecked: true })).toBe(true);
+    expect(canSurrender([c('10'), c('6')], { fromSplit: true, dealerChecked: true })).toBe(false);
+    expect(canSurrender([c('10'), c('6')], { fromSplit: false, dealerChecked: false })).toBe(false);
   });
 
   it('uses exact table payouts', () => {
