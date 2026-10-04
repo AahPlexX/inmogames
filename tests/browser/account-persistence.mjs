@@ -13,6 +13,23 @@ const errors = [];
 async function visibleText(page, text) { await page.getByText(text, { exact: false }).first().waitFor(); }
 async function accountReady(page) { await page.waitForFunction(() => /Account (progress loaded|progress saved|game progress reset)/.test(document.querySelector('.save-status')?.textContent ?? '')); }
 async function readBank(page) { return Number((await page.locator('.rp-bank b').first().innerText()).replaceAll(',', '')); }
+async function overflowReport(page) {
+  return page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    innerWidth,
+    offenders: [...document.querySelectorAll('body *')].map(element => {
+      const rect = element.getBoundingClientRect();
+      return {
+        tag: element.tagName,
+        className: element.className,
+        text: element.textContent?.trim().slice(0, 60) ?? '',
+        left: Math.round(rect.left),
+        right: Math.round(rect.right),
+        width: Math.round(rect.width),
+      };
+    }).filter(item => item.left < -1 || item.right > innerWidth + 1).slice(0, 20),
+  }));
+}
 async function signIn(page, email, password, register=false) {
   await page.getByRole('button', { name: 'Sign in / create account', exact: true }).click();
   if(register)await page.getByRole('dialog').getByRole('button',{name:'Create account',exact:true}).click();
@@ -69,7 +86,7 @@ try {
   await page.getByRole('button',{name:'Sign in / create account',exact:true}).click();await page.getByRole('dialog').waitFor();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.keyboard.press('Escape');assert.equal(await page.getByRole('dialog').count(),0);
   const zoomPage=await context.newPage();zoomPage.on('pageerror',error=>errors.push(error.message));await zoomPage.goto(base);await zoomPage.getByRole('button',{name:'Sign in / create account',exact:true}).waitFor();
   await zoomPage.evaluate(()=>{document.documentElement.style.fontSize='200%';});await zoomPage.getByRole('button',{name:'Sign in / create account',exact:true}).click();
-  assert.ok(await zoomPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  const zoomOverflow=await overflowReport(zoomPage);assert.ok(zoomOverflow.scrollWidth<=zoomOverflow.innerWidth,JSON.stringify(zoomOverflow));
   assert.ok(await zoomPage.getByRole('dialog').getByLabel('Email',{exact:true}).evaluate(element=>element===document.activeElement));
   for(let tab=0;tab<8;tab++){await zoomPage.keyboard.press('Tab');assert.ok(await zoomPage.getByRole('dialog').evaluate(element=>element.contains(document.activeElement)));}
   await zoomPage.keyboard.press('Escape');assert.ok(await zoomPage.getByRole('button',{name:'Sign in / create account',exact:true}).evaluate(element=>element===document.activeElement));await zoomPage.close();
