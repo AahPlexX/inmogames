@@ -78,10 +78,11 @@ try {
   await page.goto(base + '#/games/threefold');
   const gameSkip = page.getByRole('button', { name: 'Skip to game', exact: true });
   await gameSkip.waitFor();
+  const firstTile = page.locator('.threefold-board button').first();
+  await firstTile.waitFor();
   await assertNoOverflow(page, 'Threefold at 320px');
   assert.equal(await page.locator('.threefold-board button').count(), 9);
   await page.getByLabel('Selected tiles', { exact: true }).waitFor();
-  const firstTile = page.locator('.threefold-board button').first();
   await firstTile.focus();
   await page.keyboard.press('Enter');
   assert.equal(await firstTile.getAttribute('aria-pressed'), 'true');
@@ -93,18 +94,21 @@ try {
   await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
 
   await page.goto(base + '#/games/royal-palace-blackjack');
+  await page.getByRole('button', { name: 'Add 5 virtual-credit chip', exact: true }).waitFor();
   await assertNoOverflow(page, 'Royal Palace at 320px');
   await page.locator('summary').filter({ hasText: 'Table rules & help' }).waitFor();
   const chip = page.getByRole('button', { name: 'Add 5 virtual-credit chip', exact: true });
   await assertTouchTarget(chip, 'Blackjack chip', 48);
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
   await assertNoOverflow(page, 'Royal Palace at 200% text');
+  await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
   await phone.close();
 
   const desktop = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const desktopPage = await desktop.newPage();
   desktopPage.on('pageerror', (error) => errors.push(error.message));
   await desktopPage.goto(base);
+  await desktopPage.locator('.game-card').first().waitFor();
   const desktopCards = await desktopPage.locator('.game-card').evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().toJSON()));
   assert.ok(Math.abs(desktopCards[0].top - desktopCards[1].top) < 4, 'Desktop catalog cards should share a row.');
   assert.ok(desktopCards[1].left > desktopCards[0].left, 'Desktop catalog should use two columns.');
@@ -115,6 +119,7 @@ try {
   const reducedPage = await reduced.newPage();
   reducedPage.on('pageerror', (error) => errors.push(error.message));
   await reducedPage.goto(base + '#/games/royal-palace-blackjack');
+  await reducedPage.getByRole('button', { name: 'Add 5 virtual-credit chip', exact: true }).waitFor();
   await reducedPage.getByRole('button', { name: 'Add 5 virtual-credit chip', exact: true }).click();
   await reducedPage.getByRole('button', { name: 'Deal', exact: true }).click();
   await reducedPage.locator('.rp-card').first().waitFor();

@@ -8,6 +8,7 @@ import { SaveStatus } from '../../platform/SaveStatus';
 import { needsShuffle, shuffledShoe } from './shoe';
 import { playCue } from './audio';
 import './royal-palace-blackjack.css';
+import './royal-palace-guide.css';
 
 type Phase='betting'|'player'|'dealer'|'settled';
 interface Hand { cards:Card[]; wager:number; fromSplit:boolean; splitAces:boolean; doubled:boolean; surrendered:boolean }
@@ -107,6 +108,8 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
  const canS=phase==='player'&&!!current&&canSplit(current.cards,current.fromSplit)&&save.bankroll>=current.wager;
  const canR=phase==='player'&&!!current&&!insurance&&canSurrender(current.cards,{fromSplit:current.fromSplit,dealerChecked:true});
  const advice=save.preferences.hints&&phase==='player'&&dealerUp&&current&&!insurance?advise({player:current.cards,dealerUp,canDouble:!!canD,canSplit:!!canS,canSurrender:!!canR}):null;
+ const phaseLabel=insurance?'Insurance':phase==='betting'?'Betting':phase==='player'?'Your turn':phase==='dealer'?'Dealer turn':'Round complete';
+ const phasePrompt=insurance?'Decide on insurance':phase==='betting'?'Build your wager':phase==='player'?'Choose your play':phase==='dealer'?'Dealer is drawing':'Review the result';
  return <section className="rp" aria-label="Royal Palace Blackjack table">
   <div className="rp-top"><div><strong>♠ Royal Palace</strong><span>6 decks · S17 · 3:2 · DAS</span></div><div className="rp-stats"><span>Shoe <b>{shoePct}%</b></span><span><b>{save.stats.wins}</b> W · <b>{save.stats.losses}</b> L · <b>{save.stats.pushes}</b> P</span><span>Session <b>{save.sessionNet>=0?'+':''}{money(save.sessionNet)}</b></span></div></div>
   <div className="rp-felt">
@@ -117,18 +120,23 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
    {advice&&<aside className="rp-advice"><b>Strategy: {advice.action}</b><span>{advice.reason} Recommendations improve decisions; they do not guarantee a win.</span></aside>}
   </div>
   <div className="rp-console">
+   <div className="rp-console-head"><span>{phaseLabel}</span><strong>{phasePrompt}</strong></div>
    <div className="rp-bank"><span>Bank <b>{money(save.bankroll)}</b></span><span>Bet <b>{money(bet)}</b></span><span>Cards <b>{remaining}</b></span></div>
+   <BlackjackGuide/>
    {phase==='betting'&&save.bankroll<5&&bet===0&&<div className="rp-recovery"><span>Your balance is below the 5-credit minimum. Restore practice credits without clearing your record.</span><button className="primary" onClick={restoreCredits}>Restore 1,000 practice credits</button></div>}
    {phase==='betting'&&<div className="rp-betting" aria-label="Bet controls"><div className="rp-chips">{chips.map(v=><button key={v} disabled={v>save.bankroll} onClick={()=>addChip(v)} aria-label={`Add ${v} virtual-credit chip`}>{v>=1000?'1K':v}</button>)}</div><div className="rp-betmods"><button onClick={undo} disabled={!betStack.length}>Undo</button><button onClick={clear} disabled={!bet}>Clear</button><button onClick={()=>setExactBet(save.lastBet)} disabled={!save.lastBet||save.lastBet>save.bankroll+bet}>Re-bet</button><button onClick={()=>setExactBet(bet*2)} disabled={!bet||bet>save.bankroll}>2×</button><button onClick={()=>setExactBet(save.bankroll+bet)} disabled={!save.bankroll}>All in</button></div></div>}
-   <div className="rp-actions">
+   <div className="rp-actions" aria-label="Round actions">
     {phase==='betting'&&<button className="primary" disabled={bet<5} onClick={deal}>Deal</button>}
     {phase==='player'&&!insurance&&<><button disabled={!canH} onClick={hit}>Hit</button><button onClick={stand}>Stand</button><button disabled={!canD} onClick={doubleDown}>Double</button><button disabled={!canS} onClick={split}>Split</button><button disabled={!canR} onClick={surrender}>Surrender</button></>}
     {phase==='settled'&&<button className="primary" onClick={nextRound}>Next round</button>}
    </div>
-   <div className="rp-prefs"><button aria-pressed={save.preferences.sound} onClick={()=>{const next=!save.preferences.sound;setSave(s=>({...s,preferences:{...s.preferences,sound:next}}));if(next)playCue('chip',true)}}>Sound {save.preferences.sound?'on':'off'}</button><button aria-pressed={save.preferences.hints} onClick={()=>setSave(s=>({...s,preferences:{...s.preferences,hints:!s.preferences.hints}}))}>Strategy hints {save.preferences.hints?'on':'off'}</button><button onClick={resetAll}>Reset saved game</button></div>
+   <div className="rp-prefs" aria-label="Table preferences and saved game"><button aria-pressed={save.preferences.sound} onClick={()=>{const next=!save.preferences.sound;setSave(s=>({...s,preferences:{...s.preferences,sound:next}}));if(next)playCue('chip',true)}}>Sound {save.preferences.sound?'on':'off'}</button><button aria-pressed={save.preferences.hints} onClick={()=>setSave(s=>({...s,preferences:{...s.preferences,hints:!s.preferences.hints}}))}>Strategy hints {save.preferences.hints?'on':'off'}</button><button onClick={resetAll}>Reset saved game</button></div>
   </div>
   {insurance&&<div className="rp-modal" role="dialog" aria-modal="true" aria-labelledby="insurance-title" onKeyDown={event=>{if(event.key==='Escape')declineInsurance()}}><div><h2 id="insurance-title">Dealer shows an Ace</h2><p>Insurance costs {money(hands[0].wager/2)} virtual credits and pays 2:1 profit if the dealer has blackjack.</p><p className="rp-dialog-note">Choose one option to continue the round.</p><div><button disabled={save.bankroll<hands[0].wager/2} onClick={takeInsurance}>Take insurance</button><button className="primary" autoFocus onClick={declineInsurance}>No insurance</button></div></div></div>}
  </section>
+}
+function BlackjackGuide(){
+ return <details className="rp-guide"><summary>Table rules &amp; help</summary><div className="rp-guide-body"><p><b>Practice table:</b> virtual credits have no cash value. The minimum wager is 5 credits.</p><ul><li>Blackjack pays 3:2. The dealer stands on every 17, including soft 17.</li><li>You may double on your first two cards and after a non-Ace split.</li><li>You may split once. Split Aces receive exactly one additional card each.</li><li>Late surrender is available on the original two-card hand after the dealer blackjack check.</li><li>Insurance is offered when the dealer shows an Ace. It costs half the original wager and pays 2:1 profit if the dealer has blackjack.</li></ul><p>Strategy hints are optional coaching, not a guarantee of any outcome.</p></div></details>
 }
 function HandView({label,cards,hiddenIndex=-1,active=false,fromSplit=false}:{label:string;cards:Card[];hiddenIndex?:number;active?:boolean;fromSplit?:boolean}){
  const shown=cards.filter((_,i)=>i!==hiddenIndex);const v=evaluateHand(shown,{fromSplit});
