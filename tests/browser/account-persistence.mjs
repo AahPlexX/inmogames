@@ -47,7 +47,7 @@ try {
   const recoveryPage=await recovery.newPage();recoveryPage.on('pageerror',error=>errors.push(error.message));
   await recoveryPage.goto(`http://127.0.0.1:${ports[1]}/inmogames/#/games/royal-palace-blackjack`);
   await recoveryPage.getByRole('button',{name:'Restore 1,000 practice credits',exact:true}).waitFor();assert.equal(await readBank(recoveryPage),2.5);
-  await recoveryPage.getByRole('button',{name:'Restore 1,000 practice credits',exact:true}).click();assert.equal(await readBank(recoveryPage),1000);
+  await recoveryPage.getByRole('button',{name:'Restore 1,000 practice credits',exact:true}).click();await visibleText(recoveryPage,'Practice credits restored to 1,000');assert.equal(await readBank(recoveryPage),1000);
   await visibleText(recoveryPage,'9 W · 8 L · 2 P');await recoveryPage.reload();assert.equal(await readBank(recoveryPage),1000);await recovery.close();
   const context=await browser.newContext({viewport:{width:320,height:900}});
   await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1' ? route.continue() : route.abort());
