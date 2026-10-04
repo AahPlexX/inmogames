@@ -14,7 +14,7 @@ The canonical account/save contract is `docs/FIREBASE_ARCHITECTURE.md`.
 
 ## Design system evidence
 
-`DESIGN.md` is the durable visual contract. `src/styles.css` remains the canonical runtime token owner; DESIGN.md mirrors accepted shared values and explains intent. Game-specific visual systems stay scoped inside their game folder and must preserve shared shell/account/save/focus behavior. A substantial UI change must update DESIGN.md when it changes a durable visual rule, update the runtime owner in the same changeset, pass `pnpm design:check`, and preserve 320 CSS-px plus 200% zoom reflow.
+`DESIGN.md` is the durable visual contract. `src/styles.css` remains the canonical runtime token owner; DESIGN.md mirrors accepted shared values and explains intent. Game-specific visual systems stay scoped inside their game folder and must preserve shared shell/account/save/focus behavior. A substantial UI change must update DESIGN.md when it changes a durable visual rule, update the runtime owner in the same changeset, pass `pnpm design:check`, and pass `pnpm test:design-browser` for rendered browser evidence. The design-browser gate covers catalog recomposition, skip/focus behavior, 320 CSS-px and 200% text reflow, representative keyboard selection, touch target sizing and reduced motion. Source inspection alone is not sufficient evidence for those behaviors.
 
 ## Dependency evidence
 
@@ -47,8 +47,9 @@ If a game has persistent data, its spec must state:
 - Playable start to finish on desktop and touch.
 - Engine unit tests pass.
 - No horizontal overflow at 320 CSS px; keyboard operable; reduced motion respected.
+- Material UI has rendered browser evidence for responsive/reflow/focus/target behavior rather than source-only claims.
 - Any persistent game data has verified guest-local behavior and, once the platform integration is available, verified authenticated account-save behavior.
 - Save/reset/migration behavior is described in the spec and does not bypass the shared repository abstraction.
 - Tracker has no capability left `planned` or `started`.
-- `pnpm validate` green, including exact/current dependency gates, DESIGN.md validation, mandatory account/save rules and browser emulator checks, and Pages deployment successful.
+- `pnpm validate` green, including exact/current dependency gates, DESIGN.md validation, account/rules browser checks, design-browser checks, and Pages deployment successful.
 - Firebase-enabled features also record real configured-project/deployed-site verification or its exact external blocker; emulator results alone do not establish live verification.

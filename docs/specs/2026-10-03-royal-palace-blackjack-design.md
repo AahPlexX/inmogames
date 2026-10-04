@@ -30,6 +30,8 @@ The v1 table is fixed and visibly disclosed:
 
 The rule model follows recognized blackjack configurations documented by the Nevada Gaming Control Board and casino rules references researched on 2026-10-03.
 
+A collapsed **Table rules & help** disclosure is available from the control console at all normal table phases. It summarizes the minimum wager, S17/3:2/DAS/split-Ace/surrender/insurance rules and the practice-only status of virtual credits without taking over the play surface. The felt also keeps a concise 3:2/S17 rule line visible during play.
+
 ## Bankroll and betting
 
 The local practice bankroll starts at 1,000 virtual credits. Chip denominations are 5, 25, 100, 500 and 1,000. The minimum wager is 5 and the maximum wager is the available bankroll.
@@ -41,6 +43,8 @@ When the durable bankroll falls below the 5-credit table minimum, the betting sc
 ## Session state
 
 Visible session information includes bankroll, current wager, shoe cards/percentage, wins, losses, pushes, and virtual-credit session net. Split-hand outcomes count independently in W/L/P statistics.
+
+The console explicitly names the current phase and the next interaction context: **Betting / Build your wager**, **Your turn / Choose your play**, **Dealer turn / Dealer is drawing**, **Insurance / Decide on insurance**, or **Round complete / Review the result**. This prevents the enabled-control set from being the only signal for what is happening.
 
 Local storage key: `inmogames:royal-palace-blackjack:v1`.
 Cloud game slug: `royal-palace-blackjack`.
@@ -58,8 +62,9 @@ A dedicated **Reset saved game** control restores the initial bankroll/statistic
 - `storage.ts`: game-state schema/decoder and legacy-local compatibility seam.
 - `persistence.ts`: versioned shared-platform definition and completed-round/preference checkpoint selection.
 - `strategy.ts`: optional basic-strategy recommendation for this exact S17/DAS table; advisory only and never auto-plays.
-- `RoyalPalaceBlackjackWorkspace.tsx`: round state machine and accessible presentation.
-- `royal-palace-blackjack.css`: scoped responsive visual system; no external fonts/assets.
+- `RoyalPalaceBlackjackWorkspace.tsx`: round state machine, phase guidance, rules/help disclosure and accessible presentation.
+- `royal-palace-blackjack.css`: scoped felt/cards/controls responsive visual system; no external fonts/assets.
+- `royal-palace-guide.css`: scoped phase/rules-help presentation kept separate from the core table treatment.
 - `royal-palace-blackjack.meta.ts`: catalog metadata.
 
 ## Interaction and accessibility
@@ -68,22 +73,24 @@ All actionable controls are native buttons. Primary controls target at least 48 
 
 - No action depends on hover, color, animation, drag, right-click or audio.
 - Visible `:focus-visible` treatment is mandatory.
-- Disabled actions remain understandable through nearby rules/status text.
+- Shared route chrome exposes a keyboard-visible **Skip to game** control that transfers focus to the main game region.
+- Disabled actions remain understandable through nearby phase/rule/status text.
 - Player/dealer totals and outcome changes have restrained live-region announcements.
 - Cards expose readable rank/suit text to assistive technology; decorative suit duplication is hidden.
 - Hidden dealer card is announced as hidden, not exposed through accessible text.
 - Modals use a real dialog surface with labelled heading, focus entry, Escape handling where cancellation is valid, and focus restoration.
+- The rules/help disclosure uses native `details`/`summary`, stays collapsed by default, and remains keyboard-operable without custom widget scripting.
 - Strategy hints are opt-in and state the recommended action in text.
 - Sound is opt-in preference-controlled, synthesized locally with Web Audio, and never required for feedback.
 - Motion is cosmetic. `prefers-reduced-motion: reduce` removes dealing, chip, glow and celebration motion.
 - Layout must not create page-level horizontal overflow at 320 CSS px. Controls reflow instead of shrinking below usable targets.
-- The game must remain usable at 200% browser zoom without overlapping essential controls.
+- The game must remain usable at 200% browser text sizing without overlapping essential controls.
 
 ## Responsive layout
 
 The table uses normal document flow rather than locking `html/body` to one viewport. On wide screens the felt presents dealer, status, player hands and betting/actions as a coherent table. On narrow/short screens the control dock becomes part of the scroll flow; nothing essential is clipped behind a fixed footer. Safe-area padding is applied on supported mobile browsers.
 
-Cards scale with `clamp()`; split hands wrap when needed. Statistics collapse to concise labels rather than disappearing entirely.
+Cards scale with `clamp()`; split hands wrap when needed. Statistics collapse to concise labels rather than disappearing entirely. The phase/action heading and rule disclosure stack vertically on narrow screens instead of forcing a minimum inline width.
 
 ## Sound and motion
 
@@ -111,6 +118,6 @@ Hints are optional learning assistance for the fixed table rules. The strategy m
 
 Engine tests must cover Ace scoring, natural blackjack, dealer S17 behavior, payout math, push/bust, insurance, late surrender, double, split eligibility, split-Ace restrictions and split-21 semantics. Shoe tests cover 312-card composition, deterministic test shuffle and cut threshold. Storage tests cover valid/missing/malformed/write-failure states. Strategy tests cover representative hard/soft/pair decisions and legal fallbacks.
 
-The game is not `verified` until typecheck, structural check, all unit tests and production build pass; responsive/accessibility review is complete; guest persistence and authenticated account-save behavior are verified; tracker/spec/index/task docs match shipped behavior; and Pages deployment succeeds through the automatic validated-main workflow.
+Rendered design-browser checks cover 320 CSS-px and 200% text reflow, table-help discoverability, representative 48px+ chip target sizing, desktop catalog composition and `prefers-reduced-motion` card behavior. The game is not `verified` until typecheck, structural check, all unit tests and production build pass; remaining gameplay/accessibility review is complete; guest persistence and authenticated account-save behavior are verified; tracker/spec/index/task docs match shipped behavior; and Pages deployment succeeds through the automatic validated-main workflow.
 
-Repository persistence/Auth/rules behavior is verified with unit and Chromium emulator tests. Live Firebase account/save verification remains blocked by TASK-003; Pages deployment itself is verified; see `docs/FIREBASE_SETUP.md`. Pending cloud checkpoints can be retried during the page session; after reload/sign-out, successfully loaded cloud state is authoritative.
+Repository persistence/Auth/rules behavior is verified with unit and Chromium emulator tests. Current responsive/help/reduced-motion behavior is verified with the dedicated design-browser suite. Live Firebase account/save verification remains blocked by TASK-003; Pages deployment itself is verified; see `docs/FIREBASE_SETUP.md`. Pending cloud checkpoints can be retried during the page session; after reload/sign-out, successfully loaded cloud state is authoritative.

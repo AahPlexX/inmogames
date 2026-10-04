@@ -65,6 +65,7 @@ Work on `origin/main` only. Commit directly to `main`; do not leave branches or 
 - Shared chrome (catalog, navigation, account/save UI, focus language) must remain consistent. Individual games may use scoped local palettes/material metaphors when they reinforce gameplay, but must not redefine shared account/navigation behavior.
 - No runtime third-party fonts or decorative assets are required by the design system. Prefer system typography and repository-authored CSS/art.
 - `pnpm design:check` is a mandatory integration gate and uses the pinned Google Labs DESIGN.md validator.
+- Material UI changes must also pass `pnpm test:design-browser`. That rendered Chromium gate checks catalog recomposition, keyboard skip/focus behavior, 320 CSS-px and 200% text reflow, non-color selection state, game touch targets and reduced-motion behavior. Do not replace it with source inspection alone.
 
 ## Code standards
 

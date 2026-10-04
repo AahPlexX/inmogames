@@ -3,6 +3,7 @@ version: alpha
 name: InMo Game Cabinet
 description: A tactile game-shelf system with shared product chrome and materially distinct game surfaces.
 colors:
+  primary: "#204F7C"
   canvas: "#E9EEF2"
   surface: "#FBFCFD"
   surface-soft: "#DFE6EC"
@@ -49,12 +50,41 @@ spacing:
   lg: "1.5rem"
   xl: "2.25rem"
 components:
+  page-shell:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.ink}"
+    borderColor: "{colors.line}"
+    mutedTextColor: "{colors.muted}"
   button-primary:
-    backgroundColor: "{colors.brand}"
+    backgroundColor: "{colors.primary}"
     textColor: "{colors.on-brand}"
+    hoverColor: "{colors.brand-strong}"
     rounded: "{rounded.sm}"
     padding: "0.6rem 0.9rem"
     height: "44px"
+  button-secondary:
+    backgroundColor: "{colors.surface-soft}"
+    textColor: "{colors.muted}"
+    borderColor: "{colors.line}"
+    rounded: "{rounded.sm}"
+  site-brand:
+    backgroundColor: "{colors.brand}"
+    textColor: "{colors.on-brand}"
+    accentColor: "{colors.accent}"
+  focus-ring:
+    backgroundColor: "{colors.focus}"
+    textColor: "{colors.on-brand}"
+    rounded: "{rounded.sm}"
+    padding: "3px"
+  status-success:
+    backgroundColor: "{colors.success}"
+    textColor: "{colors.on-brand}"
+  status-danger:
+    backgroundColor: "{colors.danger}"
+    textColor: "{colors.on-brand}"
+  game-highlight:
+    backgroundColor: "{colors.gold}"
+    textColor: "{colors.ink}"
   catalog-card:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
@@ -65,6 +95,11 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.md}"
     padding: "0.72rem 0.78rem"
+  dark-shell:
+    backgroundColor: "{colors.dark-canvas}"
+    surfaceColor: "{colors.dark-surface}"
+    textColor: "{colors.dark-ink}"
+    mutedTextColor: "{colors.dark-muted}"
 ---
 
 ## Overview
@@ -73,7 +108,9 @@ InMo Games should feel like opening a well-kept cabinet of physical games rather
 
 The product register is product-first with restrained brand expression. Global UI should never compete with gameplay.
 
-The runtime token source is `src/styles.css` (Model B). This file mirrors accepted shared values and explains their use. Game-specific palettes remain scoped to their game stylesheets.
+The runtime token source is `src/styles.css` (Model B). This file mirrors accepted shared values and explains their use. Game-specific palettes remain scoped to their game stylesheets. `primary` mirrors the runtime `--brand` role so the machine-readable design contract and runtime semantic naming remain interoperable.
+
+`pnpm design:check` validates this file. `pnpm test:design-browser` is the rendered contract for responsive composition, 200% text reflow, keyboard focus/selection, minimum game touch targets and reduced-motion behavior.
 
 ## Colors
 
@@ -98,7 +135,7 @@ Large headings use tight tracking and short measures. Body copy should normally 
 
 The global shell is a centered fluid container capped around 76rem; game routes may expand to about 88rem when the play surface benefits from it. The catalog is two-column at wide widths, one-column on small screens, and each game card recomposes rather than merely shrinking.
 
-Spacing follows the xs/sm/md/lg/xl rhythm above. The primary game artifact appears before secondary settings or destructive controls.
+Spacing follows the xs/sm/md/lg/xl rhythm above. The primary game artifact appears before secondary settings or destructive controls. Every catalog and game route exposes a keyboard-visible skip control that transfers focus to `#main-content`.
 
 ## Elevation & Depth
 
@@ -122,16 +159,19 @@ Game shapes may follow their physical metaphor: Threefold uses squared tiles and
 
 **Save status:** narrow inline status surface with a redundant status dot plus readable text; errors retain their recovery action.
 
-**Threefold:** tactile tile board, large central target, compact three-value score rail. Selection uses fill, movement and a checkmark so color is not the only cue.
+**Skip control:** visually suppressed until keyboard focus, then clearly visible. Activation moves programmatic focus to the main catalog/game region without changing gameplay state.
 
-**Royal Palace:** private practice table with felt as the dominant work surface. Bank and actions stay close to the table; preferences remain visibly lower priority.
+**Threefold:** tactile tile board, large central target, compact three-value score rail, visible current round value and selected-equation strip. Selection uses fill, movement, `aria-pressed` and a checkmark so color is not the only cue. Completion includes per-round earned points.
+
+**Royal Palace:** private practice table with felt as the dominant work surface. Bank and actions stay close to the table; preferences remain visibly lower priority. The console names the current phase/action context, and a collapsed **Table rules & help** disclosure keeps the fixed S17/3:2/DAS rules available without crowding the play surface.
 
 ## Do's and Don'ts
 
 - Do let each game express its own material world inside shared product chrome.
 - Do keep the first useful viewport focused on choosing or playing a game.
 - Do use semantic tokens for product UI and scope game-specific literals to game stylesheets.
-- Do preserve visible keyboard focus, 44px+ important targets, reduced motion and 320px reflow.
+- Do preserve visible keyboard focus, 44px+ important targets, reduced motion, 320px reflow and 200% text reflow.
+- Do use the rendered design-browser gate for material UI changes instead of relying on source inspection alone.
 - Don't turn the catalog into a generic equal-card feature grid; the game art face carries identity.
 - Don't use glass blur as a general style, neon gradients, excessive pills, floating blobs or decorative KPI cards.
 - Don't make account creation look required.

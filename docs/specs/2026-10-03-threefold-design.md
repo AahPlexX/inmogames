@@ -25,7 +25,7 @@ A run contains five rounds. Each round presents nine distinct integer tiles and 
 
 Each round starts at 100 available points. Each incorrect checked trio reduces that round's available score by 20, to a minimum of 20. A correct trio banks the remaining round score. A five-round run therefore ranges from 100 to 500 points.
 
-The result view reports total score, best score and per-round earned points. Best completed score is durable progress and is eligible for account sync when the player is authenticated.
+The active-round UI exposes the current round value so the scoring consequence of a miss is visible before another check. Correct/missed feedback states the points banked or the new remaining round value. The completion view reports total score, best score and per-round earned points. Best completed score is durable progress and is eligible for account sync when the player is authenticated.
 
 ## Controls and interaction
 
@@ -35,9 +35,11 @@ The primary board is nine native buttons in a responsive 3 × 3 grid. Native con
 - Keyboard: Tab/Shift+Tab move through ordinary controls; Enter/Space activate the focused control.
 - Controls must remain comfortably larger than WCAG 2.2 AA's 24 × 24 CSS-pixel minimum target. The intended minimum game control block size is 48 CSS px.
 - Focus indicators remain clearly visible and are never removed.
-- Selection cannot be communicated by color alone: selected tiles use text/state styling and `aria-pressed`.
+- Selection cannot be communicated by color alone: selected tiles use `aria-pressed`, a rendered checkmark, positional treatment and a visible **Selected** expression strip that lists the current values.
+- The active-round header reports round number, current point value and selected-tile count without requiring the user to infer state from the board.
 - Round, score and result changes use restrained live-region announcements; ordinary tile focus is not announced redundantly.
-- The layout must have no horizontal page overflow at 320 CSS px and must scale without typography collisions through large desktop widths.
+- The completion state retains the final total as the dominant value and adds a compact per-round earned-point breakdown so the result is explainable rather than just a single number.
+- The layout must have no horizontal page overflow at 320 CSS px and must reflow at 200% text sizing without hiding or overlapping gameplay controls.
 - Essential gameplay has no countdown or reaction-time requirement.
 - Motion is nonessential and suppressed under `prefers-reduced-motion: reduce`.
 
@@ -67,8 +69,8 @@ Before Threefold can be marked verified:
 2. Storage tests cover valid, missing, malformed and write-failure behavior through an explicit storage seam.
 3. The catalog and lazy workspace registry expose the game.
 4. Keyboard and pointer behavior use the same native control path.
-5. 320 CSS-px layout, large viewport layout, visible focus, target sizing, reduced motion and live status behavior are reviewed.
-6. `pnpm validate` passes.
+5. Rendered-browser tests cover 320 CSS-px and 200% text reflow, visible/non-color selection state, minimum tile target sizing and keyboard activation.
+6. `pnpm validate` passes, including `pnpm design:check` and `pnpm test:design-browser`.
 7. The tracker contains no `planned` or `started` capability.
 8. The game index, tracker, spec and task records match shipped behavior.
 9. Guest best-score persistence is verified and authenticated best-score sync is verified once the shared Firebase platform is available.
@@ -78,4 +80,4 @@ Before Threefold can be marked verified:
 
 No timer, hints, undo history, sound, online leaderboard, daily challenge, sharing, multiplayer, external assets or analytics. Shared helpers are not extracted until a second game proves reuse.
 
-Repository best-score persistence, migration, reset and cross-browser Auth/save behavior are verified with unit and Chromium emulator tests. Real Firebase account/save verification remains blocked by TASK-003; Pages deployment itself is verified. Pending sync can be retried before leaving; after reload/sign-out, successfully loaded cloud state wins.
+Repository best-score persistence, migration, reset and cross-browser Auth/save behavior are verified with unit and Chromium emulator tests. Rendered-browser design checks verify the current responsive/selection/touch contract. Real Firebase account/save verification remains blocked by TASK-003; Pages deployment itself is verified. Pending sync can be retried before leaving; after reload/sign-out, successfully loaded cloud state wins.

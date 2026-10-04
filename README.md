@@ -18,6 +18,7 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract. See
 - React + TypeScript + Vite
 - pnpm with latest-stable, exact-pinned direct dependencies and a frozen lockfile
 - Vitest for unit tests
+- Playwright Chromium for account/persistence and rendered design regression checks
 - Firebase Authentication + Cloud Firestore for optional accounts/account saves
 - GitHub Actions validates and deploys to GitHub Pages from `main`
 
@@ -38,7 +39,8 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract. See
 - `pnpm dependency:check` - reject dependency ranges so installs remain reproducible.
 - `pnpm dependency:current` - require every direct dependency/devDependency to match the researched manifest and npm's current stable `latest` tag.
 - `pnpm design:check` - validate the durable `DESIGN.md` contract with the exact pinned validator.
-- `pnpm validate` - dependency policy, typecheck, game check, unit tests, rules/browser emulator tests and both production builds.
+- `pnpm test:design-browser` - rendered UI regression checks for responsive composition, 200% text reflow, keyboard focus/selection, touch targets and reduced motion.
+- `pnpm validate` - dependency/design policy, typecheck, game check, unit tests, rules/account browser tests, design-browser tests and both production builds.
 - `pnpm test:rules` / `pnpm test:browser` - isolated Firebase rules and browser account/save checks.
 - `pnpm build:firebase` - optional root-base static build for the existing Firebase Hosting compatibility path.
 
@@ -50,6 +52,6 @@ Configure the public Web variables, Email/Password provider, Firestore database/
 
 ## Status
 
-Both games use the shared optional account/save platform. Repository behavior is verified with unit, rules and browser emulator tests; real Firebase provisioning and deployed-site verification remain external tasks. Guest play requires no Firebase setup.
+Both games use the shared optional account/save platform and the shared InMo Game Cabinet shell. Repository behavior is verified with unit, rules, account/persistence browser and rendered design-browser tests; real Firebase provisioning and deployed account-save verification remain external tasks. Guest play requires no Firebase setup.
 
 For validation, use pnpm 10.0.0, Node 24.12.0+, Java 21 and Playwright Chromium. After `pnpm install --frozen-lockfile`, run `pnpm exec playwright install chromium` (add `--with-deps` on Linux when needed), then `pnpm validate`. An existing compatible Chromium may be selected with `CHROMIUM_PATH`. See the architecture document for cache, retry and reset semantics. Dependency integration rules and the current evidence matrix are in `docs/DEPENDENCY_POLICY.md`.
