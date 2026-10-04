@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { AccountControls } from '../platform/auth/AccountControls';
 import type { GameMeta } from '../game-meta';
 
 export function GameLayout({ game, children }: { game: GameMeta; children: ReactNode }) {
@@ -8,6 +9,7 @@ export function GameLayout({ game, children }: { game: GameMeta; children: React
         <a href="#/">All games</a>
         <h1>{game.name}</h1>
         <p>{game.summary}</p>
+      <AccountControls />
       </header>
       <main className="shell-main">{children}</main>
     </div>

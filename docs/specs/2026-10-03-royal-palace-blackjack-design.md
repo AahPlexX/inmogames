@@ -45,17 +45,18 @@ Visible session information includes bankroll, current wager, shoe cards/percent
 Local storage key: `inmogames:royal-palace-blackjack:v1`.
 Cloud game slug: `royal-palace-blackjack`.
 
-Durable state is limited to bankroll, last completed wager, W/L/P statistics, sound preference, strategy-hint preference and cumulative virtual-credit session net. Never persist a live hand, shoe, current wager construction or unfinished round.
+Durable state is limited to bankroll, last completed wager, W/L/P statistics, sound preference, strategy-hint preference and cumulative virtual-credit session net. Never persist a live hand, shoe, current wager construction or unfinished round. Settlement commits bankroll, last completed wager and statistics. Preference changes merge into the last committed durable balance even during chip construction or a round. Reloading abandons staged wagers/unfinished rounds without consuming durable credits. Historical legacy balances cannot be repaired by guessing unrecorded staged chips.
 
-Guests use defensive local persistence. Once the shared Firebase platform is implemented, authenticated players sync the same committed durable state to `users/{uid}/games/royal-palace-blackjack` through the shared save repository. If no account save exists at first sign-in, eligible local progress may seed it; an existing account save must not be silently overwritten by unrelated guest data.
+Guests use defensive local persistence. Authenticated players sync the same committed durable state to `users/{uid}/games/royal-palace-blackjack` through the shared save repository. Schema version is 1. At the first authenticated game load, a transaction seeds eligible local progress only when no account save exists; an existing account save must not be silently overwritten by unrelated guest data.
 
-A dedicated **Reset saved game** control restores the initial bankroll/statistics/preferences state for this game only and, when authenticated, must keep the account save and local mirror consistent.
+A dedicated **Reset saved game** control restores the initial bankroll/statistics/preferences state for this game only and, when authenticated, clears the local mirror and writes a default-state account document so old guest data cannot reseed it. It never deletes the account or another game.
 
 ## Architecture
 
 - `engine.ts`: card/hand scoring, legal actions, settlement, blackjack/split semantics and payout math. No React, DOM, storage or audio.
 - `shoe.ts`: six-deck construction, cryptographically seeded browser shuffle adapter plus deterministic seeded shuffle for tests, cut-card/penetration helpers.
-- `storage.ts`: game-state serialization/local compatibility seam; integration must migrate behind the shared platform save repository without putting Firebase calls in the game engine.
+- `storage.ts`: game-state schema/decoder and legacy-local compatibility seam.
+- `persistence.ts`: versioned shared-platform definition and completed-round/preference checkpoint selection.
 - `strategy.ts`: optional basic-strategy recommendation for this exact S17/DAS table; advisory only and never auto-plays.
 - `RoyalPalaceBlackjackWorkspace.tsx`: round state machine and accessible presentation.
 - `royal-palace-blackjack.css`: scoped responsive visual system; no external fonts/assets.
@@ -111,3 +112,5 @@ Hints are optional learning assistance for the fixed table rules. The strategy m
 Engine tests must cover Ace scoring, natural blackjack, dealer S17 behavior, payout math, push/bust, insurance, late surrender, double, split eligibility, split-Ace restrictions and split-21 semantics. Shoe tests cover 312-card composition, deterministic test shuffle and cut threshold. Storage tests cover valid/missing/malformed/write-failure states. Strategy tests cover representative hard/soft/pair decisions and legal fallbacks.
 
 The game is not `verified` until typecheck, structural check, all unit tests and production build pass; responsive/accessibility review is complete; guest persistence and authenticated account-save behavior are verified; tracker/spec/index/task docs match shipped behavior; and Pages deployment succeeds after repository TASK-001 is resolved.
+
+Repository persistence/Auth/rules behavior is verified with unit and Chromium emulator tests. Live Firebase and deployed-site verification remain blocked by TASK-003/TASK-001; see `docs/FIREBASE_SETUP.md`. Pending cloud checkpoints can be retried during the page session; after reload/sign-out, successfully loaded cloud state is authoritative.

@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { games } from './catalog';
 import { GameLayout } from './components/GameLayout';
+import { AccountControls } from './platform/auth/AccountControls';
 import { workspaces } from './games/workspaces';
 
 const ROUTE = /^#\/games\/([a-z0-9-]+)$/;
@@ -36,7 +37,8 @@ export default function App() {
     <div className="shell">
       <header className="shell-header">
         <h1>InMo Games</h1>
-        <p>Local-first browser games. No accounts, no server.</p>
+        <p>Browser games with optional accounts and cross-device saves.</p>
+      <AccountControls />
       </header>
       <main className="shell-main">
         {slug && <p role="alert">No game named "{slug}".</p>}

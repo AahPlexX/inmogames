@@ -16,4 +16,4 @@ Repository-level deployment remains separately blocked by TASK-001 (enable GitHu
 ## PLATFORM-001: Firebase authentication and account saves
 **Priority:** P0 | **Tags:** firebase, auth, firestore, persistence
 
-Implement the approved architecture in `docs/FIREBASE_ARCHITECTURE.md`. Keep GitHub Pages as the static frontend host, preserve guest play/local saves, add optional Firebase email/password accounts, and route authenticated durable game saves through one shared repository layer. Royal Palace Blackjack and Threefold are the first migration targets. Do not introduce privileged client credentials or game-specific direct Firestore calls.
+Repository implementation of `docs/FIREBASE_ARCHITECTURE.md` is verified: shared optional email/password Auth, isolated guest/account repositories, transactional migration, secured/tested rules, durable Blackjack/Threefold checkpoints and browser emulator checks. Live completion is blocked by TASK-003 (actual Firebase configuration/provisioning and deployed-site verification) and TASK-001 (Pages enablement). GitHub Pages remains canonical; optional Hosting is independent.

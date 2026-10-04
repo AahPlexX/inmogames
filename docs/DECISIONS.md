@@ -62,3 +62,15 @@ Firestore Security Rules must deny access by default and permit a signed-in user
 The repository already contains a secondary Firebase Hosting build/configuration path. It is retained as optional static-host compatibility only. GitHub Pages remains the canonical deployment target.
 
 Firebase Authentication and Cloud Firestore must work from the GitHub Pages build and must not require Firebase Hosting. Hosting project selection/deployment is a separate lower-priority task and must not block account/save implementation.
+
+## D-014 Shared account-save implementation (2026-10-04)
+
+The modular `firebase@12.19.0` SDK is pinned exactly after checking official Firebase documentation/release notes and the npm latest tag. Optional email/password Auth uses browser-local persistence and an explicit in-memory fallback when storage is blocked. Firestore Lite supplies direct server reads/writes; the shared platform owns per-user local mirrors, ordered checkpoint queues and nonblocking retry. Pure engines remain unchanged and Firebase-free.
+
+Each game owns a version-1 schema. Atomic first-load migration seeds guest progress only if the account document is absent. Existing account saves take precedence. Account reset writes the game's default envelope instead of deleting its document, preventing old guest state from reseeding a reset game. Guest reset removes only the selected local key. Pending retry intent lives in the current page; a successful load after reload/sign-out gives cloud state precedence.
+
+Blackjack persists only completed settlements and preferences merged into the last committed balance. Staged chips and unfinished rounds never alter durable credit totals. Threefold persists only a best completed five-round score. The Security Rules require ownership plus a versioned map/server-time envelope. Unit, Firebase-supported rules emulator and Chromium Auth/save emulator tests are required validation checks. Console provisioning, actual email delivery and deployed-site verification remain external requirements described in `docs/FIREBASE_SETUP.md`.
+
+## D-015 Validation precedes Pages configuration (2026-10-04)
+
+The build job validates both host builds plus unit/rules/browser tests and uploads the Pages artifact without requiring an enabled Pages site. The deployment job configures Pages immediately before deploying. This keeps exact-revision validation independent of the known external Pages-enable task while retaining deployment gating and the default GitHub token. No privileged enablement workaround is added.

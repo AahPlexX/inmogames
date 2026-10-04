@@ -35,15 +35,18 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract.
 
 - `pnpm dev` - local development server.
 - `pnpm dependency:check` - reject dependency ranges so installs remain reproducible.
-- `pnpm validate` - dependency policy, typecheck, game check, unit tests and production build.
+- `pnpm validate` - dependency policy, typecheck, game check, unit tests, rules/browser emulator tests and both production builds.
+- `pnpm test:rules` / `pnpm test:browser` - isolated Firebase rules and browser account/save checks.
 - `pnpm build:firebase` - optional root-base static build for the existing Firebase Hosting compatibility path.
 
 ## Deployment
 
 In the repository settings, set Pages > Source to "GitHub Actions" once. The Vite production base is `/inmogames/`, matching the repository project-site path. After Pages is enabled, every push to `main` that passes validation is published.
 
-Firebase project provisioning, authorized domains, Authentication providers and Firestore rules are separate managed-service configuration. They must match `docs/FIREBASE_ARCHITECTURE.md`; no privileged credentials belong in the GitHub Pages bundle.
+Configure the public Web variables, Email/Password provider, Firestore database/rules and authorized hostname using [Firebase setup](docs/FIREBASE_SETUP.md). Missing configuration keeps the build and guest play available. No privileged credentials belong in the GitHub Pages bundle.
 
 ## Status
 
-Two games are under active implementation. The Firebase account/save architecture is approved and documented; implementation is tracked as a separate platform workstream.
+Both games use the shared optional account/save platform. Repository behavior is verified with unit, rules and browser emulator tests; real Firebase provisioning and deployed-site verification remain external tasks. Guest play requires no Firebase setup.
+
+For validation, use pnpm 10.0.0, Node 22+, Java 21 and Playwright Chromium. After `pnpm install --frozen-lockfile`, run `pnpm exec playwright install chromium` (add `--with-deps` on Linux when needed), then `pnpm validate`. An existing compatible Chromium may be selected with `CHROMIUM_PATH`. See the architecture document for cache, retry and reset semantics.

@@ -1,7 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { canSplit, cardValue, dealerShouldHit, evaluateHand, settleHand, type Card } from './engine';
 import { advise } from './strategy';
-import { loadSave, resetSave, saveGame, DEFAULT_SAVE, type BlackjackSave } from './storage';
+import { DEFAULT_SAVE, type BlackjackSave } from './storage';
+import { blackjackSaveDefinition, durableCheckpoint } from './persistence';
+import { useGameSave } from '../../platform/PlatformProvider';
+import { SaveStatus } from '../../platform/SaveStatus';
 import { needsShuffle, shuffledShoe } from './shoe';
 import { playCue } from './audio';
 import './royal-palace-blackjack.css';
@@ -14,9 +17,12 @@ const money=(n:number)=>n.toLocaleString(undefined,{minimumFractionDigits:Number
 const freshHand=():Hand=>({cards:[],wager:0,fromSplit:false,splitAces:false,doubled:false,surrendered:false});
 
 export default function RoyalPalaceBlackjackWorkspace(){
- const loaded=useMemo(()=>loadSave(typeof window==='undefined'?null:window.localStorage),[]);
- const [save,setSave]=useState<BlackjackSave>(loaded.value);
- const [persistent,setPersistent]=useState(loaded.persistent);
+ const progress=useGameSave(blackjackSaveDefinition);
+ return <><SaveStatus {...progress}/><BlackjackTable key={`${progress.scope}:${progress.ready}:${progress.revision}`} initial={progress.state} persist={progress.save} reset={progress.reset}/></>;
+}
+function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(state:BlackjackSave)=>void;reset:()=>void}){
+ const [save,setSave]=useState<BlackjackSave>(()=>structuredClone(initial));
+ const committed=useRef(structuredClone(initial));
  const [phase,setPhase]=useState<Phase>('betting');
  const [bet,setBet]=useState(0); const [betStack,setBetStack]=useState<number[]>([]);
  const [shoe,setShoe]=useState<Card[]>(()=>shuffledShoe());
@@ -26,7 +32,12 @@ export default function RoyalPalaceBlackjackWorkspace(){
  const current=hands[active]; const value=current?evaluateHand(current.cards,{fromSplit:current.fromSplit}):null;
  const dealerUp=dealer[0]; const remaining=shoe.length; const shoePct=Math.round(remaining/312*100);
 
- useEffect(()=>{if(phase!=='betting')return;const ok=saveGame(window.localStorage,save);if(!ok)setPersistent(false)},[save,phase]);
+ useEffect(()=>{
+  const checkpoint=durableCheckpoint(committed.current,save,phase);
+  if(JSON.stringify(checkpoint)===JSON.stringify(committed.current))return;
+  committed.current=structuredClone(checkpoint);
+  persist(checkpoint);
+ },[save,phase,persist]);
 
  function drawFrom(cards:Card[]):[Card,Card[]]{const copy=[...cards];const card=copy.pop();if(!card)throw new Error('Shoe unexpectedly empty');return[card,copy]}
  function addChip(v:number){if(phase!=='betting'||v>save.bankroll)return;playCue('chip',save.preferences.sound);setSave(s=>({...s,bankroll:s.bankroll-v}));setBet(x=>x+v);setBetStack(x=>[...x,v])}
@@ -89,14 +100,13 @@ export default function RoyalPalaceBlackjackWorkspace(){
   playCue(net>0?'win':net<0?'loss':'push',save.preferences.sound);setPhase('settled');setShoe(deck);setStatus(net>0?`Round won: +${money(net)} virtual credits.`:net<0?`Round result: −${money(Math.abs(net))} virtual credits.`:'Round is a push.');
  }
  function nextRound(){setDealer([]);setHands([freshHand()]);setActive(0);setHoleHidden(true);setInsurance(false);setPhase('betting');setStatus('Place virtual chips for the next round.')}
- function resetAll(){resetSave(window.localStorage);setSave(structuredClone(DEFAULT_SAVE));setBet(0);setBetStack([]);setShoe(shuffledShoe());setDealer([]);setHands([freshHand()]);setActive(0);setPhase('betting');setPersistent(true);setStatus('Saved game reset. You have 1,000 virtual credits.')}
+ function resetAll(){committed.current=structuredClone(DEFAULT_SAVE);reset();setSave(structuredClone(DEFAULT_SAVE));setBet(0);setBetStack([]);setShoe(shuffledShoe());setDealer([]);setHands([freshHand()]);setActive(0);setPhase('betting');setInsurance(false);setHoleHidden(true);setStatus('Saved game reset. You have 1,000 virtual credits.')}
  const canD=phase==='player'&&current?.cards.length===2&&!current.splitAces&&save.bankroll>=current.wager;
  const canS=phase==='player'&&!!current&&canSplit(current.cards,current.fromSplit)&&save.bankroll>=current.wager;
  const canR=phase==='player'&&!!current&&current.cards.length===2&&!current.fromSplit&&!insurance;
  const advice=save.preferences.hints&&phase==='player'&&dealerUp&&current&&!insurance?advise({player:current.cards,dealerUp,canDouble:!!canD,canSplit:!!canS,canSurrender:!!canR}):null;
  return <section className="rp" aria-label="Royal Palace Blackjack table">
   <div className="rp-top"><div><strong>♠ Royal Palace</strong><span>6 decks · S17 · 3:2 · DAS</span></div><div className="rp-stats"><span>Shoe <b>{shoePct}%</b></span><span><b>{save.stats.wins}</b> W · <b>{save.stats.losses}</b> L · <b>{save.stats.pushes}</b> P</span><span>Session <b>{save.sessionNet>=0?'+':''}{money(save.sessionNet)}</b></span></div></div>
-  {!persistent&&<p className="rp-note" role="status">Browser storage is unavailable. This session still plays normally, but progress may not persist.</p>}
   <div className="rp-felt">
    <div className="rp-rules" aria-hidden="true">BLACKJACK PAYS 3 TO 2 · DEALER STANDS ON ALL 17</div>
    <HandView label="Dealer" cards={dealer} hiddenIndex={holeHidden?1:-1}/>

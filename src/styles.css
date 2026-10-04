@@ -96,3 +96,7 @@ a {
     transition: none !important;
   }
 }
+
+.threefold-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; max-width: 24rem; }
+.threefold-board button { min-height: 64px; }
+.threefold-board button[aria-pressed="true"] { outline: 3px solid var(--accent); outline-offset: -3px; font-weight: bold; text-decoration: underline; }

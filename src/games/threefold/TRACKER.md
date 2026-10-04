@@ -15,15 +15,17 @@
 | Visible focus and non-color selection state | planned | Accessibility review |
 | Live round/score/result feedback | planned | Accessibility review |
 | Reduced-motion handling | planned | CSS review |
-| Defensive guest-local best-score persistence | planned | Storage unit tests |
-| Best-score reset | planned | Storage/UI verification |
-| Catalog registration and lazy workspace loading | planned | Structural check + build |
+| Defensive guest-local best-score persistence | verified | Valid/legacy/schema/blocked-storage unit coverage + browser completion |
+| Best-score reset | verified | Game-scoped browser emulator reset across two account sessions |
+| Catalog registration and lazy workspace loading | verified | Structural check + both builds |
 | 320 CSS-px no-overflow behavior | planned | Viewport review |
-| Completion/results state | planned | UI + engine verification |
-| Authenticated best-score account sync | planned | Shared Firebase platform + integration test |
-| Runtime network restricted to shared Firebase account/save traffic | planned | Source/build/network review |
+| Completion/results state | verified | Five-round browser completion and persisted best score |
+| Authenticated best-score account sync | blocked | Shared repository + cross-browser emulator verified; real project/Pages requires TASK-003/TASK-001 |
+| Runtime network restricted to shared Firebase account/save traffic | verified | No game Firebase calls; browser emulator traffic restricted to local services |
 | Spec/tracker/index/task synchronization | started | Updated with each implementation commit |
 
 ## Assets and licences
 
 No third-party visual, audio, font or gameplay assets are planned. Threefold v1 uses only repository-authored HTML/CSS/TypeScript/React.
+
+Save schema version 1 stores only the best completed score. Full live Firebase/deployed-site checks and broader accessibility review remain explicit external/remaining game checks.

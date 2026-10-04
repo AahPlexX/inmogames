@@ -42,4 +42,5 @@ If a game has persistent data, its spec must state:
 - Any persistent game data has verified guest-local behavior and, once the platform integration is available, verified authenticated account-save behavior.
 - Save/reset/migration behavior is described in the spec and does not bypass the shared repository abstraction.
 - Tracker has no capability left `planned` or `started`.
-- `pnpm validate` green and Pages deployment successful.
+- `pnpm validate` green, including mandatory account/save rules and browser emulator checks, and Pages deployment successful.
+- Firebase-enabled features also record real configured-project/deployed-site verification or its exact external blocker; emulator results alone do not establish live verification.

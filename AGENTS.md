@@ -33,6 +33,7 @@ Work on `origin/main` only. Commit directly to `main`; do not leave branches or 
 - `src/games/workspaces.tsx` - lazy workspace registry keyed by slug.
 - `src/platform/` - shared platform concerns such as Firebase bootstrap, authentication and game-save repositories.
 - `docs/FIREBASE_ARCHITECTURE.md` - authoritative account/save platform contract.
+- `docs/FIREBASE_SETUP.md` - Console/build configuration and live verification requirements.
 - `docs/DOCUMENTATION_STANDARD.md` - naming, required docs, definition of done.
 - `docs/DECISIONS.md` - decision log.
 - `docs/GAME_INDEX.md` - one row per game.

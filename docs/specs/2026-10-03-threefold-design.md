@@ -45,7 +45,7 @@ The primary board is nine native buttons in a responsive 3 × 3 grid. Native con
 
 Storage key: `inmogames:threefold:v1`.
 
-Only the best completed score is durable. Guests use localStorage. Once the shared Firebase save platform is implemented, authenticated players sync that best score to `users/{uid}/games/threefold` through the shared save repository. Active runs remain intentionally ephemeral: reload starts a fresh run.
+Only the best completed score is durable. Guests use localStorage. Authenticated players sync that best score to `users/{uid}/games/threefold` through the shared save repository. Schema version is 1 with state `{ bestScore }`. Legacy numeric scores are migrated by the local adapter. Active runs remain intentionally ephemeral: reload starts a fresh run. On the first authenticated load, a transaction seeds an eligible guest score only if no cloud save exists; otherwise cloud wins. Reset removes the guest key or writes account defaults and clears the account mirror for Threefold only.
 
 Storage/network failure must never prevent play. Threefold must not make game-specific third-party requests; Firebase account/save traffic is owned by the shared platform layer.
 
@@ -77,3 +77,5 @@ Before Threefold can be marked verified:
 ## Explicit exclusions for v1
 
 No timer, hints, undo history, sound, online leaderboard, daily challenge, sharing, multiplayer, external assets or analytics. Shared helpers are not extracted until a second game proves reuse.
+
+Repository best-score persistence, migration, reset and cross-browser Auth/save behavior are verified with unit and Chromium emulator tests. Real Firebase/deployed-site verification remains blocked by TASK-003/TASK-001. Pending sync can be retried before leaving; after reload/sign-out, successfully loaded cloud state wins.

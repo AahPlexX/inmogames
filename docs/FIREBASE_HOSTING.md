@@ -5,7 +5,7 @@
 
 Firebase Hosting support is retained as an optional alternate static deployment path. It is not required for Firebase Authentication, Cloud Firestore, account saves, or ordinary InMo Games development.
 
-The shared account/save architecture is defined in `docs/FIREBASE_ARCHITECTURE.md` and must work from the canonical GitHub Pages build.
+The shared account/save architecture is defined in `docs/FIREBASE_ARCHITECTURE.md` and works from the canonical GitHub Pages build. Configure Auth/Firestore using `docs/FIREBASE_SETUP.md`. The `firestore` section in `firebase.json` declares rules independently of the retained `hosting` section.
 
 ## Build and preview
 

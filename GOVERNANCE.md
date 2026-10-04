@@ -30,9 +30,10 @@ Firebase Web configuration is public client configuration and may be supplied to
 
 A workstream is complete only when:
 
-1. The validation job is green on the exact integrated `main` revision.
+1. The validation checks (including Auth/save behavior, Firestore rules and browser emulator tests) are green on the exact integrated `main` revision.
 2. GitHub Pages deployment for that revision succeeded when the deployed app changed.
 3. `.tasks/` and `docs/GAME_INDEX.md` reflect the final state.
+4. Firebase account/save work distinguishes repository/emulator verification from real project and deployed-site verification. Missing project configuration or Pages enablement remains an explicit external blocker.
 
 ## Governance history
 
