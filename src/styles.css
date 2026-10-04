@@ -1,102 +1,47 @@
-:root {
-  color-scheme: light dark;
-  --fg: #111827;
-  --bg: #f9fafb;
-  --card: #ffffff;
-  --accent: #047857;
-  --border: #d1d5db;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-  line-height: 1.5;
+:root{
+  color-scheme:light dark;
+  --canvas:#e9eef2;--surface:#fbfcfd;--surface-soft:#dfe6ec;--surface-raised:#fff;
+  --ink:#14263d;--muted:#52657a;--line:#b7c3cf;--brand:#204f7c;--brand-strong:#163b5f;
+  --on-brand:#fff;--accent:#b84833;--focus:#0a66c2;--success:#276749;--danger:#a33a2b;--gold:#d8a53f;
+  --shadow-sm:0 .35rem 1rem rgb(20 38 61/.08);--shadow-md:0 1.2rem 3rem rgb(20 38 61/.14);
+  --radius-sm:.5rem;--radius-md:.85rem;--radius-lg:1.25rem;
+  --space-1:.375rem;--space-2:.625rem;--space-3:1rem;--space-4:1.5rem;--space-5:2.25rem;
+  --font-display:ui-rounded,"SF Pro Rounded","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --font-body:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-data:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  font-family:var(--font-body);font-size:clamp(1rem,.97rem + .15vw,1.075rem);line-height:1.55;color:var(--ink);background:var(--canvas)
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fg: #f3f4f6;
-    --bg: #111827;
-    --card: #1f2937;
-    --accent: #34d399;
-    --border: #374151;
-  }
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  color: var(--fg);
-  background: var(--bg);
-}
-
-a {
-  color: var(--accent);
-}
-
-:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.shell {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1rem, 3vw, 2rem);
-  min-height: 100dvh;
-  width: min(100%, 72rem);
-  margin-inline: auto;
-  padding: clamp(1rem, 4vw, 2.5rem);
-}
-
-.shell-header h1 {
-  margin: 0.25rem 0;
-  font-size: clamp(1.75rem, 1.2rem + 2.5vw, 2.75rem);
-  line-height: 1.15;
-}
-
-.shell-header p {
-  margin: 0;
-  max-width: 60ch;
-}
-
-.shell-main {
-  flex: 1;
-}
-
-.catalog {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
-  gap: clamp(0.75rem, 2vw, 1.25rem);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.catalog a {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  height: 100%;
-  padding: 1rem;
-  color: inherit;
-  text-decoration: none;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-}
-
-.catalog a:hover {
-  border-color: var(--accent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-.threefold-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; max-width: 24rem; }
-.threefold-board button { min-height: 64px; }
-.threefold-board button[aria-pressed="true"] { outline: 3px solid var(--accent); outline-offset: -3px; font-weight: bold; text-decoration: underline; }
+@media(prefers-color-scheme:dark){:root{--canvas:#0e1724;--surface:#142238;--surface-soft:#1c2e48;--surface-raised:#182a42;--ink:#f4f7fa;--muted:#b8c5d2;--line:#344a63;--brand:#81b1e0;--brand-strong:#a8d0ff;--on-brand:#0e1724;--accent:#f0936f;--focus:#a8d0ff;--success:#79c99d;--danger:#ff9a88;--gold:#edc96e;--shadow-sm:0 .35rem 1rem rgb(0 0 0/.2);--shadow-md:0 1.2rem 3rem rgb(0 0 0/.32)}}
+*{box-sizing:border-box}
+html,body,#root{min-width:20rem;min-height:100%}
+body{margin:0;color:var(--ink);background-color:var(--canvas);background-image:linear-gradient(rgb(82 101 122/.055) 1px,transparent 1px),linear-gradient(90deg,rgb(82 101 122/.055) 1px,transparent 1px);background-size:2rem 2rem}
+button,input{font:inherit}button,a{-webkit-tap-highlight-color:transparent}a{color:var(--brand);text-underline-offset:.2em}a:hover{color:var(--brand-strong)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+button{min-height:44px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:.6rem .9rem;color:var(--ink);background:var(--surface-raised);font-weight:750;cursor:pointer;box-shadow:0 1px 0 rgb(20 38 61/.06);transition:border-color .14s ease,background-color .14s ease,transform .14s ease,box-shadow .14s ease}
+button:hover:not(:disabled){border-color:var(--brand);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+button:active:not(:disabled){transform:none;box-shadow:none}button:disabled{cursor:not-allowed;opacity:.48}button[aria-pressed="true"]{border-color:var(--brand);background:var(--surface-soft)}
+.shell{width:min(100%,76rem);min-height:100dvh;margin-inline:auto;padding:clamp(1rem,3vw,2.5rem)}.shell--game{width:min(100%,88rem)}.shell-main{min-width:0}.game-main{display:grid;gap:var(--space-3)}
+.shell-header{display:grid;gap:var(--space-4);margin-bottom:clamp(1.5rem,4vw,3rem)}.site-nav{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)}
+.site-brand{display:inline-flex;align-items:center;gap:.7rem;color:var(--ink);text-decoration:none}.site-brand:hover{color:var(--ink)}
+.site-brand-mark{position:relative;width:2.45rem;height:2.45rem;flex:0 0 auto;border:2px solid var(--ink);border-radius:.6rem .6rem 1rem .6rem;background:radial-gradient(circle at 29% 30%,var(--accent) 0 .21rem,transparent .22rem),radial-gradient(circle at 71% 70%,var(--gold) 0 .21rem,transparent .22rem),var(--surface-raised);box-shadow:.22rem .22rem 0 var(--ink);transform:rotate(-2deg)}
+.site-brand-copy{display:grid;line-height:.92}.site-brand-copy strong{font:850 1.08rem/1 var(--font-display);letter-spacing:-.025em}.site-brand-copy small{margin-top:.18rem;color:var(--muted);font:750 .68rem/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase}
+.site-note{color:var(--muted);font:700 .78rem/1.2 var(--font-data);letter-spacing:.04em;text-align:right}
+.back-link{display:inline-flex;min-height:44px;align-items:center;padding-inline:.75rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font-weight:750;text-decoration:none}.back-link:hover{border-color:var(--brand);color:var(--ink)}
+.eyebrow{margin:0 0 .55rem;color:var(--accent);font:800 .75rem/1.2 var(--font-data);letter-spacing:.12em;text-transform:uppercase}
+.catalog-hero,.game-heading{max-width:50rem}.catalog-hero{margin-bottom:clamp(1.5rem,4vw,2.5rem)}
+.catalog-hero h1,.game-heading h1{margin:0;font:850 clamp(2.35rem,7vw,5.5rem)/.96 var(--font-display);letter-spacing:-.055em;text-wrap:balance}.game-heading h1{font-size:clamp(2rem,6vw,4.4rem)}
+.catalog-hero>p:last-child,.game-heading>p:last-child{max-width:62ch;margin:.9rem 0 0;color:var(--muted);font-size:clamp(1rem,.95rem + .35vw,1.2rem)}
+.shell-header--game{padding-bottom:var(--space-4);border-bottom:1px solid var(--line)}
+.catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1rem,2.5vw,1.5rem);margin:0;padding:0;list-style:none}.catalog li{min-width:0}
+.game-card{display:grid;grid-template-columns:minmax(8.5rem,.78fr) minmax(0,1.3fr);min-height:17rem;overflow:hidden;color:inherit;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.game-card:hover{color:inherit;border-color:var(--brand);transform:translateY(-3px);box-shadow:var(--shadow-md)}.game-card:focus-visible{outline-offset:5px}
+.catalog-art{position:relative;display:grid;place-items:center;min-height:13rem;overflow:hidden;border-right:1px solid rgb(255 255 255/.22)}.catalog-art:before,.catalog-art:after{content:"";position:absolute;pointer-events:none}
+.catalog-art[data-game="threefold"]{background:linear-gradient(90deg,transparent 48%,rgb(255 255 255/.32) 49% 51%,transparent 52%),linear-gradient(transparent 48%,rgb(255 255 255/.32) 49% 51%,transparent 52%),#2d6091;background-size:33.333% 33.333%}.catalog-art[data-game="threefold"]:before{inset:10%;border:2px solid rgb(255 255 255/.55);border-radius:.8rem}
+.catalog-art[data-game="royal-palace-blackjack"]{background:radial-gradient(ellipse at 50% 104%,#146846 0 45%,#0b3c2b 46% 61%,transparent 62%),linear-gradient(145deg,#24130e,#0e0a08 70%)}.catalog-art[data-game="royal-palace-blackjack"]:before{width:3.8rem;height:5.3rem;left:22%;top:22%;border-radius:.4rem;background:#faf7ef;border:2px solid #d7cab7;transform:rotate(-9deg);box-shadow:1.4rem .55rem 0 -.12rem #faf7ef,1.4rem .55rem 0 .02rem #d7cab7}.catalog-art[data-game="royal-palace-blackjack"]:after{inset:auto 10% 12%;height:2px;background:#d8a53f;opacity:.75}
+.catalog-glyph{position:relative;z-index:2;color:#fff;font:900 clamp(2.2rem,6vw,4.6rem)/1 var(--font-data);letter-spacing:-.08em;text-shadow:0 .18rem .35rem rgb(0 0 0/.3)}.catalog-art[data-game="royal-palace-blackjack"] .catalog-glyph{align-self:end;margin-bottom:1.35rem;color:#f3cf72;font-family:Georgia,serif}
+.game-card-body{display:flex;min-width:0;flex-direction:column;padding:clamp(1.15rem,3vw,1.6rem)}.game-card-meta{display:flex;flex-wrap:wrap;gap:.45rem .8rem;color:var(--muted);font:750 .72rem/1.3 var(--font-data);text-transform:uppercase;letter-spacing:.08em}.game-card-meta span+span:before{content:"•";margin-right:.8rem;color:var(--line)}
+.game-card-title{margin-top:.85rem;font:850 clamp(1.35rem,3vw,1.85rem)/1.05 var(--font-display);letter-spacing:-.03em}.game-card-summary{margin-top:.65rem;color:var(--muted);line-height:1.48}.game-card-cta{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:auto;padding-top:1.25rem;color:var(--brand);font-weight:800}.game-card-cta>span{font-size:1.35rem;transition:transform .16s ease}.game-card:hover .game-card-cta>span{transform:translateX(.25rem)}
+.inline-alert,.empty-state,.loading-state{padding:.85rem 1rem;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface)}.inline-alert{border-color:color-mix(in srgb,var(--danger) 45%,var(--line))}
+@media(max-width:760px){.catalog{grid-template-columns:1fr}.game-card{grid-template-columns:minmax(7rem,10rem) minmax(0,1fr);min-height:13rem}.catalog-art{min-height:100%}}
+@media(max-width:520px){.shell{padding:1rem}.site-nav{align-items:flex-start}.site-note{max-width:10rem;font-size:.7rem}.catalog-hero h1{font-size:clamp(2.5rem,17vw,4.25rem)}.game-card{grid-template-columns:1fr}.catalog-art{min-height:9.5rem;border-right:0;border-bottom:1px solid rgb(255 255 255/.2)}.catalog-art[data-game="royal-palace-blackjack"]:before{width:2.9rem;height:4.1rem}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}button:hover:not(:disabled),.game-card:hover{transform:none}.game-card:hover .game-card-cta>span{transform:none}}
