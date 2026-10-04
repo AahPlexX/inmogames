@@ -13,7 +13,7 @@
 }
 @media(prefers-color-scheme:dark){:root{--canvas:#0e1724;--surface:#142238;--surface-soft:#1c2e48;--surface-raised:#182a42;--ink:#f4f7fa;--muted:#b8c5d2;--line:#344a63;--brand:#81b1e0;--brand-strong:#a8d0ff;--on-brand:#0e1724;--accent:#f0936f;--focus:#a8d0ff;--success:#79c99d;--danger:#ff9a88;--gold:#edc96e;--shadow-sm:0 .35rem 1rem rgb(0 0 0/.2);--shadow-md:0 1.2rem 3rem rgb(0 0 0/.32)}}
 *{box-sizing:border-box}
-html,body,#root{min-width:20rem;min-height:100%}
+html,body,#root{min-width:0;min-height:100%}
 body{margin:0;color:var(--ink);background-color:var(--canvas);background-image:linear-gradient(rgb(82 101 122/.055) 1px,transparent 1px),linear-gradient(90deg,rgb(82 101 122/.055) 1px,transparent 1px);background-size:2rem 2rem}
 button,input{font:inherit}button,a{-webkit-tap-highlight-color:transparent}a{color:var(--brand);text-underline-offset:.2em}a:hover{color:var(--brand-strong)}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
@@ -43,5 +43,5 @@ button:active:not(:disabled){transform:none;box-shadow:none}button:disabled{curs
 .game-card-title{margin-top:.85rem;font:850 clamp(1.35rem,3vw,1.85rem)/1.05 var(--font-display);letter-spacing:-.03em}.game-card-summary{margin-top:.65rem;color:var(--muted);line-height:1.48}.game-card-cta{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:auto;padding-top:1.25rem;color:var(--brand);font-weight:800}.game-card-cta>span{font-size:1.35rem;transition:transform .16s ease}.game-card:hover .game-card-cta>span{transform:translateX(.25rem)}
 .inline-alert,.empty-state,.loading-state{padding:.85rem 1rem;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface)}.inline-alert{border-color:color-mix(in srgb,var(--danger) 45%,var(--line))}
 @media(max-width:760px){.catalog{grid-template-columns:1fr}.game-card{grid-template-columns:minmax(7rem,10rem) minmax(0,1fr);min-height:13rem}.catalog-art{min-height:100%}}
-@media(max-width:520px){.shell{padding:1rem}.site-nav{align-items:flex-start}.site-note{max-width:10rem;font-size:.7rem}.catalog-hero h1{font-size:clamp(2.5rem,17vw,4.25rem)}.game-card{grid-template-columns:1fr}.catalog-art{min-height:9.5rem;border-right:0;border-bottom:1px solid rgb(255 255 255/.2)}.catalog-art[data-game="royal-palace-blackjack"]:before{width:2.9rem;height:4.1rem}}
+@media(max-width:520px){.shell{padding:1rem}.site-nav{align-items:flex-start;flex-wrap:wrap}.site-note{max-width:100%;font-size:.7rem}.catalog-hero h1{font-size:clamp(2.5rem,17vw,4.25rem)}.game-card{grid-template-columns:1fr}.catalog-art{min-height:9.5rem;border-right:0;border-bottom:1px solid rgb(255 255 255/.2)}.catalog-art[data-game="royal-palace-blackjack"]:before{width:2.9rem;height:4.1rem}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}button:hover:not(:disabled),.game-card:hover{transform:none}.game-card:hover .game-card-cta>span{transform:none}}
