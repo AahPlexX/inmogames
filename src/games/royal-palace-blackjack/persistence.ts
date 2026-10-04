@@ -9,6 +9,6 @@ export function durableCheckpoint(committed: BlackjackSave, visible: BlackjackSa
 }
 
 
-export function restorePracticeCredits(_state: BlackjackSave): BlackjackSave | null {
-  return null;
+export function restorePracticeCredits(state: BlackjackSave): BlackjackSave | null {
+  return state.bankroll < 5 ? { ...state, bankroll: 1000 } : null;
 }
