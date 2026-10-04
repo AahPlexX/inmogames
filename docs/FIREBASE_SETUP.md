@@ -14,8 +14,8 @@ GitHub Pages is the canonical frontend host. Firebase Hosting is optional and is
 Rules may be published from the Console Rules editor or with an authenticated developer CLI:
 
 ```sh
-npx --yes firebase-tools@15.32.1 login
-npx --yes firebase-tools@15.32.1 deploy --only firestore:rules --project YOUR_PROJECT_ID
+pnpm exec firebase login
+pnpm exec firebase deploy --only firestore:rules --project YOUR_PROJECT_ID
 ```
 
 Replace `YOUR_PROJECT_ID` with the selected project's actual ID. This deploys only Firestore rules and does not deploy Hosting. CLI credentials remain outside the repository.
@@ -37,7 +37,7 @@ The workflow supplies them at build time. Vite embeds them in the public bundle.
 
 Blank configuration builds successfully and enables guest play. Partial/invalid configuration disables account controls safely. A syntactically valid configuration can still point to an unavailable service; the application exposes nonblocking account/sync errors in that case.
 
-Enable repository Settings > Pages > Source = GitHub Actions separately. After the configuration and rules are ready, deploy the current main through the existing workflow. Ordinary builds use `/inmogames/`; a custom domain may require revisiting the base-path decision. Changing the Firebase variables requires a new build/deployment.
+Repository Pages is configured with Source = GitHub Actions and deployment has been verified. After Firebase configuration/rules changes, a new `main` integration automatically runs the existing validate-and-deploy workflow. Ordinary builds use `/inmogames/`; a custom domain may require revisiting the base-path decision. Changing the Firebase variables requires a new build/deployment.
 
 ## Verification on the deployed site
 
@@ -52,7 +52,7 @@ Verify all of the following before marking live integration complete:
 - Interrupt Firestore connectivity, complete a checkpoint, restore connectivity and use **Retry account sync** before leaving. Confirm the retry writes the intended account checkpoint.
 - Confirm the deployed rules match the repository and denied cross-account/unauthenticated requests remain denied.
 
-Live verification is currently blocked by missing real Web configuration, provider/database/rules/domain provisioning evidence, and the Pages setting/deployment. Emulator verification does not satisfy those external checks.
+Live Firebase account/save verification is currently blocked by missing real Web configuration and provider/database/rules/domain provisioning evidence. GitHub Pages deployment is no longer a blocker. Emulator verification does not satisfy the remaining Firebase external checks.
 
 ## Authoritative references
 
