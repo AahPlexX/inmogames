@@ -2,6 +2,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { games } from './catalog';
 import { GameLayout } from './components/GameLayout';
 import { SiteHeader } from './components/SiteHeader';
+import { SkipToContent } from './components/SkipToContent';
 import { workspaces } from './games/workspaces';
 
 const ROUTE = /^#\/games\/([a-z0-9-]+)$/;
@@ -39,8 +40,9 @@ export default function App() {
 
   return (
     <div className="shell">
+      <SkipToContent label="Skip to games" />
       <SiteHeader />
-      <main className="shell-main">
+      <main id="main-content" className="shell-main" tabIndex={-1}>
         <section className="catalog-hero" aria-labelledby="catalog-title">
           <p className="eyebrow">Game shelf</p>
           <h1 id="catalog-title">Choose a table.</h1>

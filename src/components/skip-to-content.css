@@ -1,0 +1,4 @@
+.skip-link{position:fixed;top:.75rem;left:.75rem;z-index:250;min-height:44px;padding:.65rem .9rem;color:var(--on-brand);background:var(--brand);border:2px solid var(--surface-raised);border-radius:var(--radius-sm);box-shadow:var(--shadow-md);transform:translateY(calc(-100% - 2rem));transition:transform .14s ease}
+.skip-link:focus-visible{transform:none;outline:3px solid var(--focus);outline-offset:3px}
+.shell-main:focus{outline:none}
+@media(prefers-reduced-motion:reduce){.skip-link{transition:none}}

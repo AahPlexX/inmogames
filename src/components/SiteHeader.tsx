@@ -13,13 +13,13 @@ const categoryLabel: Record<GameMeta['category'], string> = {
 export function SiteHeader({ game }: { game?: GameMeta }) {
   return (
     <header className={'shell-header' + (game ? ' shell-header--game' : '')}>
-      <div className="site-nav">
+      <nav className="site-nav" aria-label="Primary">
         <a className="site-brand" href="#/" aria-label="InMo Games home">
           <span className="site-brand-mark" aria-hidden="true" />
           <span className="site-brand-copy"><strong>InMo</strong><small>Games</small></span>
         </a>
         {game ? <a className="back-link" href="#/">← Game shelf</a> : <span className="site-note">Play now · save if you want</span>}
-      </div>
+      </nav>
       {game && (
         <div className="game-heading">
           <p className="eyebrow">{categoryLabel[game.category]} · {game.players === 'single' ? 'Solo' : 'Hot-seat'}</p>

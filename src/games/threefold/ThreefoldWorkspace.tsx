@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createRun, submitSelection } from './engine';
+import { createRun, scoreRound, submitSelection } from './engine';
 import { threefoldSaveDefinition, type ThreefoldSave } from './persistence';
 import { useGameSave } from '../../platform/PlatformProvider';
 import { SaveStatus } from '../../platform/SaveStatus';
@@ -20,12 +20,20 @@ function ThreefoldBoard({ initial, persist, reset }: { initial: ThreefoldSave; p
   const [best, setBest] = useState(initial.bestScore);
   const round = run.rounds[run.roundIndex];
   const done = run.roundIndex >= run.rounds.length;
+  const roundValue = done ? 0 : scoreRound(round.misses);
 
   function check() {
+    const roundIndex = run.roundIndex;
     const result = submitSelection(run, selection);
     setRun(result.run);
     setSelection([]);
-    setMessage(result.correct ? 'Correct.' : 'Not quite. Try another trio.');
+    if (result.correct) {
+      const earned = result.run.rounds[roundIndex].earned ?? 0;
+      setMessage(`Correct — ${earned} points banked.`);
+    } else {
+      const nextValue = scoreRound(result.run.rounds[roundIndex].misses);
+      setMessage(`Not quite. Try another trio. Round value is now ${nextValue} points.`);
+    }
     if (result.run.roundIndex === result.run.rounds.length && result.run.totalScore > best) {
       setBest(result.run.totalScore);
       persist({ bestScore: result.run.totalScore });
@@ -50,10 +58,12 @@ function ThreefoldBoard({ initial, persist, reset }: { initial: ThreefoldSave; p
 
     {done ? <div className="tf-complete">
       <p className="tf-kicker">Final score</p><h2>Run complete</h2><strong>{run.totalScore}</strong><span>points out of 500</span>
+      <ol className="tf-results" aria-label="Round scores">{run.rounds.map((item, index) => <li key={index}><span>Round {index + 1}</span><b>{item.earned ?? 0} pts</b></li>)}</ol>
       <button className="tf-primary" onClick={start}>Play another run</button>
     </div> : <>
-      <div className="tf-roundline"><span>Round {run.roundIndex + 1} of 5</span><span>{selection.length} of 3 selected</span></div>
+      <div className="tf-roundline"><span>Round {run.roundIndex + 1} of 5</span><span>Round value {roundValue} points</span><span>{selection.length} of 3 selected</span></div>
       <h2 className="tf-target"><span>Make</span><strong>{round.target}</strong></h2>
+      <div className="tf-selection" aria-label="Selected tiles"><span>Selected</span><strong>{selection.length ? selection.join(' + ') : '—'}</strong></div>
       <div className="threefold-board">
         {round.tiles.map(tile => <button key={tile} aria-pressed={selection.includes(tile)} onClick={() => setSelection(current => current.includes(tile) ? current.filter(value => value !== tile) : current.length < 3 ? [...current, tile] : current)}>{tile}</button>)}
       </div>
