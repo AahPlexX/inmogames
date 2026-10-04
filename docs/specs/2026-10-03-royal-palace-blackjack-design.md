@@ -1,14 +1,14 @@
 # Royal Palace Blackjack design
 
 **Status:** Approved concept; production implementation in progress  
-**Last synchronized:** 2026-10-03  
+**Last synchronized:** 2026-10-04  
 **Route:** `#/games/royal-palace-blackjack`
 
 ## Product intent
 
-Royal Palace Blackjack turns the supplied single-file prototype into an independent InMo Games title. The visual direction is an elegant green-felt casino table with restrained gold/wood detailing, but the production implementation is componentized, testable, accessible and fully browser-local.
+Royal Palace Blackjack turns the supplied single-file prototype into an independent InMo Games title. The visual direction is an elegant green-felt casino table with restrained gold/wood detailing, but the production implementation is componentized, testable, accessible and local-first, with optional account-bound persistence through the shared Firebase platform.
 
-This is simulated play with virtual chips only. It has no purchases, deposits, cash-out, real-money value, ads, telemetry, accounts, server, database or runtime third-party requests.
+This is simulated play with virtual chips only. It has no purchases, deposits, cash-out, real-money value, ads or telemetry. The frontend remains static on GitHub Pages; optional accounts and durable account saves use the approved Firebase Authentication/Cloud Firestore platform.
 
 ## Table rules
 
@@ -42,17 +42,20 @@ When the bankroll reaches zero after settlement, the player may reset the practi
 
 Visible session information includes bankroll, current wager, shoe cards/percentage, wins, losses, pushes, and virtual-credit session net. Split-hand outcomes count independently in W/L/P statistics.
 
-Persistent key: `inmogames:royal-palace-blackjack:v1`.
+Local storage key: `inmogames:royal-palace-blackjack:v1`.
+Cloud game slug: `royal-palace-blackjack`.
 
-Persist only: bankroll, last completed wager, W/L/P statistics, sound preference, strategy-hint preference and cumulative virtual-credit session net. Never persist a live hand or shoe. Malformed/blocked storage falls back safely to defaults and never prevents play.
+Durable state is limited to bankroll, last completed wager, W/L/P statistics, sound preference, strategy-hint preference and cumulative virtual-credit session net. Never persist a live hand, shoe, current wager construction or unfinished round.
 
-A dedicated **Reset saved game** control restores the initial bankroll/statistics/preferences state for this game only.
+Guests use defensive local persistence. Once the shared Firebase platform is implemented, authenticated players sync the same committed durable state to `users/{uid}/games/royal-palace-blackjack` through the shared save repository. If no account save exists at first sign-in, eligible local progress may seed it; an existing account save must not be silently overwritten by unrelated guest data.
+
+A dedicated **Reset saved game** control restores the initial bankroll/statistics/preferences state for this game only and, when authenticated, must keep the account save and local mirror consistent.
 
 ## Architecture
 
 - `engine.ts`: card/hand scoring, legal actions, settlement, blackjack/split semantics and payout math. No React, DOM, storage or audio.
 - `shoe.ts`: six-deck construction, cryptographically seeded browser shuffle adapter plus deterministic seeded shuffle for tests, cut-card/penetration helpers.
-- `storage.ts`: defensive versioned persistence through a small Storage-like seam.
+- `storage.ts`: game-state serialization/local compatibility seam; integration must migrate behind the shared platform save repository without putting Firebase calls in the game engine.
 - `strategy.ts`: optional basic-strategy recommendation for this exact S17/DAS table; advisory only and never auto-plays.
 - `RoyalPalaceBlackjackWorkspace.tsx`: round state machine and accessible presentation.
 - `royal-palace-blackjack.css`: scoped responsive visual system; no external fonts/assets.
@@ -93,7 +96,8 @@ Hints are optional learning assistance for the fixed table rules. The strategy m
 
 ## Error and edge handling
 
-- Storage unavailable/malformed: continue with in-memory defaults and surface a nonblocking persistence note.
+- Local storage unavailable/malformed: continue with in-memory defaults and surface a nonblocking persistence note.
+- Firebase unavailable while authenticated: continue play, preserve committed local state for retry, and surface a nonblocking sync failure.
 - Audio unavailable: gameplay continues silently.
 - Unexpected empty shoe: replenish only through the shoe abstraction and record no impossible card.
 - Rapid repeated input: round phase/state guards make actions idempotent or reject them.
@@ -106,4 +110,4 @@ Hints are optional learning assistance for the fixed table rules. The strategy m
 
 Engine tests must cover Ace scoring, natural blackjack, dealer S17 behavior, payout math, push/bust, insurance, late surrender, double, split eligibility, split-Ace restrictions and split-21 semantics. Shoe tests cover 312-card composition, deterministic test shuffle and cut threshold. Storage tests cover valid/missing/malformed/write-failure states. Strategy tests cover representative hard/soft/pair decisions and legal fallbacks.
 
-The game is not `verified` until typecheck, structural check, all unit tests and production build pass; responsive/accessibility review is complete; tracker/spec/index/task docs match shipped behavior; and Pages deployment succeeds after repository TASK-001 is resolved.
+The game is not `verified` until typecheck, structural check, all unit tests and production build pass; responsive/accessibility review is complete; guest persistence and authenticated account-save behavior are verified; tracker/spec/index/task docs match shipped behavior; and Pages deployment succeeds after repository TASK-001 is resolved.

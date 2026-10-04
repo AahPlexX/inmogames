@@ -1,7 +1,7 @@
 # Royal Palace Blackjack tracker
 
 **Spec:** `docs/specs/2026-10-03-royal-palace-blackjack-design.md`  
-**Last synchronized:** 2026-10-03
+**Last synchronized:** 2026-10-04
 
 | Capability | Status | Verification |
 | --- | --- | --- |
@@ -17,7 +17,9 @@
 | Virtual bankroll and chip betting controls | started | UI verification |
 | Re-bet / 2× / all-in / undo / clear | started | UI verification |
 | W/L/P and session-net statistics | started | Engine/UI verification |
-| Defensive versioned local persistence | verified | Storage unit tests |
+| Defensive versioned guest-local persistence | verified | Storage unit tests |
+| Authenticated account-bound durable save | planned | Shared Firebase platform + integration verification |
+| Guest-to-account save seeding without cloud overwrite | planned | Repository/integration tests |
 | Saved-game reset | started | Storage/UI verification |
 | Optional exact-table strategy hints | verified | Strategy unit tests |
 | Local procedural sound preference | started | Unit/source verification green; browser review pending Pages |
@@ -26,7 +28,8 @@
 | Accessible cards/status/dialogs | started | Semantic/static audit improved; live assistive-tech review pending Pages |
 | Reduced-motion presentation | started | Reduced-motion CSS present; live browser review pending Pages |
 | Catalog + lazy workspace integration | verified | game-check + build |
-| No runtime external requests/assets | verified | Source/build review |
+| No runtime third-party assets | verified | Source/build review |
+| Runtime network restricted to shared Firebase account/save traffic | planned | Source/build/network review |
 | Documentation/task synchronization | started | Updated with implementation commits |
 
 ## Assets and licences
