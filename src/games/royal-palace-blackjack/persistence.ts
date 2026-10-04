@@ -7,3 +7,8 @@ export const blackjackSaveDefinition: GameSaveDefinition<BlackjackSave> = {
 export function durableCheckpoint(committed: BlackjackSave, visible: BlackjackSave, phase: 'betting' | 'player' | 'dealer' | 'settled'): BlackjackSave {
   return { ...(phase === 'settled' ? visible : committed), preferences: { ...visible.preferences } };
 }
+
+
+export function restorePracticeCredits(_state: BlackjackSave): BlackjackSave | null {
+  return null;
+}
