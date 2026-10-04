@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { canSplit, cardValue, dealerShouldHit, evaluateHand, settleHand, type Card } from './engine';
+import { canDouble, canHit, canSplit, canSurrender, cardValue, dealerShouldHit, evaluateHand, settleHand, type Card } from './engine';
 import { advise } from './strategy';
 import { DEFAULT_SAVE, type BlackjackSave } from './storage';
-import { blackjackSaveDefinition, durableCheckpoint } from './persistence';
+import { blackjackSaveDefinition, durableCheckpoint, restorePracticeCredits } from './persistence';
 import { useGameSave } from '../../platform/PlatformProvider';
 import { SaveStatus } from '../../platform/SaveStatus';
 import { needsShuffle, shuffledShoe } from './shoe';
@@ -64,7 +64,7 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
  }
  function mutateActive(fn:(h:Hand)=>Hand){setHands(list=>list.map((h,i)=>i===active?fn(h):h))}
  function hit(){
-  if(phase!=='player'||!current)return;let card,deck;[card,deck]=drawFrom(shoe);setShoe(deck);const next={...current,cards:[...current.cards,card]};mutateActive(()=>next);
+  if(phase!=='player'||!current||!canHit(current.cards,current.splitAces))return;let card,deck;[card,deck]=drawFrom(shoe);setShoe(deck);const next={...current,cards:[...current.cards,card]};mutateActive(()=>next);
   const v=evaluateHand(next.cards,{fromSplit:next.fromSplit});if(v.bust||v.total===21){setStatus(v.bust?`Hand ${active+1} busts with ${v.total}.`:`Hand ${active+1} has 21.`);advance({...next})}
  }
  function stand(){if(phase==='player')advance(current)}
@@ -74,11 +74,11 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
   dealerPlay(list);
  }
  function doubleDown(){
-  if(!current||current.cards.length!==2||save.bankroll<current.wager)return;setSave(s=>({...s,bankroll:s.bankroll-current.wager}));
+  if(phase!=='player'||!current||!canDouble(current.cards,{splitAces:current.splitAces,bankroll:save.bankroll,wager:current.wager}))return;setSave(s=>({...s,bankroll:s.bankroll-current.wager}));
   let card,deck;[card,deck]=drawFrom(shoe);setShoe(deck);const next={...current,wager:current.wager*2,doubled:true,cards:[...current.cards,card]};mutateActive(()=>next);advance(next);
  }
  function split(){
-  if(!current||!dealerUp||!canSplit(current.cards,current.fromSplit)||save.bankroll<current.wager)return;
+  if(phase!=='player'||!current||!dealerUp||!canSplit(current.cards,current.fromSplit)||save.bankroll<current.wager)return;
   setSave(s=>({...s,bankroll:s.bankroll-current.wager}));let deck=[...shoe],a,b;[a,deck]=drawFrom(deck);[b,deck]=drawFrom(deck);setShoe(deck);
   const aces=current.cards[0].rank==='A';const next:[Hand,Hand]=[
    {...freshHand(),wager:current.wager,fromSplit:true,splitAces:aces,cards:[current.cards[0],a]},
@@ -86,7 +86,7 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
   ];setHands(next);setActive(0);setStatus(aces?'Split Aces receive one card each.':'Playing split hand 1.');
   if(aces)dealerPlay(next);
  }
- function surrender(){if(!current||current.fromSplit||current.cards.length!==2)return;const next={...current,surrendered:true};setSave(s=>({...s,bankroll:s.bankroll+current.wager/2,sessionNet:s.sessionNet-current.wager/2,stats:{...s.stats,losses:s.stats.losses+1}}));setHoleHidden(false);setHands([next]);setPhase('settled');setStatus('Surrendered. Half the wager returned.')}
+ function surrender(){if(phase!=='player'||!current||!canSurrender(current.cards,{fromSplit:current.fromSplit,dealerChecked:!insurance}))return;const next={...current,surrendered:true};setSave(s=>({...s,bankroll:s.bankroll+current.wager/2,sessionNet:s.sessionNet-current.wager/2,stats:{...s.stats,losses:s.stats.losses+1}}));setHoleHidden(false);setHands([next]);setPhase('settled');setStatus('Surrendered. Half the wager returned.')}
  function dealerPlay(playerHands:Hand[]){
   setPhase('dealer');setHoleHidden(false);let deck=[...shoe],d=[...dealer];
   if(playerHands.some(h=>!evaluateHand(h.cards,{fromSplit:h.fromSplit}).bust)){while(dealerShouldHit(d)){let card;[card,deck]=drawFrom(deck);d.push(card)}}
@@ -100,10 +100,12 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
   playCue(net>0?'win':net<0?'loss':'push',save.preferences.sound);setPhase('settled');setShoe(deck);setStatus(net>0?`Round won: +${money(net)} virtual credits.`:net<0?`Round result: −${money(Math.abs(net))} virtual credits.`:'Round is a push.');
  }
  function nextRound(){setDealer([]);setHands([freshHand()]);setActive(0);setHoleHidden(true);setInsurance(false);setPhase('betting');setStatus('Place virtual chips for the next round.')}
+ function restoreCredits(){const next=restorePracticeCredits(save);if(phase!=='betting'||bet!==0||!next)return;committed.current=structuredClone(next);setSave(next);persist(next);setStatus('Practice credits restored to 1,000. Your stats and session record were kept.')}
  function resetAll(){committed.current=structuredClone(DEFAULT_SAVE);reset();setSave(structuredClone(DEFAULT_SAVE));setBet(0);setBetStack([]);setShoe(shuffledShoe());setDealer([]);setHands([freshHand()]);setActive(0);setPhase('betting');setInsurance(false);setHoleHidden(true);setStatus('Saved game reset. You have 1,000 virtual credits.')}
- const canD=phase==='player'&&current?.cards.length===2&&!current.splitAces&&save.bankroll>=current.wager;
+ const canH=phase==='player'&&!!current&&canHit(current.cards,current.splitAces);
+ const canD=phase==='player'&&!!current&&canDouble(current.cards,{splitAces:current.splitAces,bankroll:save.bankroll,wager:current.wager});
  const canS=phase==='player'&&!!current&&canSplit(current.cards,current.fromSplit)&&save.bankroll>=current.wager;
- const canR=phase==='player'&&!!current&&current.cards.length===2&&!current.fromSplit&&!insurance;
+ const canR=phase==='player'&&!!current&&!insurance&&canSurrender(current.cards,{fromSplit:current.fromSplit,dealerChecked:true});
  const advice=save.preferences.hints&&phase==='player'&&dealerUp&&current&&!insurance?advise({player:current.cards,dealerUp,canDouble:!!canD,canSplit:!!canS,canSurrender:!!canR}):null;
  return <section className="rp" aria-label="Royal Palace Blackjack table">
   <div className="rp-top"><div><strong>♠ Royal Palace</strong><span>6 decks · S17 · 3:2 · DAS</span></div><div className="rp-stats"><span>Shoe <b>{shoePct}%</b></span><span><b>{save.stats.wins}</b> W · <b>{save.stats.losses}</b> L · <b>{save.stats.pushes}</b> P</span><span>Session <b>{save.sessionNet>=0?'+':''}{money(save.sessionNet)}</b></span></div></div>
@@ -116,10 +118,11 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
   </div>
   <div className="rp-console">
    <div className="rp-bank"><span>Bank <b>{money(save.bankroll)}</b></span><span>Bet <b>{money(bet)}</b></span><span>Cards <b>{remaining}</b></span></div>
+   {phase==='betting'&&save.bankroll<5&&bet===0&&<div className="rp-recovery"><span>Your balance is below the 5-credit minimum. Restore practice credits without clearing your record.</span><button className="primary" onClick={restoreCredits}>Restore 1,000 practice credits</button></div>}
    {phase==='betting'&&<div className="rp-betting" aria-label="Bet controls"><div className="rp-chips">{chips.map(v=><button key={v} disabled={v>save.bankroll} onClick={()=>addChip(v)} aria-label={`Add ${v} virtual-credit chip`}>{v>=1000?'1K':v}</button>)}</div><div className="rp-betmods"><button onClick={undo} disabled={!betStack.length}>Undo</button><button onClick={clear} disabled={!bet}>Clear</button><button onClick={()=>setExactBet(save.lastBet)} disabled={!save.lastBet||save.lastBet>save.bankroll+bet}>Re-bet</button><button onClick={()=>setExactBet(bet*2)} disabled={!bet||bet>save.bankroll}>2×</button><button onClick={()=>setExactBet(save.bankroll+bet)} disabled={!save.bankroll}>All in</button></div></div>}
    <div className="rp-actions">
     {phase==='betting'&&<button className="primary" disabled={bet<5} onClick={deal}>Deal</button>}
-    {phase==='player'&&!insurance&&<><button disabled={!!current?.splitAces||!!value?.bust} onClick={hit}>Hit</button><button onClick={stand}>Stand</button><button disabled={!canD} onClick={doubleDown}>Double</button><button disabled={!canS} onClick={split}>Split</button><button disabled={!canR} onClick={surrender}>Surrender</button></>}
+    {phase==='player'&&!insurance&&<><button disabled={!canH} onClick={hit}>Hit</button><button onClick={stand}>Stand</button><button disabled={!canD} onClick={doubleDown}>Double</button><button disabled={!canS} onClick={split}>Split</button><button disabled={!canR} onClick={surrender}>Surrender</button></>}
     {phase==='settled'&&<button className="primary" onClick={nextRound}>Next round</button>}
    </div>
    <div className="rp-prefs"><button aria-pressed={save.preferences.sound} onClick={()=>{const next=!save.preferences.sound;setSave(s=>({...s,preferences:{...s.preferences,sound:next}}));if(next)playCue('chip',true)}}>Sound {save.preferences.sound?'on':'off'}</button><button aria-pressed={save.preferences.hints} onClick={()=>setSave(s=>({...s,preferences:{...s.preferences,hints:!s.preferences.hints}}))}>Strategy hints {save.preferences.hints?'on':'off'}</button><button onClick={resetAll}>Reset saved game</button></div>
