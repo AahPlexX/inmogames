@@ -53,11 +53,34 @@ async function assertTouchTarget(locator, label, minimum = 44) {
   assert.ok(box.width >= minimum && box.height >= minimum, `${label} is ${box.width}×${box.height}, expected at least ${minimum}×${minimum}.`);
 }
 
+function cssRgb(value) {
+  const numbers = value.match(/[\d.]+/g)?.slice(0, 3).map(Number);
+  if (!numbers || numbers.length !== 3) throw new Error(`Unsupported computed color: ${value}`);
+  return numbers;
+}
+
+function relativeLuminance([red, green, blue]) {
+  const linear = [red, green, blue].map((channel) => {
+    const normalized = channel / 255;
+    return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
+async function assertContrast(foreground, background, label, minimum = 4.5) {
+  const foregroundColor = await foreground.evaluate((element) => getComputedStyle(element).color);
+  const backgroundColor = await background.evaluate((element) => getComputedStyle(element).backgroundColor);
+  const fg = relativeLuminance(cssRgb(foregroundColor));
+  const bg = relativeLuminance(cssRgb(backgroundColor));
+  const ratio = (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05);
+  assert.ok(ratio >= minimum, `${label} contrast is ${ratio.toFixed(2)}:1, expected at least ${minimum}:1 (${foregroundColor} on ${backgroundColor}).`);
+}
+
 try {
   await waitForServer();
   browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || undefined });
 
-  const phone = await browser.newContext({ viewport: { width: 320, height: 900 } });
+  const phone = await browser.newContext({ viewport: { width: 320, height: 900 }, colorScheme: 'light' });
   const page = await phone.newPage();
   page.on('pageerror', (error) => errors.push(error.message));
 
@@ -66,6 +89,11 @@ try {
   await catalogSkip.waitFor();
   await assertNoOverflow(page, 'catalog at 320px');
   assert.equal(await page.locator('.game-card').count(), 2);
+  await assertContrast(page.locator('.eyebrow').first(), page.locator('body'), 'Catalog eyebrow');
+  await assertContrast(page.locator('.catalog-hero > p').last(), page.locator('body'), 'Catalog supporting copy');
+  const accountButton = page.getByRole('button', { name: 'Sign in / create account', exact: true });
+  await accountButton.waitFor();
+  await assertContrast(accountButton, accountButton, 'Account primary action');
   const phoneCards = await page.locator('.game-card').evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().toJSON()));
   assert.ok(phoneCards[1].top > phoneCards[0].top, 'Phone catalog cards should stack vertically.');
   await catalogSkip.focus();
@@ -104,7 +132,7 @@ try {
   await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
   await phone.close();
 
-  const desktop = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const desktop = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'light' });
   const desktopPage = await desktop.newPage();
   desktopPage.on('pageerror', (error) => errors.push(error.message));
   await desktopPage.goto(base);
@@ -128,7 +156,7 @@ try {
   await reduced.close();
 
   assert.deepEqual(errors, []);
-  console.log('Design regression checks passed: catalog composition, skip controls, 320px/200% reflow, Threefold keyboard/non-color selection, Blackjack touch targets/help, desktop layout and reduced motion.');
+  console.log('Design regression checks passed: catalog composition/contrast, skip controls, 320px/200% reflow, Threefold keyboard/non-color selection, Blackjack touch targets/help, desktop layout and reduced motion.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');
