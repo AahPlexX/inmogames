@@ -5,7 +5,7 @@ Rules for every contributor and agent working in InMo Games.
 ## Platform rules (never change)
 
 - No user accounts or authentication.
-- No server, backend or server-side database; the site is static files on GitHub Pages.
+- No server, backend or server-side database; the site is static files on GitHub Pages or Firebase Hosting.
 - Everything runs in the player's browser; game data stays in that browser (IndexedDB, localStorage).
 
 Game-specific consequences:

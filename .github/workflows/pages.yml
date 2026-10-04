@@ -29,6 +29,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm game:check
       - run: pnpm test:unit
+      - run: pnpm build:firebase
       - run: pnpm build
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5

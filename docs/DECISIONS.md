@@ -35,3 +35,7 @@ The deployment workflow uses the default `GITHUB_TOKEN` only. Current `actions/c
 ## D-009 Vite Pages base path (2026-10-03)
 
 The production base is `/inmogames/`, matching Vite's current GitHub Pages guidance for a project site hosted at `<owner>.github.io/<repo>/`. Hash routing remains under that static project path. If the site later moves to a custom domain or an owner-level Pages repository, this base decision must be revisited.
+
+## D-010 Firebase Hosting integration (2026-10-04)
+
+Firebase integration defaults to static Hosting under the user's request. `build:firebase` overrides Vite's base to `/` while the Pages build keeps `/inmogames/`. Both hosts serve the same browser-only app and hash routes. `firebase.json` serves `dist` with immutable caching for hashed assets and revalidation for the HTML entry point. No runtime Firebase SDK, authentication, database or analytics is introduced. A live Firebase deployment requires a project ID and an authenticated deployment identity; these have not been supplied.

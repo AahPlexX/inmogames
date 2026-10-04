@@ -10,6 +10,7 @@
     "game:check": "node scripts/game-check.mjs",
     "test:unit": "vitest run",
     "build": "vite build",
+    "build:firebase": "vite build --base=/",
     "validate": "pnpm dependency:check && pnpm typecheck && pnpm game:check && pnpm test:unit && pnpm build",
     "dependency:check": "node scripts/dependency-check.mjs"
   },

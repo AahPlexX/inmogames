@@ -3,7 +3,7 @@
 ## Platform rules (apply to every game and every spec)
 
 - **No user accounts or authentication.** No sign-in, sessions, tokens or identity.
-- **No server and no server-side database.** Static files on GitHub Pages only.
+- **No server and no server-side database.** Static files on GitHub Pages or Firebase Hosting only.
 - **Everything runs in the browser.** Saves, settings and scores live only in that browser (IndexedDB, localStorage) and are never uploaded.
 - **Network use is limited** to the site's own static files.
 
