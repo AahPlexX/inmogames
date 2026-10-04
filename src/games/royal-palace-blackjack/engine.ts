@@ -32,22 +32,28 @@ export function dealerShouldHit(cards: readonly Card[]): boolean {
   return evaluateHand(cards).total < 17;
 }
 
-export function canHit(_cards: readonly Card[], _splitAces: boolean): boolean {
-  return false;
+export function canHit(cards: readonly Card[], splitAces: boolean): boolean {
+  const value = evaluateHand(cards);
+  return !splitAces && !value.bust && value.total < 21;
 }
 
 export function canDouble(
-  _cards: readonly Card[],
-  _options: { splitAces: boolean; bankroll: number; wager: number },
+  cards: readonly Card[],
+  options: { splitAces: boolean; bankroll: number; wager: number },
 ): boolean {
-  return false;
+  const value = evaluateHand(cards);
+  return cards.length === 2
+    && !options.splitAces
+    && !value.bust
+    && value.total < 21
+    && options.bankroll >= options.wager;
 }
 
 export function canSurrender(
-  _cards: readonly Card[],
-  _options: { fromSplit: boolean; dealerChecked: boolean },
+  cards: readonly Card[],
+  options: { fromSplit: boolean; dealerChecked: boolean },
 ): boolean {
-  return false;
+  return cards.length === 2 && !options.fromSplit && options.dealerChecked;
 }
 
 export function canSplit(cards: readonly Card[], alreadySplit: boolean): boolean {

@@ -22,7 +22,11 @@ export function advise(context: StrategyContext): StrategyAdvice {
       if (context.canDouble && up >= 3 && up <= 6) return { action: 'double', reason: 'Soft 18 is a profitable double against a weak dealer card.' };
       return { action: up <= 8 ? 'stand' : 'hit', reason: up <= 8 ? 'Soft 18 is strong enough to stand here.' : 'A strong dealer up-card makes improving soft 18 preferable.' };
     }
-    const double = context.canDouble && ((value.total >= 15 && up >= 4 && up <= 6) || (value.total <= 14 && up >= 5 && up <= 6));
+    const double = context.canDouble && (
+      (value.total === 17 && up >= 3 && up <= 6)
+      || (value.total >= 15 && value.total <= 16 && up >= 4 && up <= 6)
+      || (value.total <= 14 && up >= 5 && up <= 6)
+    );
     return double ? { action: 'double', reason: 'The dealer weakness makes this soft hand a double.' } : { action: 'hit', reason: 'A soft hand can improve without immediately risking a hard bust.' };
   }
   if (value.total >= 17) return { action: 'stand', reason: 'Hard 17 or better stands on this S17 table.' };
