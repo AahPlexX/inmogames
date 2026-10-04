@@ -29,7 +29,7 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
  const [dealer,setDealer]=useState<Card[]>([]); const [holeHidden,setHoleHidden]=useState(true);
  const [hands,setHands]=useState<Hand[]>([freshHand()]); const [active,setActive]=useState(0);
  const [status,setStatus]=useState('Place virtual chips to begin.'); const [insurance,setInsurance]=useState(false);
- const current=hands[active]; const value=current?evaluateHand(current.cards,{fromSplit:current.fromSplit}):null;
+ const current=hands[active];
  const dealerUp=dealer[0]; const remaining=shoe.length; const shoePct=Math.round(remaining/312*100);
 
  useEffect(()=>{
