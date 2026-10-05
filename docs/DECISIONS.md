@@ -56,7 +56,6 @@ Firebase Web configuration is public browser configuration and is not an authori
 
 Firestore Security Rules must deny access by default and permit a signed-in user to read/write only their own account-save documents. Initial account saves use the path `users/{uid}/games/{gameSlug}`. Security enforcement belongs in Firestore rules, not merely in React route/UI checks.
 
-
 ## D-013 Firebase Hosting is optional and separate from account persistence (2026-10-04)
 
 The repository already contains a secondary Firebase Hosting build/configuration path. It is retained as optional static-host compatibility only. GitHub Pages remains the canonical deployment target.
@@ -83,7 +82,6 @@ GitHub Pages is enabled with GitHub Actions as its source. `.github/workflows/pa
 
 Every direct `dependencies` and `devDependencies` package must be the stable npm `latest` release when integrated, pinned exactly with no caret/range. Before integration, its target version is checked against the project's authoritative release source and npmjs.com and recorded in `docs/DEPENDENCY_POLICY.md` plus `.tasks/dependency-refresh-request.json`. CI additionally queries npm's live `latest` endpoint on each `main` validation. If a stable release appears before a later integration, validation blocks until the dependency set is deliberately refreshed and the full suite passes.
 
-
 ## D-018 Shared game-cabinet design system (2026-10-04)
 
 InMo Games uses a shared product-shell visual system documented in `DESIGN.md`, with runtime shared tokens owned by `src/styles.css`. The shell uses a restrained blue-enamel/ivory/brick/brass language and system fonts only. Catalog, navigation, account/save surfaces, focus treatment and spacing remain shared.
@@ -91,3 +89,11 @@ InMo Games uses a shared product-shell visual system documented in `DESIGN.md`, 
 Individual games may use scoped material identities when they support the game itself. Threefold uses a tactile paper/tile puzzle-board language; Royal Palace Blackjack uses a private felt/card-table language. Game-local styling must not redefine shared navigation, account, save, accessibility or responsive contracts.
 
 `pnpm design:check` validates DESIGN.md on every normal Pages integration and through aggregate validation.
+
+## D-019 Per-game documentation must be current at every integrated checkpoint (2026-10-05)
+
+A game's authoritative spec sheet and live tracker are part of that game's implementation, not deferred documentation. Any change to `src/games/<slug>/`, game-specific tests/evidence, or the game's `docs/GAME_INDEX.md` row must update both the authoritative dated spec and `TRACKER.md` in the same commit/integration. Updating one without the other is invalid.
+
+`scripts/game-doc-sync.mjs` is the history-aware enforcement layer behind `pnpm game:check`. Normal push validation fetches full history and supplies the pre-push base; each commit in the pushed range is evaluated separately, so a later documentation-only commit cannot retroactively repair an earlier stale game commit. Generic test files are mapped to games when they reference `src/games/<slug>` or `#/games/<slug>`. Local and maintenance validation also checks staged/working changes and a previous-commit fallback.
+
+This rule exists so any provider or agent can resume from any integrated checkpoint using repository state alone. Hidden chat history, provider memory, or a promise to update docs later is never a valid continuation mechanism.
