@@ -1,7 +1,7 @@
 # Threefold design
 
-**Status:** Approved for implementation  
-**Last synchronized:** 2026-10-04  
+**Status:** Game implementation verified; live Firebase account services externally blocked by TASK-003  
+**Last synchronized:** 2026-10-05  
 **Route:** `#/games/threefold`
 
 ## Purpose
@@ -33,13 +33,13 @@ The primary board is nine native buttons in a responsive 3 × 3 grid. Native con
 
 - Pointer/touch: activate a tile to toggle it; use **Check three** to submit.
 - Keyboard: Tab/Shift+Tab move through ordinary controls; Enter/Space activate the focused control.
-- Controls must remain comfortably larger than WCAG 2.2 AA's 24 × 24 CSS-pixel minimum target. The intended minimum game control block size is 48 CSS px.
+- Controls remain comfortably larger than WCAG 2.2 AA's 24 × 24 CSS-pixel minimum target. The intended minimum game control block size is 48 CSS px.
 - Focus indicators remain clearly visible and are never removed.
-- Selection cannot be communicated by color alone: selected tiles use `aria-pressed`, a rendered checkmark, positional treatment and a visible **Selected** expression strip that lists the current values.
+- Selection is not communicated by color alone: selected tiles use `aria-pressed`, a rendered checkmark, positional treatment and a visible **Selected** expression strip that lists the current values.
 - The active-round header reports round number, current point value and selected-tile count without requiring the user to infer state from the board.
 - Round, score and result changes use restrained live-region announcements; ordinary tile focus is not announced redundantly.
 - The completion state retains the final total as the dominant value and adds a compact per-round earned-point breakdown so the result is explainable rather than just a single number.
-- The layout must have no horizontal page overflow at 320 CSS px and must reflow at 200% text sizing without hiding or overlapping gameplay controls.
+- The layout has no horizontal page overflow at 320 CSS px and reflows at 200% text sizing without hiding or overlapping gameplay controls.
 - Essential gameplay has no countdown or reaction-time requirement.
 - Motion is nonessential and suppressed under `prefers-reduced-motion: reduce`.
 
@@ -49,13 +49,13 @@ Storage key: `inmogames:threefold:v1`.
 
 Only the best completed score is durable. Guests use localStorage. Authenticated players sync that best score to `users/{uid}/games/threefold` through the shared save repository. Schema version is 1 with state `{ bestScore }`. Legacy numeric scores are migrated by the local adapter. Active runs remain intentionally ephemeral: reload starts a fresh run. On the first authenticated load, a transaction seeds an eligible guest score only if no cloud save exists; otherwise cloud wins. Reset removes the guest key or writes account defaults and clears the account mirror for Threefold only.
 
-Storage/network failure must never prevent play. Threefold must not make game-specific third-party requests; Firebase account/save traffic is owned by the shared platform layer.
+Storage/network failure never prevents play. Threefold does not make game-specific third-party requests; Firebase account/save traffic is owned by the shared platform layer.
 
 ## Engine boundary
 
 `engine.ts` owns deterministic game rules and contains no DOM, React or storage access. Its public behavior covers seeded round generation, solution validation, score calculation and run progression. UI state is a consumer of the engine rather than an alternate rules implementation.
 
-Round generation derives the target from a selected solution trio and shuffles all nine tiles deterministically. Tests must prove generated rounds are solvable and deterministic for fixed seeds.
+Round generation derives the target from a selected solution trio and shuffles all nine tiles deterministically. Tests prove generated rounds are solvable and deterministic for fixed seeds.
 
 ## Failure handling
 
@@ -63,21 +63,24 @@ Impossible UI states are prevented by engine contracts. If local persistence fai
 
 ## Quality gates
 
-Before Threefold can be marked verified:
+Threefold's game implementation is verified because:
 
 1. Engine tests cover deterministic generation, guaranteed solvability, alternate valid solutions, scoring floor and five-round completion.
-2. Storage tests cover valid, missing, malformed and write-failure behavior through an explicit storage seam.
+2. Storage tests cover valid, missing, malformed and write-failure behavior through the shared persistence seams.
 3. The catalog and lazy workspace registry expose the game.
 4. Keyboard and pointer behavior use the same native control path.
-5. Rendered-browser tests cover 320 CSS-px and 200% text reflow, visible/non-color selection state, minimum tile target sizing and keyboard activation.
+5. Rendered-browser tests cover 320 CSS-px and 200% text reflow, visible/non-color selection state, minimum tile target sizing, keyboard activation, reduced motion and representative contrast.
 6. `pnpm validate` passes, including `pnpm design:check` and `pnpm test:design-browser`.
-7. The tracker contains no `planned` or `started` capability.
+7. The tracker has no game-local capability left `planned` or `started`.
 8. The game index, tracker, spec and task records match shipped behavior.
-9. Guest best-score persistence is verified and authenticated best-score sync is verified once the shared Firebase platform is available.
+9. Guest persistence and the shared authenticated save path are repository/emulator verified. Real Firebase project provisioning and deployed account-save verification remain the external TASK-003 platform blocker and do not represent unfinished Threefold gameplay.
 10. GitHub Pages deployment succeeds through the repository's automatic validated-main workflow.
+11. Independent deployed phone QA confirms coherent heading/status/score semantics, meaningful accessible names, 44px+ visible controls, and no game-local clipping or painted overlap.
+
+Exact revision `9ee0f93d` passed dependency freshness, warning-free design lint, TypeScript, structural checks, 44 unit tests, Firestore rules, account/persistence browser checks, the full rendered design/game browser suite including the catalog accessibility contract, both production builds, artifact upload and automatic Pages deployment in run `37256390159`.
 
 ## Explicit exclusions for v1
 
-No timer, hints, undo history, sound, online leaderboard, daily challenge, sharing, multiplayer, external assets or analytics. Shared helpers are not extracted until a second game proves reuse.
+No timer, hints, undo history, sound, online leaderboard, daily challenge, sharing, multiplayer, external assets or analytics. Shared helpers are extracted only when cross-game reuse is demonstrated.
 
-Repository best-score persistence, migration, reset and cross-browser Auth/save behavior are verified with unit and Chromium emulator tests. Rendered-browser design checks verify the current responsive/selection/touch contract. Real Firebase account/save verification remains blocked by TASK-003; Pages deployment itself is verified. Pending sync can be retried before leaving; after reload/sign-out, successfully loaded cloud state wins.
+Threefold's game-local implementation is therefore verified. Shared account-save code is repository- and emulator-verified, but live Firebase project provisioning and real-site account/save verification remain externally blocked by TASK-003. See `docs/FIREBASE_SETUP.md`.
