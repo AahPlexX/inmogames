@@ -1,6 +1,6 @@
 # Dependency policy and current audit
 
-**Last researched:** 2026-10-04  
+**Last researched:** 2026-10-05  
 **Machine-readable target set:** `.tasks/dependency-refresh-request.json`
 
 ## Integration rule
@@ -27,12 +27,14 @@ Prerelease channels such as `next`, `alpha`, `beta`, `rc`, canary and experiment
 | @firebase/rules-unit-testing | 5.0.2 | Firebase JS SDK package source: https://github.com/firebase/firebase-js-sdk/blob/main/packages/rules-unit-testing/package.json | https://www.npmjs.com/package/@firebase/rules-unit-testing |
 | @types/react | 19.3.0 | DefinitelyTyped React definitions: https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react | https://www.npmjs.com/package/@types/react |
 | @types/react-dom | 19.3.0 | DefinitelyTyped React DOM definitions: https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-dom | https://www.npmjs.com/package/@types/react-dom |
-| @vitejs/plugin-react | 6.1.1 | Vite React plugin changelog: https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/CHANGELOG.md | https://www.npmjs.com/package/@vitejs/plugin-react |
+| @vitejs/plugin-react | 6.1.2 | Vite React plugin official release `plugin-react@6.1.2`: https://github.com/vitejs/vite-plugin-react/releases/tag/plugin-react%406.1.2 | https://www.npmjs.com/package/@vitejs/plugin-react |
 | firebase-tools | 15.32.1 | Firebase CLI release: https://github.com/firebase/firebase-tools/releases/tag/v15.32.1 | https://www.npmjs.com/package/firebase-tools |
 | playwright | 1.63.0 | Playwright release notes: https://playwright.dev/docs/release-notes | https://www.npmjs.com/package/playwright |
 | typescript | 7.0.2 | TypeScript 7 stable announcement: https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/ | https://www.npmjs.com/package/typescript |
 | vite | 8.3.2 | Vite releases/current stable line: https://vite.dev/releases and https://github.com/vitejs/vite/releases/tag/v8.3.2 | https://www.npmjs.com/package/vite |
 | vitest | 5.0.3 | Vitest 5 stable announcement/release: https://vitest.dev/blog/vitest-5 and https://github.com/vitest-dev/vitest/releases/tag/v5.0.3 | https://www.npmjs.com/package/vitest |
+
+The 2026-10-05 refresh was triggered by the npm live `latest` tag moving `@vitejs/plugin-react` from 6.1.1 to 6.1.2. The official Vite plugin release is non-prerelease and was published 2026-10-05; the repository's live npm freshness gate independently observed 6.1.2 as `latest`.
 
 ## Runtime/toolchain consequence
 
