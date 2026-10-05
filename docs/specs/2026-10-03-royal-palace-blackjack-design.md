@@ -1,7 +1,7 @@
 # Royal Palace Blackjack design
 
-**Status:** Approved concept; production implementation in progress  
-**Last synchronized:** 2026-10-04  
+**Status:** Game implementation verified; live Firebase account services externally blocked by TASK-003  
+**Last synchronized:** 2026-10-05  
 **Route:** `#/games/royal-palace-blackjack`
 
 ## Product intent
@@ -90,7 +90,7 @@ All actionable controls are native buttons. Primary controls target at least 48 
 
 The table uses normal document flow rather than locking `html/body` to one viewport. On wide screens the felt presents dealer, status, player hands and betting/actions as a coherent table. On narrow/short screens the control dock becomes part of the scroll flow; nothing essential is clipped behind a fixed footer. Safe-area padding is applied on supported mobile browsers.
 
-Cards scale with `clamp()`; split hands wrap when needed. Statistics collapse to concise labels rather than disappearing entirely. The phase/action heading and rule disclosure stack vertically on narrow screens instead of forcing a minimum inline width.
+Cards scale with `clamp()`; split hands wrap when needed. Statistics collapse to concise labels rather than disappearing entirely. The phase/action heading and rule disclosure stack vertically on narrow screens instead of forcing a minimum inline width. When a phase presents only one round action, that action spans the compact action grid rather than leaving a misleading empty column; multi-action player phases retain the compact multi-column arrangement.
 
 ## Sound and motion
 
@@ -116,8 +116,8 @@ Hints are optional learning assistance for the fixed table rules. The strategy m
 
 ## Quality gates
 
-Engine tests must cover Ace scoring, natural blackjack, dealer S17 behavior, payout math, push/bust, insurance, late surrender, double, split eligibility, split-Ace restrictions and split-21 semantics. Shoe tests cover 312-card composition, deterministic test shuffle and cut threshold. Storage tests cover valid/missing/malformed/write-failure states. Strategy tests cover representative hard/soft/pair decisions and legal fallbacks.
+Engine tests cover Ace scoring, natural blackjack, dealer S17 behavior, payout math, push/bust, insurance, late surrender, double, split eligibility, split-Ace restrictions and split-21 semantics. Shoe tests cover 312-card composition, deterministic test shuffle and cut threshold. Storage/checkpoint tests cover valid, missing, malformed, failure and staged-wager durability boundaries. Strategy tests cover representative hard/soft/pair decisions and legal fallbacks.
 
-Rendered design-browser checks cover 320 CSS-px and 200% text reflow, table-help discoverability, representative 48px+ chip target sizing, desktop catalog composition and `prefers-reduced-motion` card behavior. The game is not `verified` until typecheck, structural check, all unit tests and production build pass; remaining gameplay/accessibility review is complete; guest persistence and authenticated account-save behavior are verified; tracker/spec/index/task docs match shipped behavior; and Pages deployment succeeds through the automatic validated-main workflow.
+Rendered browser gates cover 320 CSS-px and 200% text reflow, table-help discoverability, touch targets, native keyboard behavior, reduced motion, card/dialog accessibility, deterministic betting/gameplay accounting, WebAudio opt-in/no-autoplay behavior, and the compact lone-action layout. Run `37255447688` passed exact dependency freshness, design lint, TypeScript, structural checks, 44 unit tests, Firestore rules, account/persistence browser checks, all Royal Palace browser suites, both production builds, artifact upload and automatic Pages deployment. Deployed desktop/mobile inspection also found no remaining Royal Palace overflow, clipping, broken assets or visible overlap after the mobile action correction.
 
-Repository persistence/Auth/rules behavior is verified with unit and Chromium emulator tests. Current responsive/help/reduced-motion behavior is verified with the dedicated design-browser suite. Live Firebase account/save verification remains blocked by TASK-003; Pages deployment itself is verified; see `docs/FIREBASE_SETUP.md`. Pending cloud checkpoints can be retried during the page session; after reload/sign-out, successfully loaded cloud state is authoritative.
+The Royal Palace game implementation is therefore verified. Shared account-save code is repository- and emulator-verified, but live Firebase project provisioning and real-site account/save verification remain externally blocked by TASK-003; that platform dependency is not represented as a game implementation defect and is not claimed as live-verified. See `docs/FIREBASE_SETUP.md`.

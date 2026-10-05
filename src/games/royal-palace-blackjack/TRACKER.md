@@ -1,7 +1,7 @@
 # Royal Palace Blackjack tracker
 
 **Spec:** `docs/specs/2026-10-03-royal-palace-blackjack-design.md`  
-**Last synchronized:** 2026-10-04
+**Last synchronized:** 2026-10-05
 
 | Capability | Status | Verification |
 | --- | --- | --- |
@@ -19,23 +19,25 @@
 | Re-bet / 2× / all-in / undo / clear | verified | Deterministic Chromium betting-control regression |
 | W/L/P and session-net statistics | verified | Deterministic Chromium loss/win/split/surrender settlement accounting |
 | Defensive versioned guest-local persistence | verified | Storage unit tests |
-| Authenticated account-bound durable save | blocked | Shared repository + browser emulator verified; real Firebase project verification requires TASK-003 |
+| Authenticated account-bound durable save | blocked externally | Shared repository + browser emulator verified; real Firebase project verification requires TASK-003 |
 | Guest-to-account save seeding without cloud overwrite | verified | Atomic migration unit tests + browser emulator |
 | Saved-game reset | verified | Scoped guest/account repository tests + browser emulator; defaults prevent guest reseeding |
 | Optional exact-table strategy hints | verified | Strategy unit tests |
-| Local procedural sound preference | started | Unit/source + preference browser persistence green; AudioContext cue scheduling browser verification remains |
-| Responsive casino-table presentation | verified | Dedicated design-browser 320px + 200% text reflow assertions |
-| Table rules/help and phase guidance | verified | Collapsed fixed-rule disclosure + phase/action context; design-browser discovery check |
-| Keyboard/touch parity and visible focus | verified | Chromium deterministic keyboard flow tabs to chip and actions, verifies visible focus, Enter wager/deal/next-round, Space stand, and 48px minimum chip target |
-| Accessible cards/status/dialogs | verified | Deterministic Chromium Ace-upcard flow verifies named visible/hidden card semantics, live status, initial dialog focus, Tab/Shift+Tab confinement, Escape dismissal and logical focus restoration |
+| Local procedural sound preference | verified | Unit tests + Chromium WebAudio opt-in/resume/no-autoplay/persistence/cue-suppression regression |
+| Responsive casino-table presentation | verified | 320px + 200% browser reflow, live desktop/mobile inspection, and lone-action mobile regression |
+| Table rules/help and phase guidance | verified | Collapsed fixed-rule disclosure + phase/action context; browser discovery check |
+| Keyboard/touch parity and visible focus | verified | Chromium deterministic keyboard flow, visible focus, native activation, and touch-target checks |
+| Accessible cards/status/dialogs | verified | Deterministic Chromium card semantics, live status, insurance focus entry/confinement, Escape and focus restoration |
 | Reduced-motion presentation | verified | Chromium reduced-motion context verifies card animation resolves to `none` |
 | Catalog + lazy workspace integration | verified | game-check + both builds |
 | No runtime third-party assets | verified | Source/build review |
-| Runtime network restricted to shared Firebase account/save traffic | verified | Game workspaces have no Firebase imports; browser emulator traffic confined to local services |
-| Documentation/task synchronization | started | Updated with implementation/design verification commits |
+| Runtime network restricted to shared Firebase account/save traffic | verified | Game workspace has no direct Firebase import; browser emulator traffic confined to shared platform services |
+| Documentation/task synchronization | verified | Spec, tracker, game index and task ledger synchronized after deployed verification |
 
 ## Assets and licences
 
 No third-party visual, audio, font or gameplay assets. Card faces, table treatment, symbols, sounds and copy are repository-authored or rendered from Unicode/system capabilities; no Google Fonts request from the prototype is retained.
 
-Persistence schema version 1 and its committed balance/preference boundary are defined in the spec. Current rendered-browser evidence covers 320px/200% reflow, minimum chip target sizing, table-help discoverability, native keyboard gameplay/focus, named card semantics, insurance-dialog keyboard behavior, reduced motion, betting modifiers, Hit/Stand, Double, split/DAS, split-Ace auto-resolution, surrender and resulting bankroll/W/L/P/session accounting. Run `37253435033` also verifies the immediate-action shoe-consumption regression: cards drawn for a terminal Hit, Double or split-Ace deal are carried into dealer play rather than being reused through stale React state. Pages deployment is verified. No production Firebase project has been claimed as verified.
+Persistence schema version 1 and its committed balance/preference boundary are defined in the spec. Run `37253435033` verifies deterministic gameplay and the immediate-action shoe-consumption regression: cards drawn for a terminal Hit, Double or split-Ace deal are carried into dealer play rather than being reused through stale React state. Run `37253740411` verifies procedural WebAudio opt-in behavior and deploys it. Run `37255447688` verifies the full validation chain plus the 320px mobile action-row regression and successful Pages deployment. Independent deployed desktop/mobile browser inspection found no remaining Royal Palace overflow, clipping, broken assets or visible overlap after the mobile action-row correction.
+
+The game implementation is verified. Live Firebase account/save provisioning is a shared platform blocker tracked by TASK-003 and is not claimed as verified.
