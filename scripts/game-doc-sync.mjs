@@ -82,7 +82,7 @@ const slugs = existsSync(gamesDir)
 let base = process.env.GAME_DOC_SYNC_BASE?.trim() ?? '';
 if (!base || /^0+$/.test(base)) base = tryGit(['rev-parse', 'HEAD^']) ?? '';
 
-if (base && !tryGit(['cat-file', '-e', `${base}^{commit}`])) {
+if (base && !tryGit(['rev-parse', '--verify', `${base}^{commit}`])) {
   problems.push(`repository history does not contain documentation-sync base ${base}; fetch sufficient history before validation`);
 } else if (base) {
   const commits = lines(tryGit(['rev-list', '--reverse', `${base}..HEAD`]) ?? '');
