@@ -38,6 +38,8 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm validate
       - name: Commit verified dependency refresh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git fetch origin main
           test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
