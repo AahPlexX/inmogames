@@ -74,17 +74,17 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
  function mutateActive(fn:(h:Hand)=>Hand){setHands(list=>list.map((h,i)=>i===active?fn(h):h))}
  function hit(){
   if(phase!=='player'||!current||!canHit(current.cards,current.splitAces))return;let card,deck;[card,deck]=drawFrom(shoe);setShoe(deck);const next={...current,cards:[...current.cards,card]};mutateActive(()=>next);
-  const v=evaluateHand(next.cards,{fromSplit:next.fromSplit});if(v.bust||v.total===21){setStatus(v.bust?`Hand ${active+1} busts with ${v.total}.`:`Hand ${active+1} has 21.`);advance({...next})}
+  const v=evaluateHand(next.cards,{fromSplit:next.fromSplit});if(v.bust||v.total===21){setStatus(v.bust?`Hand ${active+1} busts with ${v.total}.`:`Hand ${active+1} has 21.`);advance({...next},deck)}
  }
  function stand(){if(phase==='player')advance(current)}
- function advance(updated:Hand){
+ function advance(updated:Hand,sourceShoe:Card[]=shoe){
   const list=hands.map((h,i)=>i===active?updated:h);
   if(active<list.length-1){setHands(list);setActive(active+1);setStatus(`Playing hand ${active+2}.`);return}
-  dealerPlay(list);
+  dealerPlay(list,sourceShoe);
  }
  function doubleDown(){
   if(phase!=='player'||!current||!canDouble(current.cards,{splitAces:current.splitAces,bankroll:save.bankroll,wager:current.wager}))return;setSave(s=>({...s,bankroll:s.bankroll-current.wager}));
-  let card,deck;[card,deck]=drawFrom(shoe);setShoe(deck);const next={...current,wager:current.wager*2,doubled:true,cards:[...current.cards,card]};mutateActive(()=>next);advance(next);
+  let card,deck;[card,deck]=drawFrom(shoe);setShoe(deck);const next={...current,wager:current.wager*2,doubled:true,cards:[...current.cards,card]};mutateActive(()=>next);advance(next,deck);
  }
  function split(){
   if(phase!=='player'||!current||!dealerUp||!canSplit(current.cards,current.fromSplit)||save.bankroll<current.wager)return;
@@ -93,11 +93,11 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
    {...freshHand(),wager:current.wager,fromSplit:true,splitAces:aces,cards:[current.cards[0],a]},
    {...freshHand(),wager:current.wager,fromSplit:true,splitAces:aces,cards:[current.cards[1],b]},
   ];setHands(next);setActive(0);setStatus(aces?'Split Aces receive one card each.':'Playing split hand 1.');
-  if(aces)dealerPlay(next);
+  if(aces)dealerPlay(next,deck);
  }
  function surrender(){if(phase!=='player'||!current||!canSurrender(current.cards,{fromSplit:current.fromSplit,dealerChecked:!insurance}))return;const next={...current,surrendered:true};setSave(s=>({...s,bankroll:s.bankroll+current.wager/2,sessionNet:s.sessionNet-current.wager/2,stats:{...s.stats,losses:s.stats.losses+1}}));setHoleHidden(false);setHands([next]);setPhase('settled');setStatus('Surrendered. Half the wager returned.')}
- function dealerPlay(playerHands:Hand[]){
-  setPhase('dealer');setHoleHidden(false);let deck=[...shoe],d=[...dealer];
+ function dealerPlay(playerHands:Hand[],sourceShoe:Card[]=shoe){
+  setPhase('dealer');setHoleHidden(false);let deck=[...sourceShoe],d=[...dealer];
   if(playerHands.some(h=>!evaluateHand(h.cards,{fromSplit:h.fromSplit}).bust)){while(dealerShouldHit(d)){let card;[card,deck]=drawFrom(deck);d.push(card)}}
   setDealer(d);setShoe(deck);finishRound(playerHands,d,deck);
  }
