@@ -24,6 +24,8 @@ export default function RoyalPalaceBlackjackWorkspace(){
 function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(state:BlackjackSave)=>void;reset:()=>void}){
  const [save,setSave]=useState<BlackjackSave>(()=>structuredClone(initial));
  const committed=useRef(structuredClone(initial));
+ const actionsRef=useRef<HTMLDivElement>(null);
+ const restoreInsuranceFocus=useRef(false);
  const [phase,setPhase]=useState<Phase>('betting');
  const [bet,setBet]=useState(0); const [betStack,setBetStack]=useState<number[]>([]);
  const [shoe,setShoe]=useState<Card[]>(()=>shuffledShoe());
@@ -39,6 +41,12 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
   committed.current=structuredClone(checkpoint);
   persist(checkpoint);
  },[save,phase,persist]);
+ useEffect(()=>{
+  if(insurance||!restoreInsuranceFocus.current)return;
+  restoreInsuranceFocus.current=false;
+  const frame=requestAnimationFrame(()=>actionsRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus());
+  return()=>cancelAnimationFrame(frame);
+ },[insurance,phase]);
 
  function drawFrom(cards:Card[]):[Card,Card[]]{const copy=[...cards];const card=copy.pop();if(!card)throw new Error('Shoe unexpectedly empty');return[card,copy]}
  function addChip(v:number){if(phase!=='betting'||v>save.bankroll)return;playCue('chip',save.preferences.sound);setSave(s=>({...s,bankroll:s.bankroll-v}));setBet(x=>x+v);setBetStack(x=>[...x,v])}
@@ -57,9 +65,10 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
   if(pv.blackjack){setHoleHidden(false);finishRound([hand],[d1,d2],deck);return}
   setPhase('player');setStatus('Your move.');
  }
- function declineInsurance(){setInsurance(false);const d=evaluateHand(dealer);if(d.blackjack||evaluateHand(hands[0].cards).blackjack){setHoleHidden(false);finishRound(hands,dealer,shoe)}else setStatus('No insurance. Your move.')}
+ function closeInsurance(){restoreInsuranceFocus.current=true;setInsurance(false)}
+ function declineInsurance(){closeInsurance();const d=evaluateHand(dealer);if(d.blackjack||evaluateHand(hands[0].cards).blackjack){setHoleHidden(false);finishRound(hands,dealer,shoe)}else setStatus('No insurance. Your move.')}
  function takeInsurance(){
-  const cost=hands[0].wager/2;if(save.bankroll<cost)return;setInsurance(false);
+  const cost=hands[0].wager/2;if(save.bankroll<cost)return;closeInsurance();
   const d=evaluateHand(dealer);setSave(s=>({...s,bankroll:s.bankroll-cost+(d.blackjack?cost*3:0),sessionNet:s.sessionNet-cost+(d.blackjack?cost*3:0)}));
   if(d.blackjack||evaluateHand(hands[0].cards).blackjack){setHoleHidden(false);finishRound(hands,dealer,shoe)}else setStatus('Insurance lost. Your move.');
  }
@@ -125,14 +134,22 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
    <BlackjackGuide/>
    {phase==='betting'&&save.bankroll<5&&bet===0&&<div className="rp-recovery"><span>Your balance is below the 5-credit minimum. Restore practice credits without clearing your record.</span><button className="primary" onClick={restoreCredits}>Restore 1,000 practice credits</button></div>}
    {phase==='betting'&&<div className="rp-betting" aria-label="Bet controls"><div className="rp-chips">{chips.map(v=><button key={v} disabled={v>save.bankroll} onClick={()=>addChip(v)} aria-label={`Add ${v} virtual-credit chip`}>{v>=1000?'1K':v}</button>)}</div><div className="rp-betmods"><button onClick={undo} disabled={!betStack.length}>Undo</button><button onClick={clear} disabled={!bet}>Clear</button><button onClick={()=>setExactBet(save.lastBet)} disabled={!save.lastBet||save.lastBet>save.bankroll+bet}>Re-bet</button><button onClick={()=>setExactBet(bet*2)} disabled={!bet||bet>save.bankroll}>2×</button><button onClick={()=>setExactBet(save.bankroll+bet)} disabled={!save.bankroll}>All in</button></div></div>}
-   <div className="rp-actions" aria-label="Round actions">
+   <div ref={actionsRef} className="rp-actions" aria-label="Round actions">
     {phase==='betting'&&<button className="primary" disabled={bet<5} onClick={deal}>Deal</button>}
     {phase==='player'&&!insurance&&<><button disabled={!canH} onClick={hit}>Hit</button><button onClick={stand}>Stand</button><button disabled={!canD} onClick={doubleDown}>Double</button><button disabled={!canS} onClick={split}>Split</button><button disabled={!canR} onClick={surrender}>Surrender</button></>}
     {phase==='settled'&&<button className="primary" onClick={nextRound}>Next round</button>}
    </div>
    <div className="rp-prefs" aria-label="Table preferences and saved game"><button aria-pressed={save.preferences.sound} onClick={()=>{const next=!save.preferences.sound;setSave(s=>({...s,preferences:{...s.preferences,sound:next}}));if(next)playCue('chip',true)}}>Sound {save.preferences.sound?'on':'off'}</button><button aria-pressed={save.preferences.hints} onClick={()=>setSave(s=>({...s,preferences:{...s.preferences,hints:!s.preferences.hints}}))}>Strategy hints {save.preferences.hints?'on':'off'}</button><button onClick={resetAll}>Reset saved game</button></div>
   </div>
-  {insurance&&<div className="rp-modal" role="dialog" aria-modal="true" aria-labelledby="insurance-title" onKeyDown={event=>{if(event.key==='Escape')declineInsurance()}}><div><h2 id="insurance-title">Dealer shows an Ace</h2><p>Insurance costs {money(hands[0].wager/2)} virtual credits and pays 2:1 profit if the dealer has blackjack.</p><p className="rp-dialog-note">Choose one option to continue the round.</p><div><button disabled={save.bankroll<hands[0].wager/2} onClick={takeInsurance}>Take insurance</button><button className="primary" autoFocus onClick={declineInsurance}>No insurance</button></div></div></div>}
+  {insurance&&<div className="rp-modal" role="dialog" aria-modal="true" aria-labelledby="insurance-title" onKeyDown={event=>{
+   if(event.key==='Escape'){event.preventDefault();declineInsurance();return}
+   if(event.key!=='Tab')return;
+   const controls=[...event.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')];
+   if(!controls.length)return;
+   const first=controls[0];const last=controls.at(-1)!;
+   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+  }}><div><h2 id="insurance-title">Dealer shows an Ace</h2><p>Insurance costs {money(hands[0].wager/2)} virtual credits and pays 2:1 profit if the dealer has blackjack.</p><p className="rp-dialog-note">Choose one option to continue the round.</p><div><button disabled={save.bankroll<hands[0].wager/2} onClick={takeInsurance}>Take insurance</button><button className="primary" autoFocus onClick={declineInsurance}>No insurance</button></div></div></div>}
  </section>
 }
 function BlackjackGuide(){
@@ -140,5 +157,5 @@ function BlackjackGuide(){
 }
 function HandView({label,cards,hiddenIndex=-1,active=false,fromSplit=false}:{label:string;cards:Card[];hiddenIndex?:number;active?:boolean;fromSplit?:boolean}){
  const shown=cards.filter((_,i)=>i!==hiddenIndex);const v=evaluateHand(shown,{fromSplit});
- return <div className={`rp-hand ${active?'active':''}`}><div className="rp-handlabel"><b>{label}</b>{cards.length>0&&<span>{hiddenIndex>=0?`Showing ${v.total}`:v.bust?`Bust ${v.total}`:v.blackjack?'Blackjack':v.soft?`Soft ${v.total}`:v.total}</span>}</div><div className="rp-cards">{cards.map((card,i)=>i===hiddenIndex?<div className="rp-card back" key={i}><span>Hidden card</span></div>:<div className={`rp-card ${card.suit==='hearts'||card.suit==='diamonds'?'red':''}`} key={i} aria-label={`${card.rank} of ${card.suit}`}><b>{card.rank}</b><span aria-hidden="true">{suit[card.suit]}</span></div>)}</div></div>
+ return <div className={`rp-hand ${active?'active':''}`}><div className="rp-handlabel"><b>{label}</b>{cards.length>0&&<span>{hiddenIndex>=0?`Showing ${v.total}`:v.bust?`Bust ${v.total}`:v.blackjack?'Blackjack':v.soft?`Soft ${v.total}`:v.total}</span>}</div><div className="rp-cards">{cards.map((card,i)=>i===hiddenIndex?<div className="rp-card back" key={i} role="img" aria-label="Hidden card"><span aria-hidden="true">Hidden card</span></div>:<div className={`rp-card ${card.suit==='hearts'||card.suit==='diamonds'?'red':''}`} key={i} role="img" aria-label={`${card.rank} of ${card.suit}`}><b>{card.rank}</b><span aria-hidden="true">{suit[card.suit]}</span></div>)}</div></div>
 }
