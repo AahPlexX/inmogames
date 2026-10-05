@@ -29,11 +29,50 @@ All direct `dependencies` and `devDependencies` must be exact-pinned latest stab
 
 ## Required documents per game
 
-- Spec: `docs/specs/YYYY-MM-DD-<slug>-design.md` (rules, controls, scoring, persistence/schema behavior, accessibility).
-- Tracker: `src/games/<slug>/TRACKER.md` (capability list with status `planned`, `started`, `verified`, `blocked`, `excluded`; asset licences).
-- Index row: `docs/GAME_INDEX.md`.
+Every game has exactly one authoritative spec sheet and one live tracker/handoff. These are not optional project notes; together they are the durable continuation contract for any future provider or agent.
+
+### Authoritative spec sheet
+
+Path: `docs/specs/YYYY-MM-DD-<slug>-design.md`.
+
+It defines the game's product scope, rules, controls, scoring/progression, persistence/schema behavior, accessibility/responsive expectations, failure handling, exclusions and verification requirements. It must contain:
+
+- `**Last synchronized:**`;
+- `## Completion contract`;
+- `**Completion state:** implementing` or `**Completion state:** verified`;
+- `**Completion evidence:**` naming the best exact revision/run evidence available;
+- at least six explicit Markdown checklist gates (`- [ ]` / `- [x]`) sufficient to determine whether the individual game is complete.
+
+The Completion contract is authoritative for the word **complete**. A verified game must have every applicable checklist item checked. Any new game-local feature, rule, persistent state, material UI/UX change or newly discovered unresolved defect automatically reopens the game: set the completion state to `implementing`, add/reopen the corresponding checklist gate, update the tracker and index/task state, and do not restore `verified` until fresh evidence satisfies every applicable gate.
+
+A game-specific contract may be stricter than the repository minimum and should add gates needed by that game's mechanics, data or interaction model. It may not weaken the repository-wide requirements below.
+
+### Live tracker and resume handoff
+
+Path: `src/games/<slug>/TRACKER.md`.
+
+The tracker must link the exact authoritative spec path and keep the capability table current with status `planned`, `started`, `verified`, `blocked`, `blocked externally`, or `excluded` as appropriate. It must contain:
+
+- `**Last synchronized:**`;
+- `## Current handoff`;
+- `**Implementation state:**`;
+- `**Last verified revision:**`;
+- `**Open game-local work:**`;
+- `**External blockers:**`;
+- `**Next action:**`.
+
+The handoff must be accurate enough for a provider with no prior chat context to resume without guessing. Before ending a work session, update it if any implementation state, blocker, evidence, next action or scope changed.
+
+### Index and task state
+
+Each game also requires a row in `docs/GAME_INDEX.md` and matching `.tasks/` state. A game whose spec says `verified` must have an index row that says `verified game`; an implementing game must not be represented as verified. External shared-platform blockers must be named rather than silently folded into the game-local completion state.
+
+`pnpm game:check` enforces this documentary structure and verified-state consistency. Do not bypass or weaken it to obtain a green build.
+
+## Persistence requirements per game
 
 If a game has persistent data, its spec must state:
+
 - local storage key/cache behavior;
 - cloud game slug/document identity;
 - save schema version;
@@ -44,12 +83,22 @@ If a game has persistent data, its spec must state:
 
 ## Definition of done for a game
 
+The individual game's own Completion contract is the deciding checklist, and at minimum it must cover all applicable items below:
+
 - Playable start to finish on desktop and touch.
-- Engine unit tests pass.
+- Engine/rules tests pass for the game's material mechanics and edge cases.
 - No horizontal overflow at 320 CSS px; keyboard operable; reduced motion respected.
 - Material UI has rendered browser evidence for responsive/reflow/focus/target behavior rather than source-only claims.
-- Any persistent game data has verified guest-local behavior and, once the platform integration is available, verified authenticated account-save behavior.
+- Any persistent game data has verified guest-local behavior and the shared account-save path has repository/emulator evidence when applicable.
 - Save/reset/migration behavior is described in the spec and does not bypass the shared repository abstraction.
-- Tracker has no capability left `planned` or `started`.
-- `pnpm validate` green, including exact/current dependency gates, DESIGN.md validation, account/rules browser checks, design-browser checks, and Pages deployment successful.
-- Firebase-enabled features also record real configured-project/deployed-site verification or its exact external blocker; emulator results alone do not establish live verification.
+- Asset licences/runtime-network boundaries are documented and compliant.
+- Tracker has no game-local capability left `planned`, `started` or `blocked` when the completion state is `verified`; `blocked externally` is allowed only for a clearly named dependency outside the finished game implementation.
+- Spec, tracker, game index and `.tasks/` agree on state, evidence, blockers and continuation point.
+- `pnpm validate` is green, including exact/current dependency gates, DESIGN.md validation, account/rules browser checks, design-browser checks, production builds, and successful Pages deployment when the deployed app changed.
+- Firebase-enabled features distinguish repository/emulator verification from real configured-project/deployed-site verification; missing real Firebase configuration remains an explicit external blocker and must never be described as live-verified.
+
+A game is not complete because an agent says it is, because the UI looks finished, or because a previous conversation called it finished. It is complete only when its authoritative spec sheet says `verified`, every applicable completion gate is checked, its tracker/index/task state agrees, and the recorded evidence supports those claims.
+
+## Anti-staleness rule
+
+Documentation changes are part of implementation, not follow-up cleanup. Any change that alters a game's behavior, scope, data, interaction model, verification evidence, blocker or completion state must update the affected game spec and tracker in the same logical workstream. If a provider must stop mid-change, the tracker must state the incomplete condition and exact next action before stopping. Older chat context never overrides the current spec/tracker pair on `main`.
