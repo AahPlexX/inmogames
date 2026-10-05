@@ -24,7 +24,7 @@
 | Saved-game reset | verified | Scoped guest/account repository tests + browser emulator; defaults prevent guest reseeding |
 | Optional exact-table strategy hints | verified | Strategy unit tests |
 | Local procedural sound preference | verified | Unit tests + Chromium WebAudio opt-in/resume/no-autoplay/persistence/cue-suppression regression |
-| Responsive casino-table presentation | verified | 320px + 200% browser reflow, live desktop/mobile inspection, and lone-action mobile regression |
+| Responsive casino-table presentation | verified | 320px + 200% browser reflow, live desktop/mobile discovery review, and lone-action mobile regression |
 | Table rules/help and phase guidance | verified | Collapsed fixed-rule disclosure + phase/action context; browser discovery check |
 | Keyboard/touch parity and visible focus | verified | Chromium deterministic keyboard flow, visible focus, native activation, and touch-target checks |
 | Accessible cards/status/dialogs | verified | Deterministic Chromium card semantics, live status, insurance focus entry/confinement, Escape and focus restoration |
@@ -38,6 +38,6 @@
 
 No third-party visual, audio, font or gameplay assets. Card faces, table treatment, symbols, sounds and copy are repository-authored or rendered from Unicode/system capabilities; no Google Fonts request from the prototype is retained.
 
-Persistence schema version 1 and its committed balance/preference boundary are defined in the spec. Run `37253435033` verifies deterministic gameplay and the immediate-action shoe-consumption regression: cards drawn for a terminal Hit, Double or split-Ace deal are carried into dealer play rather than being reused through stale React state. Run `37253740411` verifies procedural WebAudio opt-in behavior and deploys it. Run `37255447688` verifies the full validation chain plus the 320px mobile action-row regression and successful Pages deployment. Independent deployed desktop/mobile browser inspection found no remaining Royal Palace overflow, clipping, broken assets or visible overlap after the mobile action-row correction.
+Persistence schema version 1 and its committed balance/preference boundary are defined in the spec. Run `37253435033` verifies deterministic gameplay and the immediate-action shoe-consumption regression: cards drawn for a terminal Hit, Double or split-Ace deal are carried into dealer play rather than being reused through stale React state. Run `37253740411` verifies procedural WebAudio opt-in behavior and deploys it. Run `37255447688` verifies the full validation chain plus the 320px mobile action-row regression and successful Pages deployment. Independent live desktop inspection was clean. Live mobile inspection exposed the lone-action layout defect, and an isolated live-browser discrimination confirmed the exact selector behavior before the same fix passed the unchanged 320px regression and Pages deployment; the later post-deploy live-browser retry timed out, so no unsupported post-fix live-mobile claim is recorded.
 
 The game implementation is verified. Live Firebase account/save provisioning is a shared platform blocker tracked by TASK-003 and is not claimed as verified.
