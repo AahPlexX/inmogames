@@ -63,11 +63,24 @@ The tracker must link the exact authoritative spec path and keep the capability 
 
 The handoff must be accurate enough for a provider with no prior chat context to resume without guessing. Before ending a work session, update it if any implementation state, blocker, evidence, next action or scope changed.
 
+### Same-integration freshness requirement
+
+Game documentation is not allowed to trail implementation by even one integration.
+
+- Any changed file under `src/games/<slug>/` other than `TRACKER.md` requires that game's authoritative spec **and** tracker in the same commit/integration.
+- Any game-specific test/evidence change requires both documents in the same commit/integration. A generic test filename is still game-specific when its content references `src/games/<slug>` or `#/games/<slug>`.
+- A spec edit and tracker edit are paired. Updating only one is invalid even when game source did not change.
+- Changing that game's row/status in `docs/GAME_INDEX.md` requires both documents in the same integration.
+- A later “documentation cleanup” commit does not cure a stale earlier game commit. CI evaluates each commit in the pushed range so every integrated checkpoint is resumable on its own.
+- Game-specific tests should include the game slug in their path/name or reference the game source path/route so the freshness checker can map evidence deterministically.
+
+The history-aware checker is `scripts/game-doc-sync.mjs`; it runs as part of `pnpm game:check`. GitHub Actions fetches full push history and supplies the pre-push base so all commits in a multi-commit push are evaluated individually. Local/maintenance validation falls back to the previous commit and also checks staged/working-tree changes.
+
 ### Index and task state
 
 Each game also requires a row in `docs/GAME_INDEX.md` and matching `.tasks/` state. A game whose spec says `verified` must have an index row that says `verified game`; an implementing game must not be represented as verified. External shared-platform blockers must be named rather than silently folded into the game-local completion state.
 
-`pnpm game:check` enforces this documentary structure and verified-state consistency. Do not bypass or weaken it to obtain a green build.
+`pnpm game:check` enforces both documentary structure/verified-state consistency and same-integration freshness. Do not bypass or weaken either check to obtain a green build.
 
 ## Persistence requirements per game
 
@@ -101,4 +114,4 @@ A game is not complete because an agent says it is, because the UI looks finishe
 
 ## Anti-staleness rule
 
-Documentation changes are part of implementation, not follow-up cleanup. Any change that alters a game's behavior, scope, data, interaction model, verification evidence, blocker or completion state must update the affected game spec and tracker in the same logical workstream. If a provider must stop mid-change, the tracker must state the incomplete condition and exact next action before stopping. Older chat context never overrides the current spec/tracker pair on `main`.
+Documentation changes are part of implementation, never follow-up cleanup. Any game source/test/index change and the corresponding authoritative spec+tracker changes must land together in the same commit/integration. If a provider must stop mid-change, that integrated commit must itself leave the tracker accurate, the spec completion contract truthful, and the exact next action recorded. Older chat context never overrides the current spec/tracker pair on `main`, and a later provider must be able to resume from any individual integrated game commit without relying on hidden conversation history.
