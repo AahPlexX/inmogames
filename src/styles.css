@@ -22,7 +22,7 @@ button:hover:not(:disabled){border-color:var(--brand);transform:translateY(-1px)
 button:active:not(:disabled){transform:none;box-shadow:none}button:disabled{cursor:not-allowed;opacity:.48}button[aria-pressed="true"]{border-color:var(--brand);background:var(--surface-soft)}
 .shell{width:min(100%,76rem);min-height:100dvh;margin-inline:auto;padding:clamp(1rem,3vw,2.5rem)}.shell--game{width:min(100%,88rem)}.shell-main{min-width:0}.game-main{display:grid;gap:var(--space-3)}
 .shell-header{display:grid;gap:var(--space-4);margin-bottom:clamp(1.5rem,4vw,3rem)}.site-nav{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)}
-.site-brand{display:inline-flex;align-items:center;gap:.7rem;color:var(--ink);text-decoration:none}.site-brand:hover{color:var(--ink)}
+.site-brand{display:inline-flex;min-height:44px;align-items:center;gap:.7rem;color:var(--ink);text-decoration:none}.site-brand:hover{color:var(--ink)}
 .site-brand-mark{position:relative;width:2.45rem;height:2.45rem;flex:0 0 auto;border:2px solid var(--ink);border-radius:.6rem .6rem 1rem .6rem;background:radial-gradient(circle at 29% 30%,var(--accent) 0 .21rem,transparent .22rem),radial-gradient(circle at 71% 70%,var(--gold) 0 .21rem,transparent .22rem),var(--surface-raised);box-shadow:.22rem .22rem 0 var(--ink);transform:rotate(-2deg)}
 .site-brand-copy{display:grid;line-height:.92}.site-brand-copy strong{font:850 1.08rem/1 var(--font-display);letter-spacing:-.025em}.site-brand-copy small{margin-top:.18rem;color:var(--muted);font:750 .68rem/1 var(--font-data);letter-spacing:.14em;text-transform:uppercase}
 .site-note{color:var(--muted);font:700 .78rem/1.2 var(--font-data);letter-spacing:.04em;text-align:right}
