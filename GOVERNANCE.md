@@ -20,11 +20,13 @@ Per-game documentation is a release-control surface, not optional prose.
 
 1. Every `src/games/<slug>/` game must have exactly one authoritative spec sheet at `docs/specs/YYYY-MM-DD-<slug>-design.md` and one `TRACKER.md` live handoff.
 2. The spec owns the individual game's Completion contract. The tracker owns the current resume point. `docs/GAME_INDEX.md` and `.tasks/` must agree with them.
-3. Any material game behavior/scope/rule/persistence/UI change or discovered unresolved defect reopens a verified game before or with implementation: spec `Completion state` becomes `implementing`, the applicable checklist/tracker capability is reopened, and the handoff names the next action.
-4. A game may be marked `verified` only when every applicable Completion-contract checkbox is checked, no game-local tracker capability remains `planned`, `started` or `blocked`, exact evidence is recorded, and required validation/deployment is green.
-5. A shared external dependency may remain `blocked externally` only when it is explicitly named and does not conceal unfinished game-local work. Emulator/repository verification must not be described as live verification.
-6. Before any provider stops, the affected game's tracker must be accurate enough that a different provider with no prior chat context can continue without guessing.
-7. `pnpm game:check` is a mandatory enforcement gate. Do not disable, bypass, weaken or special-case the checker to preserve a stale or unsupported completion claim.
+3. Every game implementation change and every game-specific test/evidence change must update **both** that game's spec and tracker in the same commit/integration. One-sided spec/tracker updates are invalid. A game-index row/status change likewise requires both documents in the same integration.
+4. Generic tests count as game-specific when their content references `src/games/<slug>` or `#/games/<slug>`. Evidence cannot be moved to a generic filename to bypass documentary synchronization.
+5. Any material game behavior/scope/rule/persistence/UI change or discovered unresolved defect reopens a verified game before or with implementation: spec `Completion state` becomes `implementing`, the applicable checklist/tracker capability is reopened, and the handoff names the next action.
+6. A game may be marked `verified` only when every applicable Completion-contract checkbox is checked, no game-local tracker capability remains `planned`, `started` or `blocked`, exact evidence is recorded, and required validation/deployment is green.
+7. A shared external dependency may remain `blocked externally` only when it is explicitly named and does not conceal unfinished game-local work. Emulator/repository verification must not be described as live verification.
+8. Before any provider stops, the affected game's tracker must be accurate enough that a different provider with no prior chat context can continue without guessing.
+9. `pnpm game:check` is a mandatory two-part enforcement gate: structural/completion consistency plus history-aware same-integration freshness. CI fetches sufficient history and evaluates each commit in the pushed range. Do not disable, bypass, weaken or special-case either checker to preserve a stale or unsupported completion claim.
 
 A stale spec or tracker is itself incomplete work. Chat history, provider memory or an old completion statement never overrides the current spec/tracker pair on `main`.
 
@@ -50,10 +52,10 @@ Firebase Web configuration is public client configuration and may be supplied to
 
 A workstream is complete only when:
 
-1. The validation checks (including Auth/save behavior, Firestore rules, per-game documentation contract and browser emulator tests) are green on the exact integrated `main` revision.
+1. The validation checks (including Auth/save behavior, Firestore rules, per-game documentation contract/freshness and browser emulator tests) are green on the exact integrated `main` revision.
 2. GitHub Pages deployment for that revision succeeded when the deployed app changed.
 3. `.tasks/` and `docs/GAME_INDEX.md` reflect the final state.
-4. Every affected game's authoritative spec sheet and tracker are synchronized with shipped behavior, verification evidence, blockers and next action.
+4. Every affected game's authoritative spec sheet and tracker are synchronized with shipped behavior, verification evidence, blockers and next action in the same integration as the affected game change.
 5. A game marked verified satisfies its own Completion contract; a provider may not substitute a generic completion opinion for that checklist.
 6. Firebase account/save work distinguishes repository/emulator verification from real project and deployed-site verification. Missing real Firebase project configuration remains an explicit external blocker.
 
@@ -64,3 +66,4 @@ A workstream is complete only when:
 - 2026-10-04 - GitHub Pages bootstrap completed and deployment verified. Normal pushes to `main` run validation and deploy automatically; maintenance commits created with `GITHUB_TOKEN` explicitly dispatch the Pages workflow because GitHub suppresses recursive push-workflow triggers from that token.
 - 2026-10-04 - Dependency integration strengthened: all direct dependencies/devDependencies must be current stable npm `latest`, exact-pinned, researched against authoritative release documentation plus npmjs.com, and gated by both static pin checks and live npm freshness checks.
 - 2026-10-05 - Per-game completion and continuation became a binding repository invariant: each game requires one authoritative spec Completion contract plus a live tracker handoff, and `pnpm game:check` rejects missing/stale documentary structure or inconsistent verified claims.
+- 2026-10-05 - Per-game anti-staleness enforcement became history-aware: a game source/test/index change and its spec+tracker updates must land in the same commit/integration; CI evaluates every commit in the pushed range and rejects deferred or one-sided documentation updates.
