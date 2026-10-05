@@ -14,7 +14,7 @@
 | Pointer/touch and keyboard parity | verified | Native buttons + Chromium Enter activation + 44px minimum tile target |
 | Visible focus and non-color selection state | verified | Shared focus path + `aria-pressed` + rendered checkmark assertion |
 | Live round/score/result feedback | verified | Round-value/selection surfaces + account-browser five-round completion |
-| Reduced-motion handling | started | Scoped reduced-motion override landed; broader motion-preference browser coverage remains |
+| Reduced-motion handling | verified | Chromium `prefers-reduced-motion: reduce` assertion confirms selected-tile transforms are removed |
 | Defensive guest-local best-score persistence | verified | Valid/legacy/schema/blocked-storage unit coverage + browser completion |
 | Best-score reset | verified | Game-scoped browser emulator reset across two account sessions |
 | Catalog registration and lazy workspace loading | verified | Structural check + both builds |
@@ -28,4 +28,4 @@
 
 No third-party visual, audio, font or gameplay assets are planned. Threefold v1 uses only repository-authored HTML/CSS/TypeScript/React and the shared system-font design language.
 
-Save schema version 1 stores only the best completed score. Current rendered-browser evidence covers 320px/200% reflow, keyboard selection, non-color state and touch target sizing. Real Firebase account/save verification and broader assistive-technology review remain explicit external/remaining checks.
+Save schema version 1 stores only the best completed score. Current rendered-browser evidence covers 320px/200% reflow, keyboard selection, non-color state, touch target sizing, reduced motion, and local secondary-text contrast. Real Firebase account/save verification and broader assistive-technology review remain explicit external/remaining checks.
