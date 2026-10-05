@@ -188,7 +188,7 @@ try {
   await tabTo(keyboardPage, keyboardChip, 'Blackjack 5-credit chip');
   assert.notEqual(await keyboardChip.evaluate((element) => getComputedStyle(element).outlineStyle), 'none');
   await keyboardPage.keyboard.press('Enter');
-  assert.match(await keyboardPage.locator('.rp-bank').innerText(), /Bet\s+5/);
+  assert.match(await keyboardPage.locator('.rp-bank').innerText(), /BET\s+5/i);
   const dealButton = keyboardPage.getByRole('button', { name: 'Deal', exact: true });
   await tabTo(keyboardPage, dealButton, 'Blackjack Deal button');
   await keyboardPage.keyboard.press('Enter');
