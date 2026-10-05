@@ -34,6 +34,16 @@
 | Runtime network restricted to shared Firebase account/save traffic | verified | Game workspace has no direct Firebase import; browser emulator traffic confined to shared platform services |
 | Documentation/task synchronization | verified | Spec, tracker, game index and task ledger synchronized after deployed verification |
 
+## Current handoff
+
+**Implementation state:** verified game; no unresolved Royal Palace game-local implementation work is open.  
+**Last verified revision:** repository-wide revision `9ee0f93d` passed full validation and Pages deployment in run `37256390159`; Royal Palace-specific gameplay/audio/mobile-layout evidence is additionally recorded in runs `37253435033`, `37253740411` and `37255447688`.  
+**Open game-local work:** none. A new table rule, feature, persistence behavior, material UI change or discovered defect must first reopen the authoritative spec's Completion contract and add/reopen the matching capability here.  
+**External blockers:** TASK-003 only: real Firebase project provisioning and deployed account-save verification. Shared save code and emulator behavior are already verified; this platform blocker does not make the blackjack implementation incomplete.  
+**Next action:** no Royal Palace-specific action is required until scope changes. If work resumes, read the authoritative spec first, set its `Completion state` to `implementing`, update this handoff and relevant capability status in the same change, then use fresh rule/unit/browser/deployment evidence before returning to `verified`.
+
+A future provider should treat this tracker as the current operational resume point and the linked spec as the authoritative product/completion contract. Do not infer unfinished work from older chat history when these files say otherwise.
+
 ## Assets and licences
 
 No third-party visual, audio, font or gameplay assets. Card faces, table treatment, symbols, sounds and copy are repository-authored or rendered from Unicode/system capabilities; no Google Fonts request from the prototype is retained.
