@@ -24,6 +24,16 @@
 | Runtime network restricted to shared Firebase account/save traffic | verified | No game Firebase calls; browser emulator traffic restricted to local services |
 | Spec/tracker/index/task synchronization | verified | Spec, tracker, game index and task ledger synchronized after deployed verification |
 
+## Current handoff
+
+**Implementation state:** verified game; no unresolved game-local implementation work is open.  
+**Last verified revision:** `9ee0f93d` with full validation and Pages deployment in run `37256390159`.  
+**Open game-local work:** none. A new feature, rule, persistence behavior, material UI change or discovered defect must first reopen the authoritative spec's Completion contract and add/reopen the matching capability here.  
+**External blockers:** TASK-003 only: real Firebase project provisioning and deployed account-save verification. Repository/shared-platform code and emulator behavior are already verified; this external platform blocker does not make Threefold gameplay incomplete.  
+**Next action:** no Threefold-specific action is required until scope changes. If work resumes, read the authoritative spec first, set its `Completion state` to `implementing`, update this handoff and relevant capability status in the same change, then use fresh tests/browser/deployment evidence before returning to `verified`.
+
+A future provider should treat this tracker as the current operational resume point and the linked spec as the authoritative product/completion contract. Do not infer work from older chat history when these files say otherwise.
+
 ## Assets and licences
 
 No third-party visual, audio, font or gameplay assets. Threefold v1 uses only repository-authored HTML/CSS/TypeScript/React and the shared system-font design language.
