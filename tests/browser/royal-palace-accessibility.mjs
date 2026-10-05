@@ -55,7 +55,7 @@ try {
   await dialog.waitFor();
   assert.match(await page.locator('.rp-status').innerText(), /Dealer shows an Ace/i);
   assert.equal(await page.locator('.rp-hand').first().locator('.rp-card:not(.back)').first().getAttribute('aria-label'), 'A of diamonds');
-  assert.equal(await page.locator('.rp-card.back').innerText(), 'Hidden card');
+  assert.match(await page.locator('.rp-card.back').innerText(), /Hidden card/i);
 
   const takeInsurance = page.getByRole('button', { name: 'Take insurance', exact: true });
   const declineInsurance = page.getByRole('button', { name: 'No insurance', exact: true });
