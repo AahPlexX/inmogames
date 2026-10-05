@@ -120,4 +120,21 @@ Engine tests cover Ace scoring, natural blackjack, dealer S17 behavior, payout m
 
 Rendered browser gates cover 320 CSS-px and 200% text reflow, table-help discoverability, touch targets, native keyboard behavior, reduced motion, card/dialog accessibility, deterministic betting/gameplay accounting, WebAudio opt-in/no-autoplay behavior, and the compact lone-action layout. Run `37255447688` passed exact dependency freshness, design lint, TypeScript, structural checks, 44 unit tests, Firestore rules, account/persistence browser checks, all Royal Palace browser suites, both production builds, artifact upload and automatic Pages deployment. Independent live desktop inspection was clean; live mobile inspection exposed the lone-action defect, and an isolated live-browser selector discrimination confirmed the exact correction before the unchanged 320px regression and Pages deployment passed. A later post-deploy live-browser retry timed out, so this document does not claim a successful post-fix live-mobile inspection.
 
+## Completion contract
+
+**Completion state:** verified  
+**Completion evidence:** repository-wide exact revision `9ee0f93d` passed the complete validation/deployment chain in run `37256390159`; Royal Palace-specific deterministic gameplay, audio and compact mobile-layout evidence is recorded in runs `37253435033`, `37253740411` and `37255447688`.
+
+- [x] A complete betting-to-settlement blackjack round is playable, including Hit, Stand, Double, one Split/DAS, split-Ace handling, late Surrender and Insurance.
+- [x] Six-deck shoe behavior, S17, natural/split-21 semantics, payouts, action legality, cut-card behavior and representative strategy decisions are covered by automated tests.
+- [x] Bankroll, re-bet/2×/all-in/undo/clear, W/L/P/session accounting, practice-credit recovery and durable checkpoint boundaries are tested through unit and deterministic browser flows.
+- [x] Desktop, touch and keyboard interaction plus 320 CSS-px, 200% text, focus, dialog semantics, reduced motion, card accessibility and compact-action layout have rendered-browser evidence.
+- [x] Procedural WebAudio is opt-in, resumes only after user action, does not autoplay and has browser-level persistence/cue-suppression evidence.
+- [x] Guest persistence, reset, migration and shared account-save checkpoints are defined and repository/emulator verified; TASK-003 is explicitly an external live Firebase blocker rather than unfinished game code.
+- [x] Runtime assets/network use comply with repository rules; the shipped game adds no third-party font, visual, audio, telemetry or game-specific network dependency.
+- [x] `pnpm validate`-equivalent CI gates and automatic GitHub Pages deployment are green on the cited revisions.
+- [x] `docs/GAME_INDEX.md`, this spec sheet, `src/games/royal-palace-blackjack/TRACKER.md` and `.tasks/` agree on the verified game-local state and external blocker.
+
+This section is authoritative for the word **complete**. Any new game-local feature, rule, persistence behavior, material UI change or unresolved defect automatically reopens Royal Palace Blackjack: change `Completion state` to `implementing`, add or reopen the relevant checklist gate and tracker capability, update the handoff, and do not restore `verified` until fresh evidence satisfies every applicable gate.
+
 The Royal Palace game implementation is therefore verified. Shared account-save code is repository- and emulator-verified, but live Firebase project provisioning and real-site account/save verification remain externally blocked by TASK-003; that platform dependency is not represented as a game implementation defect and is not claimed as live-verified. See `docs/FIREBASE_SETUP.md`.
