@@ -26,6 +26,21 @@ Default integration rule: if a feature fits these rules, build it and document i
 
 Work on `origin/main` only. Commit directly to `main`; do not leave branches or open pull requests. See `GOVERNANCE.md`.
 
+## Per-game continuity contract
+
+This is mandatory for every game, regardless of provider, model or implementation stage.
+
+- Each game has exactly one authoritative spec sheet at `docs/specs/YYYY-MM-DD-<slug>-design.md`. That spec defines rules/scope and contains the authoritative `## Completion contract` with `**Completion state:**`, `**Completion evidence:**` and at least six explicit checklist gates.
+- Each game has `src/games/<slug>/TRACKER.md`. It is the live operational handoff and must contain `## Current handoff` with `Implementation state`, `Last verified revision`, `Open game-local work`, `External blockers` and `Next action`.
+- The spec and tracker must be synchronized whenever behavior, scope, rules, persistence, UI/UX, verification evidence, blockers or completion state changes. Do not leave stale game documents for a later agent to repair.
+- Starting new game-local work on a verified game automatically reopens it. Change the spec's `Completion state` to `implementing`, reopen/add the applicable checklist gate and tracker capability, update the current handoff, and keep `docs/GAME_INDEX.md` consistent before or with the implementation change.
+- A game may return to `verified` only when every applicable spec checklist item is checked, the tracker has no `planned`, `started` or game-local `blocked` capability, evidence is recorded, task/index state agrees, and required validation/deployment has passed.
+- External platform blockers may remain explicitly `blocked externally` without making otherwise complete game-local implementation incomplete, but the spec and handoff must identify the exact blocker and must never imply live verification that did not occur.
+- Before stopping work for any reason, leave the tracker handoff accurate enough that a different provider with no chat context can continue without guessing.
+- `pnpm game:check` enforces the documentary shape and verified-state consistency. Bypassing or weakening that check is not an acceptable way to make CI pass.
+
+Older chat messages, summaries or provider memory never override the current per-game spec/tracker pair on `main`.
+
 ## Where things live
 
 - `src/catalog.ts` - the list of games.
@@ -35,7 +50,7 @@ Work on `origin/main` only. Commit directly to `main`; do not leave branches or 
 - `DESIGN.md` - durable visual identity, semantic token intent and cross-game design rules.
 - `docs/FIREBASE_ARCHITECTURE.md` - authoritative account/save platform contract.
 - `docs/FIREBASE_SETUP.md` - Console/build configuration and live verification requirements.
-- `docs/DOCUMENTATION_STANDARD.md` - naming, required docs, definition of done.
+- `docs/DOCUMENTATION_STANDARD.md` - naming, required docs, per-game continuity/completion contract and definition of done.
 - `docs/DEPENDENCY_POLICY.md` - authoritative direct-dependency freshness and evidence requirements.
 - `docs/DECISIONS.md` - decision log.
 - `docs/GAME_INDEX.md` - one row per game.
@@ -43,12 +58,13 @@ Work on `origin/main` only. Commit directly to `main`; do not leave branches or 
 
 ## Adding a game
 
-1. Add a spec in `docs/specs/YYYY-MM-DD-<slug>-design.md`.
-2. Add `src/games/<slug>/` with the files listed above.
+1. Add the authoritative spec sheet at `docs/specs/YYYY-MM-DD-<slug>-design.md`, including an `implementing` Completion contract before implementation begins.
+2. Add `src/games/<slug>/` with the files listed above, including a tracker whose Current handoff describes the actual first implementation step.
 3. Register it in `src/catalog.ts` and `src/games/workspaces.tsx`.
 4. Add a row to `docs/GAME_INDEX.md` and unit tests for the engine.
 5. If the game persists data, define its save schema/version and guest/account behavior without bypassing the shared save repository.
-6. Run `pnpm validate`, then update `.tasks/` and `docs/GAME_INDEX.md`.
+6. Keep spec/tracker/index/task state synchronized as each capability changes.
+7. Run `pnpm validate`; mark the game verified only when its own Completion contract and the repository definition of done are satisfied.
 
 ## Dependency integration
 
