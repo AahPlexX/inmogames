@@ -27,6 +27,14 @@ async function waitForServer() {
   throw new Error('Royal Palace audio Vite server did not start.');
 }
 
+async function dismissInsuranceIfPresent(page) {
+  const noInsurance = page.getByRole('button', { name: 'No insurance', exact: true });
+  if (await noInsurance.count()) {
+    await noInsurance.click();
+    await noInsurance.waitFor({ state: 'detached' });
+  }
+}
+
 try {
   await waitForServer();
   browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || undefined });
@@ -91,6 +99,7 @@ try {
   await page.getByRole('button', { name: 'Deal', exact: true }).click();
   assert.equal((await page.evaluate(() => globalThis.__royalAudioProbe)).starts >= 3, true, 'Deal should schedule its local procedural card cue while sound is enabled.');
 
+  await dismissInsuranceIfPresent(page);
   await page.getByRole('button', { name: 'Sound on', exact: true }).click();
   const beforeDisabledAction = await page.evaluate(() => globalThis.__royalAudioProbe.starts);
   const hit = page.getByRole('button', { name: 'Hit', exact: true });
