@@ -53,6 +53,14 @@ async function assertTouchTarget(locator, label, minimum = 44) {
   assert.ok(box.width >= minimum && box.height >= minimum, `${label} is ${box.width}×${box.height}, expected at least ${minimum}×${minimum}.`);
 }
 
+async function tabTo(page, locator, label, maximumTabs = 40) {
+  for (let index = 0; index < maximumTabs; index += 1) {
+    await page.keyboard.press('Tab');
+    if (await locator.evaluate((element) => document.activeElement === element)) return;
+  }
+  throw new Error(`${label} was not reachable within ${maximumTabs} Tab presses.`);
+}
+
 function cssRgb(value) {
   const numbers = value.match(/[\d.]+/g)?.slice(0, 3).map(Number);
   if (!numbers || numbers.length !== 3) throw new Error(`Unsupported computed color: ${value}`);
@@ -160,6 +168,42 @@ try {
   await assertNoOverflow(desktopPage, 'catalog at desktop width');
   await desktop.close();
 
+  const keyboard = await browser.newContext({ viewport: { width: 1024, height: 900 }, colorScheme: 'light' });
+  await keyboard.addInitScript(() => {
+    const original = Crypto.prototype.getRandomValues;
+    Crypto.prototype.getRandomValues = function seededGetRandomValues(array) {
+      if (array instanceof Uint32Array && array.length === 1) {
+        array[0] = 1;
+        return array;
+      }
+      return original.call(this, array);
+    };
+  });
+  const keyboardPage = await keyboard.newPage();
+  keyboardPage.on('pageerror', (error) => errors.push(error.message));
+  await keyboardPage.goto(base + '#/games/royal-palace-blackjack');
+  const keyboardChip = keyboardPage.getByRole('button', { name: 'Add 5 virtual-credit chip', exact: true });
+  await keyboardChip.waitFor();
+  await keyboardPage.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
+  await tabTo(keyboardPage, keyboardChip, 'Blackjack 5-credit chip');
+  assert.notEqual(await keyboardChip.evaluate((element) => getComputedStyle(element).outlineStyle), 'none');
+  await keyboardPage.keyboard.press('Enter');
+  assert.match(await keyboardPage.locator('.rp-bank').innerText(), /Bet\s+5/);
+  const dealButton = keyboardPage.getByRole('button', { name: 'Deal', exact: true });
+  await tabTo(keyboardPage, dealButton, 'Blackjack Deal button');
+  await keyboardPage.keyboard.press('Enter');
+  await keyboardPage.getByText('Your turn', { exact: true }).waitFor();
+  const standButton = keyboardPage.getByRole('button', { name: 'Stand', exact: true });
+  await tabTo(keyboardPage, standButton, 'Blackjack Stand button');
+  await keyboardPage.keyboard.press('Space');
+  await keyboardPage.getByText('Round complete', { exact: true }).waitFor();
+  const nextRoundButton = keyboardPage.getByRole('button', { name: 'Next round', exact: true });
+  await tabTo(keyboardPage, nextRoundButton, 'Blackjack Next round button');
+  await keyboardPage.keyboard.press('Enter');
+  await keyboardPage.getByText('Betting', { exact: true }).waitFor();
+  await assertNoOverflow(keyboardPage, 'Royal Palace keyboard gameplay flow');
+  await keyboard.close();
+
   const reduced = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
   const reducedPage = await reduced.newPage();
   reducedPage.on('pageerror', (error) => errors.push(error.message));
@@ -179,7 +223,7 @@ try {
   await reduced.close();
 
   assert.deepEqual(errors, []);
-  console.log('Design regression checks passed: light/dark catalog contrast, Threefold secondary contrast, skip controls, 320px/200% reflow, Threefold keyboard/non-color/reduced-motion behavior, Blackjack touch targets/help, desktop layout and reduced motion.');
+  console.log('Design regression checks passed: light/dark catalog contrast, Threefold secondary contrast, skip controls, 320px/200% reflow, Threefold keyboard/non-color/reduced-motion behavior, Blackjack touch targets/help/native keyboard gameplay, desktop layout and reduced motion.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');
