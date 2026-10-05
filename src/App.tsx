@@ -64,7 +64,7 @@ export default function App() {
                       <span>{categoryName(g.category)}</span>
                       <span>{g.players === 'single' ? 'Solo' : 'Hot-seat'}</span>
                     </span>
-                    <strong className="game-card-title">{g.name}</strong>
+                    <h2 className="game-card-title">{g.name}</h2>
                     <span className="game-card-summary">{g.summary}</span>
                     <span className="game-card-cta">Play game <span aria-hidden="true">→</span></span>
                   </span>
