@@ -18,12 +18,14 @@ function makeRepo() {
   mkdirSync(join(root, 'src/games/test-game'), { recursive: true });
   mkdirSync(join(root, 'docs/specs'), { recursive: true });
   mkdirSync(join(root, 'tests/unit'), { recursive: true });
+  mkdirSync(join(root, 'tests/browser'), { recursive: true });
   writeFileSync(join(root, 'src/games/test-game/TestGameWorkspace.tsx'), 'export default function TestGameWorkspace(){ return null; }\n');
   writeFileSync(join(root, 'src/games/test-game/test-game.meta.ts'), 'export const meta = {};\n');
   writeFileSync(join(root, 'src/games/test-game/TRACKER.md'), '# Tracker\n\n**Last synchronized:** 2026-10-05\n');
   writeFileSync(join(root, 'docs/specs/2026-10-05-test-game-design.md'), '# Spec\n\n**Last synchronized:** 2026-10-05\n');
   writeFileSync(join(root, 'docs/GAME_INDEX.md'), '| `test-game` | Test Game | implementing |\n');
   writeFileSync(join(root, 'tests/unit/test-game-engine.test.ts'), 'export {};\n');
+  writeFileSync(join(root, 'tests/browser/generic-regression.mjs'), "export const route = '#/games/another-game';\n");
   git(root, ['init']);
   git(root, ['config', 'user.email', 'fixture@example.test']);
   git(root, ['config', 'user.name', 'Fixture']);
@@ -69,6 +71,15 @@ describe('same-integration per-game documentation freshness', () => {
     expect(result.stderr).toContain('test-game: implementation/test changes require both spec and tracker updates in the same integration');
   });
 
+  it('maps generic evidence files back to a game by route reference', () => {
+    const { root, base } = makeRepo();
+    writeFileSync(join(root, 'tests/browser/generic-regression.mjs'), "export const route = '#/games/test-game';\n");
+    commit(root, 'change generic browser evidence for game');
+    const result = run(root, base);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('test-game: implementation/test changes require both spec and tracker updates in the same integration');
+  });
+
   it('rejects one-sided spec or tracker edits', () => {
     const { root, base } = makeRepo();
     append(join(root, 'docs/specs/2026-10-05-test-game-design.md'), '\nchanged\n');
@@ -76,6 +87,15 @@ describe('same-integration per-game documentation freshness', () => {
     const result = run(root, base);
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('test-game: spec and tracker must be updated together');
+  });
+
+  it('rejects a GAME_INDEX status change when game documents are untouched', () => {
+    const { root, base } = makeRepo();
+    writeFileSync(join(root, 'docs/GAME_INDEX.md'), '| `test-game` | Test Game | verified |\n');
+    commit(root, 'change game index only');
+    const result = run(root, base);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('test-game: GAME_INDEX row changes require both spec and tracker updates in the same integration');
   });
 
   it('accepts implementation changes when both game documents change together', () => {
