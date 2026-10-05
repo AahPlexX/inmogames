@@ -32,12 +32,14 @@ This is mandatory for every game, regardless of provider, model or implementatio
 
 - Each game has exactly one authoritative spec sheet at `docs/specs/YYYY-MM-DD-<slug>-design.md`. That spec defines rules/scope and contains the authoritative `## Completion contract` with `**Completion state:**`, `**Completion evidence:**` and at least six explicit checklist gates.
 - Each game has `src/games/<slug>/TRACKER.md`. It is the live operational handoff and must contain `## Current handoff` with `Implementation state`, `Last verified revision`, `Open game-local work`, `External blockers` and `Next action`.
-- The spec and tracker must be synchronized whenever behavior, scope, rules, persistence, UI/UX, verification evidence, blockers or completion state changes. Do not leave stale game documents for a later agent to repair.
+- A game implementation change or game-specific test/evidence change is invalid unless the authoritative spec **and** tracker are updated in the same commit/integration. Do not defer either document to a later response, turn, provider or cleanup commit.
+- Spec and tracker edits are paired: changing one without the other is invalid. A `docs/GAME_INDEX.md` row/status change for a game also requires both game documents in the same integration.
+- Generic browser/evidence files still count as game-specific when they reference that game's `src/games/<slug>` path or `#/games/<slug>` route.
 - Starting new game-local work on a verified game automatically reopens it. Change the spec's `Completion state` to `implementing`, reopen/add the applicable checklist gate and tracker capability, update the current handoff, and keep `docs/GAME_INDEX.md` consistent before or with the implementation change.
 - A game may return to `verified` only when every applicable spec checklist item is checked, the tracker has no `planned`, `started` or game-local `blocked` capability, evidence is recorded, task/index state agrees, and required validation/deployment has passed.
 - External platform blockers may remain explicitly `blocked externally` without making otherwise complete game-local implementation incomplete, but the spec and handoff must identify the exact blocker and must never imply live verification that did not occur.
 - Before stopping work for any reason, leave the tracker handoff accurate enough that a different provider with no chat context can continue without guessing.
-- `pnpm game:check` enforces the documentary shape and verified-state consistency. Bypassing or weakening that check is not an acceptable way to make CI pass.
+- `pnpm game:check` runs both structural/completion validation and the history-aware same-integration freshness check. Bypassing, weakening or special-casing either check is not an acceptable way to make CI pass.
 
 Older chat messages, summaries or provider memory never override the current per-game spec/tracker pair on `main`.
 
@@ -63,7 +65,7 @@ Older chat messages, summaries or provider memory never override the current per
 3. Register it in `src/catalog.ts` and `src/games/workspaces.tsx`.
 4. Add a row to `docs/GAME_INDEX.md` and unit tests for the engine.
 5. If the game persists data, define its save schema/version and guest/account behavior without bypassing the shared save repository.
-6. Keep spec/tracker/index/task state synchronized as each capability changes.
+6. Every later game-local source/test/index change must carry both spec and tracker updates in that same integration; keep task state synchronized whenever state/blockers change.
 7. Run `pnpm validate`; mark the game verified only when its own Completion contract and the repository definition of done are satisfied.
 
 ## Dependency integration
