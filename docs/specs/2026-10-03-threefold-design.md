@@ -79,6 +79,22 @@ Threefold's game implementation is verified because:
 
 Exact revision `9ee0f93d` passed dependency freshness, warning-free design lint, TypeScript, structural checks, 44 unit tests, Firestore rules, account/persistence browser checks, the full rendered design/game browser suite including the catalog accessibility contract, both production builds, artifact upload and automatic Pages deployment in run `37256390159`.
 
+## Completion contract
+
+**Completion state:** verified  
+**Completion evidence:** exact game-and-shell verification revision `9ee0f93d`; GitHub Actions run `37256390159` completed validation and Pages deployment.
+
+- [x] The complete five-round core loop is playable start to finish and accepts every valid three-tile solution.
+- [x] Deterministic engine, solvability, scoring-floor and run-completion rules are covered by automated tests.
+- [x] Desktop, touch and keyboard interaction plus 320 CSS-px, 200% text, focus, non-color state and reduced-motion behavior have rendered-browser evidence.
+- [x] Guest persistence, reset and shared account-save checkpoints are defined and repository/emulator verified; the remaining live Firebase dependency is explicitly external as TASK-003.
+- [x] Assets, runtime-network behavior and platform boundaries comply with repository rules and introduce no game-specific third-party runtime dependency.
+- [x] `pnpm validate`-equivalent CI gates and automatic GitHub Pages deployment are green on the cited exact revision.
+- [x] `docs/GAME_INDEX.md`, this spec sheet, `src/games/threefold/TRACKER.md` and `.tasks/` agree on the verified game-local state and external blocker.
+- [x] Independent deployed phone QA found no unresolved game-local clipping, overlap, target-size or accessible-name defect.
+
+This section is authoritative for the word **complete**. Any new game-local feature, rule, persistence behavior, material UI change or unresolved defect automatically reopens Threefold: change `Completion state` to `implementing`, add or reopen the relevant checklist gate and tracker capability, update the handoff, and do not restore `verified` until fresh evidence satisfies every applicable gate.
+
 ## Explicit exclusions for v1
 
 No timer, hints, undo history, sound, online leaderboard, daily challenge, sharing, multiplayer, external assets or analytics. Shared helpers are extracted only when cross-game reuse is demonstrated.
