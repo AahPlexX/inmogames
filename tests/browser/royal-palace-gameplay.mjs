@@ -73,47 +73,47 @@ try {
     assert.equal(await page.getByRole('button', { name: 'Re-bet', exact: true }).isDisabled(), true, 'Re-bet should be unavailable before a completed wager exists.');
     await page.getByRole('button', { name: 'Add 5 virtual-credit chip', exact: true }).click();
     await page.getByRole('button', { name: 'Add 25 virtual-credit chip', exact: true }).click();
-    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 970 Bet 30/);
+    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 970 Bet 30/i);
     await page.getByRole('button', { name: 'Undo', exact: true }).click();
-    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 995 Bet 5/);
+    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 995 Bet 5/i);
     await page.getByRole('button', { name: '2×', exact: true }).click();
-    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 990 Bet 10/);
+    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 990 Bet 10/i);
     await page.getByRole('button', { name: 'All in', exact: true }).click();
-    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 0 Bet 1000/);
+    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 0 Bet 1000/i);
     await page.getByRole('button', { name: 'Clear', exact: true }).click();
-    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 1000 Bet 0/);
+    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 1000 Bet 0/i);
     await context.close();
   }
 
   {
     const { context, page } = await newSeededPage(1);
     await placeFiveAndDeal(page);
-    assert.match(normalized(await page.locator('.rp-hands .rp-handlabel').innerText()), /Player 12/);
+    assert.match(normalized(await page.locator('.rp-hands .rp-handlabel').innerText()), /Player 12/i);
     await page.getByRole('button', { name: 'Hit', exact: true }).click();
-    assert.match(normalized(await page.locator('.rp-hands .rp-handlabel').innerText()), /Player 17/);
+    assert.match(normalized(await page.locator('.rp-hands .rp-handlabel').innerText()), /Player 17/i);
     assert.equal(await page.locator('.rp-hands .rp-card').count(), 3);
     await page.getByRole('button', { name: 'Stand', exact: true }).click();
     await page.getByText('Round complete', { exact: true }).waitFor();
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 995 Bet 0/);
+    assert.match(result.bank, /Bank 995 Bet 0/i);
     assert.equal(result.stats, '0 W · 1 L · 0 P');
     assert.equal(result.session, 'Session -5');
     await page.getByRole('button', { name: 'Next round', exact: true }).click();
     await page.getByRole('button', { name: 'Re-bet', exact: true }).click();
-    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 990 Bet 5/);
+    assert.match(normalized(await page.locator('.rp-bank').innerText()), /Bank 990 Bet 5/i);
     await context.close();
   }
 
   {
     const { context, page } = await newSeededPage(9);
     await placeFiveAndDeal(page);
-    assert.match(normalized(await page.locator('.rp-hands .rp-handlabel').innerText()), /Player 11/);
+    assert.match(normalized(await page.locator('.rp-hands .rp-handlabel').innerText()), /Player 11/i);
     assert.equal(await page.getByRole('button', { name: 'Double', exact: true }).isDisabled(), false);
     await page.getByRole('button', { name: 'Double', exact: true }).click();
     await page.getByText('Round complete', { exact: true }).waitFor();
     assert.match(await page.locator('.rp-status').innerText(), /Round won: \+10 virtual credits/i);
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 1010 Bet 0/);
+    assert.match(result.bank, /Bank 1010 Bet 0/i);
     assert.equal(result.stats, '1 W · 0 L · 0 P');
     assert.equal(result.session, 'Session +10');
     await context.close();
@@ -132,7 +132,7 @@ try {
     await page.getByRole('button', { name: 'Stand', exact: true }).click();
     await page.getByText('Round complete', { exact: true }).waitFor();
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 1015 Bet 0/);
+    assert.match(result.bank, /Bank 1015 Bet 0/i);
     assert.equal(result.stats, '2 W · 0 L · 0 P');
     assert.equal(result.session, 'Session +15');
     await context.close();
@@ -147,7 +147,7 @@ try {
     assert.deepEqual(await page.locator('.rp-hands .rp-hand').evaluateAll((hands) => hands.map((hand) => hand.querySelectorAll('.rp-card').length)), [2, 2]);
     assert.equal(await page.getByRole('button', { name: 'Hit', exact: true }).count(), 0, 'Split Aces should auto-resolve after one additional card each.');
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 1010 Bet 0/);
+    assert.match(result.bank, /Bank 1010 Bet 0/i);
     assert.equal(result.stats, '2 W · 0 L · 0 P');
     assert.equal(result.session, 'Session +10');
     await context.close();
@@ -161,7 +161,7 @@ try {
     await page.getByText('Round complete', { exact: true }).waitFor();
     assert.match(await page.locator('.rp-status').innerText(), /Surrendered\. Half the wager returned/i);
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 997\.5 Bet 0/);
+    assert.match(result.bank, /Bank 997\.5 Bet 0/i);
     assert.equal(result.stats, '0 W · 1 L · 0 P');
     assert.equal(result.session, 'Session -2.5');
     await context.close();
