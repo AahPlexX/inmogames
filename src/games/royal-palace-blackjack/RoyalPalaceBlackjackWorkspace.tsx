@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { canDouble, canHit, canSplit, canSurrender, cardValue, dealerShouldHit, evaluateHand, settleHand, type Card } from './engine';
 import { advise } from './strategy';
 import { DEFAULT_SAVE, type BlackjackSave } from './storage';
@@ -41,11 +41,10 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
   committed.current=structuredClone(checkpoint);
   persist(checkpoint);
  },[save,phase,persist]);
- useEffect(()=>{
+ useLayoutEffect(()=>{
   if(insurance||!restoreInsuranceFocus.current)return;
   restoreInsuranceFocus.current=false;
-  const frame=requestAnimationFrame(()=>actionsRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus());
-  return()=>cancelAnimationFrame(frame);
+  actionsRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
  },[insurance,phase]);
 
  function drawFrom(cards:Card[]):[Card,Card[]]{const copy=[...cards];const card=copy.pop();if(!card)throw new Error('Shoe unexpectedly empty');return[card,copy]}
