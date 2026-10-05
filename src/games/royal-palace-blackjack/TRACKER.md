@@ -27,7 +27,7 @@
 | Responsive casino-table presentation | verified | Dedicated design-browser 320px + 200% text reflow assertions |
 | Table rules/help and phase guidance | verified | Collapsed fixed-rule disclosure + phase/action context; design-browser discovery check |
 | Keyboard/touch parity and visible focus | verified | Chromium deterministic keyboard flow tabs to chip and actions, verifies visible focus, Enter wager/deal/next-round, Space stand, and 48px minimum chip target |
-| Accessible cards/status/dialogs | started | Semantic/static audit + existing dialog focus/Escape browser checks; broader assistive-tech review remains |
+| Accessible cards/status/dialogs | verified | Deterministic Chromium Ace-upcard flow verifies named visible/hidden card semantics, live status, initial dialog focus, Tab/Shift+Tab confinement, Escape dismissal and logical focus restoration |
 | Reduced-motion presentation | verified | Chromium reduced-motion context verifies card animation resolves to `none` |
 | Catalog + lazy workspace integration | verified | game-check + both builds |
 | No runtime third-party assets | verified | Source/build review |
@@ -38,4 +38,4 @@
 
 No third-party visual, audio, font or gameplay assets. Card faces, table treatment, symbols, sounds and copy are repository-authored or rendered from Unicode/system capabilities; no Google Fonts request from the prototype is retained.
 
-Persistence schema version 1 and its committed balance/preference boundary are defined in the spec. Current rendered-browser evidence covers 320px/200% reflow, minimum chip target sizing, table-help discoverability, native keyboard gameplay/focus, and reduced motion. Live Firebase/email account-save checks and broader assistive-technology/gameplay review remain external/remaining checks. Pages deployment is verified. No production Firebase project has been claimed as verified.
+Persistence schema version 1 and its committed balance/preference boundary are defined in the spec. Current rendered-browser evidence covers 320px/200% reflow, minimum chip target sizing, table-help discoverability, native keyboard gameplay/focus, named card semantics, insurance-dialog keyboard behavior and reduced motion. Live Firebase/email account-save checks and broader independent assistive-technology/gameplay review remain external/remaining checks. Pages deployment is verified. No production Firebase project has been claimed as verified.
