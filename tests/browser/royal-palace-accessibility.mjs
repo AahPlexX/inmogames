@@ -54,8 +54,8 @@ try {
   const dialog = page.getByRole('dialog', { name: 'Dealer shows an Ace' });
   await dialog.waitFor();
   assert.match(await page.locator('.rp-status').innerText(), /Dealer shows an Ace/i);
-  assert.equal(await page.locator('.rp-hand').first().locator('.rp-card:not(.back)').first().getAttribute('aria-label'), 'A of diamonds');
-  assert.match(await page.locator('.rp-card.back').innerText(), /Hidden card/i);
+  await page.getByRole('img', { name: 'A of diamonds', exact: true }).waitFor();
+  await page.getByRole('img', { name: 'Hidden card', exact: true }).waitFor();
 
   const takeInsurance = page.getByRole('button', { name: 'Take insurance', exact: true });
   const declineInsurance = page.getByRole('button', { name: 'No insurance', exact: true });
@@ -72,7 +72,7 @@ try {
   await assertFocused(page.getByRole('button', { name: 'Hit', exact: true }), 'Logical player action after insurance closes');
 
   await context.close();
-  console.log('Royal Palace accessibility checks passed: accessible card/status text, insurance focus entry/confinement, Escape close and logical focus restoration.');
+  console.log('Royal Palace accessibility checks passed: named card/status semantics, insurance focus entry/confinement, Escape close and logical focus restoration.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');
