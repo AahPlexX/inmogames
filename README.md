@@ -11,7 +11,7 @@ InMo Games is a local-first collection of focused browser games. The frontend is
 - Runtime network access is limited to site assets plus approved Firebase authentication/save traffic.
 - No privileged credentials or service-account material may be shipped to the browser.
 
-See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract. See `DESIGN.md` for the shared visual language and game-specific design boundaries.
+See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract. See `DESIGN.md` for the shared visual language and game-specific design boundaries. Every game also owns an authoritative dated spec in `docs/specs/` plus a live `src/games/<slug>/TRACKER.md`; together they are the provider-neutral completion and continuation contract.
 
 ## Stack
 
@@ -27,11 +27,14 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract. See
 - `DESIGN.md` - durable visual identity and semantic design contract.
 - `AGENTS.md` - rules every contributor and agent follows.
 - `GOVERNANCE.md` - binding repository-mutation rules.
+- `docs/specs/YYYY-MM-DD-<slug>-design.md` - authoritative per-game scope/rules/completion sheet.
+- `src/games/<slug>/TRACKER.md` - live per-game handoff/resume state.
 - `docs/` - documentation standard, decision log, platform architecture and game index.
 - `.tasks/` - task tracking.
 - `src/catalog.ts` - the game catalog; `src/games/<slug>/` holds one game each.
 - `src/platform/` - shared authentication/save platform modules.
-- `scripts/game-check.mjs` - structural check for every game folder.
+- `scripts/game-check.mjs` - structural/completion check for every game folder.
+- `scripts/game-doc-sync.mjs` - history-aware same-integration freshness check for game source/tests/index versus spec+tracker.
 
 ## Commands
 
@@ -39,10 +42,17 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract. See
 - `pnpm dependency:check` - reject dependency ranges so installs remain reproducible.
 - `pnpm dependency:current` - require every direct dependency/devDependency to match the researched manifest and npm's current stable `latest` tag.
 - `pnpm design:check` - validate the durable `DESIGN.md` contract with the exact pinned validator.
+- `pnpm game:check` - validate per-game file/spec/tracker/completion structure **and** reject game changes whose authoritative spec+tracker were not updated in the same integration.
 - `pnpm test:design-browser` - rendered UI regression checks for responsive composition, 200% text reflow, keyboard focus/selection, touch targets and reduced motion.
-- `pnpm validate` - dependency/design policy, typecheck, game check, unit tests, rules/account browser tests, design-browser tests and both production builds.
+- `pnpm validate` - dependency/design policy, typecheck, game documentary checks, unit tests, rules/account browser tests, design-browser tests and both production builds.
 - `pnpm test:rules` / `pnpm test:browser` - isolated Firebase rules and browser account/save checks.
 - `pnpm build:firebase` - optional root-base static build for the existing Firebase Hosting compatibility path.
+
+## Per-game continuity
+
+Game implementation, game-specific tests/evidence, and a game's `GAME_INDEX` status cannot outrun its documentation. A game-local source/test/index change requires both the authoritative spec and tracker in that same commit/integration. Updating only one document is invalid. CI evaluates every commit in a pushed range so a later documentation-only commit cannot retroactively make an earlier stale game commit acceptable.
+
+A game is complete only when its own spec `Completion contract` says `verified`, every applicable checklist gate is checked, its tracker/index/task state agrees, and recorded evidence supports the claim. Before any provider stops, the tracker's Current handoff must state the exact current status, open game-local work, external blockers and next action so another provider can resume without chat history.
 
 ## Deployment
 
