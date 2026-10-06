@@ -5,6 +5,8 @@ const gamesDir = 'src/games';
 const specsDir = 'docs/specs';
 const index = readFileSync('docs/GAME_INDEX.md', 'utf8');
 const problems = [];
+const allowedTrackerStatuses = new Set(['planned', 'started', 'verified', 'blocked', 'blocked externally', 'excluded']);
+const terminalTrackerStatuses = new Set(['verified', 'blocked externally', 'excluded']);
 
 const slugs = readdirSync(gamesDir).filter((name) => statSync(join(gamesDir, name)).isDirectory());
 
@@ -15,6 +17,29 @@ function section(content, heading) {
   const tail = content.slice(start + marker.length);
   const nextHeading = tail.search(/\n## /);
   return nextHeading < 0 ? tail : tail.slice(0, nextHeading);
+}
+
+function field(content, label) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = content.match(new RegExp(`\\*\\*${escaped}:\\*\\*[ \t]*([^\\n]*)`, 'i'));
+  return match ? match[1].trim() : null;
+}
+
+function trackerCapabilities(content) {
+  const lines = content.split('\n');
+  const header = lines.findIndex((line) => /^\|\s*Capability\s*\|\s*Status\s*\|\s*Verification\s*\|\s*$/i.test(line.trim()));
+  if (header < 0) return null;
+
+  const rows = [];
+  for (let index = header + 2; index < lines.length && lines[index].trim().startsWith('|'); index += 1) {
+    const cells = lines[index].trim().split('|').slice(1, -1).map((cell) => cell.trim());
+    if (cells.length >= 3) rows.push({ capability: cells[0], status: cells[1].toLowerCase(), verification: cells[2] });
+  }
+  return rows;
+}
+
+function hasExactVerificationEvidence(value) {
+  return /\b(?:revision|commit)\s+`?[0-9a-f]{7,40}`?/i.test(value) || /\brun\s+`?\d{5,}`?/i.test(value);
 }
 
 function specFilesFor(slug) {
@@ -46,8 +71,23 @@ for (const slug of slugs) {
   const tracker = readFileSync(trackerPath, 'utf8');
   if (!tracker.includes('**Last synchronized:**')) problems.push(`${slug}: TRACKER.md missing Last synchronized`);
   if (!tracker.includes('## Current handoff')) problems.push(`${slug}: TRACKER.md missing Current handoff`);
-  for (const marker of ['**Implementation state:**', '**Last verified revision:**', '**Open game-local work:**', '**External blockers:**', '**Next action:**']) {
-    if (!tracker.includes(marker)) problems.push(`${slug}: TRACKER.md missing handoff field ${marker}`);
+  for (const label of ['Implementation state', 'Last verified revision', 'Open game-local work', 'External blockers', 'Next action']) {
+    const value = field(tracker, label);
+    if (value === null) problems.push(`${slug}: TRACKER.md missing handoff field **${label}:**`);
+    else if (!value) problems.push(`${slug}: TRACKER.md handoff field **${label}:** is empty`);
+  }
+
+  const capabilities = trackerCapabilities(tracker);
+  if (!capabilities) {
+    problems.push(`${slug}: TRACKER.md missing Capability/Status/Verification table`);
+  } else if (capabilities.length === 0) {
+    problems.push(`${slug}: TRACKER.md capability table must contain at least one capability`);
+  } else {
+    for (const row of capabilities) {
+      if (!row.capability) problems.push(`${slug}: tracker capability row has no capability name`);
+      if (!allowedTrackerStatuses.has(row.status)) problems.push(`${slug}: tracker capability "${row.capability || '(unnamed)'}" has unsupported status "${row.status}"`);
+      if (terminalTrackerStatuses.has(row.status) && !row.verification) problems.push(`${slug}: tracker capability "${row.capability || '(unnamed)'}" with status ${row.status} requires verification or rationale`);
+    }
   }
 
   if (specs.length !== 1) continue;
@@ -56,8 +96,6 @@ for (const slug of slugs) {
   if (!tracker.includes(`**Spec:** \`${specPath}\``)) problems.push(`${slug}: TRACKER.md must reference authoritative spec ${specPath}`);
   if (!spec.includes('**Last synchronized:**')) problems.push(`${slug}: spec missing Last synchronized`);
   if (!spec.includes('## Completion contract')) problems.push(`${slug}: spec missing Completion contract`);
-  if (!spec.includes('**Completion state:**')) problems.push(`${slug}: spec missing Completion state`);
-  if (!spec.includes('**Completion evidence:**')) problems.push(`${slug}: spec missing Completion evidence`);
 
   const completion = section(spec, 'Completion contract');
   if (!completion) continue;
@@ -71,12 +109,33 @@ for (const slug of slugs) {
   }
 
   const state = stateMatch[1].toLowerCase();
+  const completionEvidence = field(completion, 'Completion evidence');
+  if (completionEvidence === null) problems.push(`${slug}: spec missing Completion evidence`);
+  else if (!completionEvidence) problems.push(`${slug}: Completion evidence must not be empty`);
+
+  const implementationState = field(tracker, 'Implementation state');
+  const trackerStateMatch = implementationState?.match(/^(implementing|verified)\b/i);
+  if (!trackerStateMatch) {
+    problems.push(`${slug}: TRACKER.md Implementation state must begin with implementing or verified`);
+  } else if (trackerStateMatch[1].toLowerCase() !== state) {
+    problems.push(`${slug}: TRACKER.md Implementation state disagrees with spec Completion state`);
+  }
+
   const indexVerified = Boolean(indexLine?.toLowerCase().includes('verified game'));
   if (state === 'verified') {
     if (checklist.some((match) => match[1] !== 'x' && match[1] !== 'X')) problems.push(`${slug}: verified Completion contract contains unchecked gates`);
-    if (/\|\s*(planned|started)\s*\|/i.test(tracker)) problems.push(`${slug}: verified game tracker still contains planned or started capabilities`);
-    if (/\|\s*blocked\s*\|/i.test(tracker)) problems.push(`${slug}: verified game tracker contains a game-local blocked capability`);
+    if (capabilities?.some((row) => !terminalTrackerStatuses.has(row.status))) problems.push(`${slug}: verified game tracker contains non-terminal capability states`);
+    if (completionEvidence && !hasExactVerificationEvidence(completionEvidence)) problems.push(`${slug}: verified Completion evidence must name an exact revision/commit or workflow run`);
     if (!indexVerified) problems.push(`${slug}: Completion state is verified but GAME_INDEX does not say verified game`);
+
+    const lastVerifiedRevision = field(tracker, 'Last verified revision') ?? '';
+    if (/^none\b/i.test(lastVerifiedRevision) || !/\b[0-9a-f]{7,40}\b/i.test(lastVerifiedRevision)) problems.push(`${slug}: verified game must record an exact Last verified revision`);
+    const openWork = field(tracker, 'Open game-local work') ?? '';
+    if (!/^none\b/i.test(openWork)) problems.push(`${slug}: verified game must state Open game-local work as none`);
+    if (capabilities?.some((row) => row.status === 'blocked externally')) {
+      const blockers = field(tracker, 'External blockers') ?? '';
+      if (/^none\b/i.test(blockers)) problems.push(`${slug}: blocked externally capability requires a named External blockers handoff`);
+    }
   } else if (indexVerified) {
     problems.push(`${slug}: GAME_INDEX says verified game while Completion state is implementing`);
   }

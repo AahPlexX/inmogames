@@ -12,8 +12,12 @@ type FixtureOptions = {
   withHandoff: boolean;
   completionState?: 'implementing' | 'verified';
   completeChecklist?: boolean;
-  trackerCapability?: 'none' | 'started' | 'verified';
+  trackerCapability?: 'none' | 'started' | 'verified' | 'blocked externally' | 'unsupported';
   indexStatus?: 'implementing' | 'verified game';
+  completionEvidence?: string;
+  implementationState?: string;
+  openWork?: string;
+  externalBlockers?: string;
 };
 
 function makeFixture(options: FixtureOptions) {
@@ -23,22 +27,28 @@ function makeFixture(options: FixtureOptions) {
   const completeChecklist = options.completeChecklist ?? false;
   const trackerCapability = options.trackerCapability ?? 'none';
   const indexStatus = options.indexStatus ?? 'implementing';
+  const completionEvidence = options.completionEvidence ?? (completionState === 'verified' ? 'revision `abcdef1`; run `123456`' : 'not verified yet');
+  const implementationState = options.implementationState ?? completionState;
+  const openWork = options.openWork ?? (completionState === 'verified' ? 'none' : 'core loop');
+  const externalBlockers = options.externalBlockers ?? (trackerCapability === 'blocked externally' ? 'TASK-003 live dependency' : 'none');
   mkdirSync(gameDir, { recursive: true });
   mkdirSync(join(root, 'docs/specs'), { recursive: true });
   writeFileSync(join(gameDir, 'test-game.meta.ts'), 'export const meta = {};\n');
   writeFileSync(join(gameDir, 'TestGameWorkspace.tsx'), 'export default function TestGameWorkspace(){ return null; }\n');
 
-  const capabilityRow = trackerCapability === 'none' ? '' : `\n| Capability | Status | Verification |\n| --- | --- | --- |\n| Core loop | ${trackerCapability} | fixture |\n`;
+  const capabilityRow = trackerCapability === 'none'
+    ? ''
+    : `\n| Capability | Status | Verification |\n| --- | --- | --- |\n| Core loop | ${trackerCapability} | fixture evidence |\n`;
   writeFileSync(
     join(gameDir, 'TRACKER.md'),
-    `# Test Game tracker\n\n**Spec:** \`docs/specs/2026-10-05-test-game-design.md\`  \n**Last synchronized:** 2026-10-05\n${capabilityRow}\n${options.withHandoff ? `## Current handoff\n\n**Implementation state:** ${completionState}\n**Last verified revision:** none yet\n**Open game-local work:** ${completionState === 'verified' ? 'none' : 'core loop'}\n**External blockers:** none\n**Next action:** ${completionState === 'verified' ? 'none' : 'implement the core loop'}\n` : ''}`,
+    `# Test Game tracker\n\n**Spec:** \`docs/specs/2026-10-05-test-game-design.md\`  \n**Last synchronized:** 2026-10-05\n${capabilityRow}\n${options.withHandoff ? `## Current handoff\n\n**Implementation state:** ${implementationState}\n**Last verified revision:** ${completionState === 'verified' ? 'abcdef1' : 'none yet'}\n**Open game-local work:** ${openWork}\n**External blockers:** ${externalBlockers}\n**Next action:** ${completionState === 'verified' ? 'none' : 'implement the core loop'}\n` : ''}`,
   );
 
   if (options.withSpec) {
     const mark = completeChecklist ? 'x' : ' ';
     writeFileSync(
       join(root, 'docs/specs/2026-10-05-test-game-design.md'),
-      `# Test Game design\n\n**Status:** ${completionState}  \n**Last synchronized:** 2026-10-05\n\n## Completion contract\n\n**Completion state:** ${completionState}\n**Completion evidence:** fixture\n\n- [${mark}] Playable start to finish.\n- [${mark}] Rules are covered by engine tests.\n- [${mark}] Responsive and accessible browser evidence is green.\n- [${mark}] Persistence/assets/network constraints are verified.\n- [${mark}] Full validation and deployment are green.\n- [${mark}] Spec, tracker, index and task records are synchronized.\n`,
+      `# Test Game design\n\n**Status:** ${completionState}  \n**Last synchronized:** 2026-10-05\n\n## Completion contract\n\n**Completion state:** ${completionState}\n**Completion evidence:** ${completionEvidence}\n\n- [${mark}] Playable start to finish.\n- [${mark}] Rules are covered by engine tests.\n- [${mark}] Responsive and accessible browser evidence is green.\n- [${mark}] Persistence/assets/network constraints are verified.\n- [${mark}] Full validation and deployment are green.\n- [${mark}] Spec, tracker, index and task records are synchronized.\n`,
     );
   }
 
@@ -66,6 +76,22 @@ describe('per-game documentation contract', () => {
     expect(result.stderr).toContain('TRACKER.md missing Current handoff');
   });
 
+  it('rejects a tracker with no capability table', () => {
+    const result = runChecker(makeFixture({ withSpec: true, withHandoff: true }));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('missing Capability/Status/Verification table');
+  });
+
+  it('rejects an unsupported tracker capability status', () => {
+    const result = runChecker(makeFixture({
+      withSpec: true,
+      withHandoff: true,
+      trackerCapability: 'unsupported',
+    }));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('unsupported status "unsupported"');
+  });
+
   it('rejects a verified game with an unchecked completion gate', () => {
     const result = runChecker(makeFixture({
       withSpec: true,
@@ -89,7 +115,77 @@ describe('per-game documentation contract', () => {
       indexStatus: 'verified game',
     }));
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain('verified game tracker still contains planned or started capabilities');
+    expect(result.stderr).toContain('verified game tracker contains non-terminal capability states');
+  });
+
+  it('rejects empty verified completion evidence', () => {
+    const result = runChecker(makeFixture({
+      withSpec: true,
+      withHandoff: true,
+      completionState: 'verified',
+      completeChecklist: true,
+      trackerCapability: 'verified',
+      indexStatus: 'verified game',
+      completionEvidence: '',
+    }));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('Completion evidence must not be empty');
+  });
+
+  it('rejects vague verified completion evidence', () => {
+    const result = runChecker(makeFixture({
+      withSpec: true,
+      withHandoff: true,
+      completionState: 'verified',
+      completeChecklist: true,
+      trackerCapability: 'verified',
+      indexStatus: 'verified game',
+      completionEvidence: 'all checks passed',
+    }));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('must name an exact revision/commit or workflow run');
+  });
+
+  it('rejects tracker/spec implementation-state disagreement', () => {
+    const result = runChecker(makeFixture({
+      withSpec: true,
+      withHandoff: true,
+      completionState: 'verified',
+      completeChecklist: true,
+      trackerCapability: 'verified',
+      indexStatus: 'verified game',
+      implementationState: 'implementing',
+    }));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('Implementation state disagrees with spec Completion state');
+  });
+
+  it('rejects a verified game that still names open game-local work', () => {
+    const result = runChecker(makeFixture({
+      withSpec: true,
+      withHandoff: true,
+      completionState: 'verified',
+      completeChecklist: true,
+      trackerCapability: 'verified',
+      indexStatus: 'verified game',
+      openWork: 'finish the last interaction',
+    }));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('Open game-local work as none');
+  });
+
+  it('requires blocked-external capability state to name the external blocker', () => {
+    const result = runChecker(makeFixture({
+      withSpec: true,
+      withHandoff: true,
+      completionState: 'verified',
+      completeChecklist: true,
+      trackerCapability: 'blocked externally',
+      indexStatus: 'verified game',
+      externalBlockers: 'none',
+    }));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('blocked externally capability requires a named External blockers handoff');
   });
 
   it('accepts a fully synchronized verified game contract', () => {

@@ -5,7 +5,7 @@
 
 Optional Firebase Hosting compatibility and a root-base build are implemented. GitHub Pages remains the canonical deployment target, and Firebase Hosting is not required for Firebase Authentication or Cloud Firestore. Live Hosting deployment remains blocked on selecting a Firebase project ID and authenticating an identity with Hosting deployment access. Follow `docs/FIREBASE_HOSTING.md`; do not invent project identifiers or commit credentials.
 
-Current repository validation includes 44 unit tests plus Firestore rules, account/persistence browser tests, design/game browser tests and both host builds. Royal Palace game verification is complete independently of optional Hosting. Live Hosting verification remains pending the project and deployment identity.
+Current repository validation includes the full unit suite plus Firestore rules, account/persistence browser tests, design/game browser tests and both host builds. Royal Palace game verification is complete independently of optional Hosting. Live Hosting verification remains pending the project and deployment identity.
 
 ## TASK-003: Configure and verify live Firebase account services
 **Priority:** P0 | **Tags:** platform, firebase, auth, firestore | **Status:** blocked externally
