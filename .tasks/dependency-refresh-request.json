@@ -1,6 +1,6 @@
 {
-  "requestedOn": "2026-10-05",
-  "requestRevision": 3,
+  "requestedOn": "2026-10-06",
+  "requestRevision": 4,
   "dependencies": {
     "firebase": "12.19.0",
     "react": "19.3.0",
@@ -14,7 +14,7 @@
     "firebase-tools": "15.32.1",
     "playwright": "1.63.0",
     "typescript": "7.0.2",
-    "vite": "8.3.2",
+    "vite": "8.3.3",
     "vitest": "5.0.3"
   }
 }

@@ -1,6 +1,6 @@
 # Dependency policy and current audit
 
-**Last researched:** 2026-10-05  
+**Last researched:** 2026-10-06  
 **Machine-readable target set:** `.tasks/dependency-refresh-request.json`
 
 ## Integration rule
@@ -31,10 +31,12 @@ Prerelease channels such as `next`, `alpha`, `beta`, `rc`, canary and experiment
 | firebase-tools | 15.32.1 | Firebase CLI release: https://github.com/firebase/firebase-tools/releases/tag/v15.32.1 | https://www.npmjs.com/package/firebase-tools |
 | playwright | 1.63.0 | Playwright release notes: https://playwright.dev/docs/release-notes | https://www.npmjs.com/package/playwright |
 | typescript | 7.0.2 | TypeScript 7 stable announcement: https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/ | https://www.npmjs.com/package/typescript |
-| vite | 8.3.2 | Vite releases/current stable line: https://vite.dev/releases and https://github.com/vitejs/vite/releases/tag/v8.3.2 | https://www.npmjs.com/package/vite |
+| vite | 8.3.3 | Vite current stable line and official `release: v8.3.3` commit: https://vite.dev/releases and https://github.com/vitejs/vite/commit/fea5b21 | https://www.npmjs.com/package/vite |
 | vitest | 5.0.3 | Vitest 5 stable announcement/release: https://vitest.dev/blog/vitest-5 and https://github.com/vitest-dev/vitest/releases/tag/v5.0.3 | https://www.npmjs.com/package/vitest |
 
-The 2026-10-05 refresh was triggered by the npm live `latest` tag moving `@vitejs/plugin-react` from 6.1.1 to 6.1.2. The official Vite plugin release is non-prerelease and was published 2026-10-05; the repository's live npm freshness gate independently observed 6.1.2 as `latest`.
+The 2026-10-06 refresh was triggered by the live npm freshness gate observing Vite `8.3.3` after the repository had pinned `8.3.2`. Vite's official repository recorded `release: v8.3.3` on 2026-10-06, Vite's release policy identifies `vite@8.3` as the current regular-patch line, and npm corroborated `8.3.3` as the newly published stable package. No prerelease channel is used.
+
+The prior 2026-10-05 refresh was triggered by the npm live `latest` tag moving `@vitejs/plugin-react` from 6.1.1 to 6.1.2. The official Vite plugin release is non-prerelease and was published 2026-10-05; the repository's live npm freshness gate independently observed 6.1.2 as `latest`.
 
 ## Runtime/toolchain consequence
 
