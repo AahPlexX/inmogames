@@ -17,4 +17,14 @@ The repository implementation is verified with unit, Security Rules and Chromium
 - Deploy a Firebase-configured `main` build through the already-enabled Pages workflow.
 - Real-site registration/sign-in/restoration, password-reset email/action/return, guest migration, two-browser checkpoint/reset, failure/retry and denied-access checks from `docs/FIREBASE_SETUP.md`.
 
-No real Firebase project configuration or provisioning evidence is available. Emulator results do not establish live verification. Optional Firebase Hosting deployment is TASK-004 and is not required for these account services.
+### Current handoff — 2026-10-06
+
+- Live `origin/main` remains `dfeef18eb46eb7672888d7bb7d6c81a380a18345`; its full validation and Pages deployment evidence remains run `37394205294`.
+- A fresh uncached fetch of `https://aahplexx.github.io/inmogames/` returned HTTP 200 and still renders: `Playing as a guest. Accounts are not available on this site yet.` This confirms the deployed bundle is currently unconfigured for Firebase accounts rather than merely carrying stale task text.
+- No actual Firebase Web configuration or Console provisioning evidence is available in the repository or current connected tooling. The user intends to add the public Web configuration later. Do not invent values and do not request or store privileged credentials.
+- Current GitHub connector access does not expose the repository Actions-variable endpoint, so presence/value verification of the four variables must be performed after the user adds them through GitHub or another authorized connection.
+- Royal Palace Blackjack and Threefold remain game-local `verified`; TASK-003 is a shared external platform blocker and does not reopen either game.
+
+**Next action once the public Web configuration is supplied:** verify the selected Firebase project against `docs/FIREBASE_SETUP.md` (Email/Password, default Firestore database, published repository rules, authorized `aahplexx.github.io` hostname), confirm/add the four repository variables, rebuild/deploy configured `main`, then execute and record every deployed-site verification case before changing TASK-003 from blocked externally.
+
+Optional Firebase Hosting deployment is TASK-004 and is not required for these account services.
