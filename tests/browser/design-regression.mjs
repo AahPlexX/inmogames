@@ -20,9 +20,7 @@ const base = `http://127.0.0.1:${port}/inmogames/`;
 
 async function waitForServer() {
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    try {
-      if ((await fetch(base)).ok) return;
-    } catch {}
+    try { if ((await fetch(base)).ok) return; } catch {}
     await delay(100);
   }
   throw new Error('Design-regression Vite server did not start.');
@@ -103,10 +101,14 @@ try {
   const catalogSkip = page.getByRole('button', { name: 'Skip to games', exact: true });
   await catalogSkip.waitFor();
   await assertNoOverflow(page, 'catalog at 320px');
-  assert.equal(await page.locator('.game-card').count(), 2);
+  const cardCount = await page.locator('.game-card').count();
+  assert.ok(cardCount >= 3, `Expected at least the three established catalog games, found ${cardCount}.`);
+  assert.equal(await page.locator('.game-card[data-game="mergrove"]').count(), 1, 'Mergrove must appear exactly once in the catalog.');
   await assertCatalogContrast(page, 'Light');
   const phoneCards = await page.locator('.game-card').evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().toJSON()));
-  assert.ok(phoneCards[1].top > phoneCards[0].top, 'Phone catalog cards should stack vertically.');
+  for (let index = 1; index < phoneCards.length; index += 1) {
+    assert.ok(phoneCards[index].top > phoneCards[index - 1].bottom, `Phone catalog card ${index + 1} should stack below its predecessor.`);
+  }
   await catalogSkip.focus();
   await page.keyboard.press('Enter');
   assert.equal(await page.evaluate(() => document.activeElement?.id), 'main-content');
@@ -146,6 +148,23 @@ try {
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
   await assertNoOverflow(page, 'Royal Palace at 200% text');
   await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+
+  await page.goto(base + '#/games/mergrove');
+  await page.getByRole('heading', { name: 'Grow the grove.', exact: true }).waitFor();
+  await assertNoOverflow(page, 'Mergrove at 320px');
+  assert.equal(await page.locator('.mg-cell').count(), 25);
+  assert.equal(await page.locator('.mg-queue-piece').count(), 3);
+  await assertTouchTarget(page.locator('.mg-cell').first(), 'Mergrove board cell');
+  await assertTouchTarget(page.locator('.mg-queue-piece').first(), 'Mergrove queue piece');
+  assert.equal(await page.locator('.mg-queue-piece').first().getAttribute('aria-pressed'), 'true');
+  await page.locator('.mg-cell').nth(0).click();
+  await page.locator('.mg-cell').nth(1).click();
+  await page.locator('.mg-cell').nth(2).click();
+  await page.waitForFunction(() => document.querySelector('[data-stat="score"]')?.textContent?.trim() === '30');
+  assert.equal(await page.locator('.mg-cell').nth(2).getAttribute('data-tier'), '2');
+  await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+  await assertNoOverflow(page, 'Mergrove at 200% text');
+  await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
   await phone.close();
 
   const dark = await browser.newContext({ viewport: { width: 320, height: 900 }, colorScheme: 'dark' });
@@ -163,7 +182,8 @@ try {
   await desktopPage.goto(base);
   await desktopPage.locator('.game-card').first().waitFor();
   const desktopCards = await desktopPage.locator('.game-card').evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().toJSON()));
-  assert.ok(Math.abs(desktopCards[0].top - desktopCards[1].top) < 4, 'Desktop catalog cards should share a row.');
+  assert.ok(desktopCards.length >= 3, 'Desktop catalog must include Mergrove alongside the established games.');
+  assert.ok(Math.abs(desktopCards[0].top - desktopCards[1].top) < 4, 'Desktop catalog first-row cards should share a row.');
   assert.ok(desktopCards[1].left > desktopCards[0].left, 'Desktop catalog should use two columns.');
   await assertNoOverflow(desktopPage, 'catalog at desktop width');
   await desktop.close();
@@ -214,16 +234,27 @@ try {
   await reducedPage.locator('.rp-card').first().waitFor();
   assert.equal(await reducedPage.locator('.rp-card').first().evaluate((element) => getComputedStyle(element).animationName), 'none');
   await assertNoOverflow(reducedPage, 'Royal Palace with reduced motion');
+
   await reducedPage.goto(base + '#/games/threefold');
   const reducedTile = reducedPage.locator('.threefold-board button').first();
   await reducedTile.waitFor();
   await reducedTile.click();
   assert.equal(await reducedTile.evaluate((element) => getComputedStyle(element).transform), 'none');
   await assertNoOverflow(reducedPage, 'Threefold with reduced motion');
+
+  await reducedPage.goto(base + '#/games/mergrove');
+  await reducedPage.getByRole('heading', { name: 'Grow the grove.', exact: true }).waitFor();
+  await reducedPage.locator('.mg-cell').nth(0).click();
+  await reducedPage.locator('.mg-cell').nth(1).click();
+  await reducedPage.locator('.mg-cell').nth(2).click();
+  const reducedSpirit = reducedPage.locator('.mg-cell--pulse .mg-spirit');
+  await reducedSpirit.waitFor();
+  assert.equal(await reducedSpirit.evaluate((element) => getComputedStyle(element).animationName), 'none');
+  await assertNoOverflow(reducedPage, 'Mergrove with reduced motion');
   await reduced.close();
 
   assert.deepEqual(errors, []);
-  console.log('Design regression checks passed: light/dark catalog contrast, Threefold secondary contrast, skip controls, 320px/200% reflow, Threefold keyboard/non-color/reduced-motion behavior, Blackjack touch targets/help/native keyboard gameplay, desktop layout and reduced motion.');
+  console.log('Design regression checks passed: dynamic catalog, light/dark contrast, skip controls, 320px/200% reflow, Threefold, Royal Palace and Mergrove touch/keyboard/reduced-motion behavior, and desktop layout.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');

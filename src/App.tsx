@@ -4,6 +4,7 @@ import { GameLayout } from './components/GameLayout';
 import { SiteHeader } from './components/SiteHeader';
 import { SkipToContent } from './components/SkipToContent';
 import { workspaces } from './games/workspaces';
+import './games/mergrove/mergrove-catalog.css';
 
 const ROUTE = /^#\/games\/([a-z0-9-]+)$/;
 
@@ -14,6 +15,13 @@ function readSlug(): string | null {
 
 function categoryName(value: string) {
   return value === 'card-board' ? 'Cards' : value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function catalogGlyph(slug: string): string {
+  if (slug === 'threefold') return 'Σ3';
+  if (slug === 'royal-palace-blackjack') return '21';
+  if (slug === 'mergrove') return '✦';
+  return '▶';
 }
 
 export default function App() {
@@ -57,7 +65,7 @@ export default function App() {
               <li key={g.slug}>
                 <a className="game-card" data-game={g.slug} href={'#/games/' + g.slug}>
                   <span className="catalog-art" data-game={g.slug} aria-hidden="true">
-                    <span className="catalog-glyph">{g.slug === 'threefold' ? 'Σ3' : g.slug === 'royal-palace-blackjack' ? '21' : '▶'}</span>
+                    <span className="catalog-glyph">{catalogGlyph(g.slug)}</span>
                   </span>
                   <span className="game-card-body">
                     <span className="game-card-meta">

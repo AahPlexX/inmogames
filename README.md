@@ -62,6 +62,6 @@ Configure the public Web variables, Email/Password provider, Firestore database/
 
 ## Status
 
-Both games use the shared optional account/save platform and the shared InMo Game Cabinet shell. Repository behavior is verified with unit, rules, account/persistence browser and rendered design-browser tests; real Firebase provisioning and deployed account-save verification remain external tasks. Guest play requires no Firebase setup.
+All current catalog games use the shared optional account/save platform and the shared InMo Game Cabinet shell. Threefold and Royal Palace Blackjack are game-local verified. Mergrove is implementing until its exact CI, rendered-browser, emulator and Pages evidence is reconciled in its authoritative completion contract. Real Firebase provisioning and deployed account-save verification remain external TASK-003 work. Guest play requires no Firebase setup.
 
 For validation, use pnpm 10.0.0, Node 24.12.0+, Java 21 and Playwright Chromium. After `pnpm install --frozen-lockfile`, run `pnpm exec playwright install chromium` (add `--with-deps` on Linux when needed), then `pnpm validate`. An existing compatible Chromium may be selected with `CHROMIUM_PATH`. See the architecture document for cache, retry and reset semantics. Dependency integration rules and the current evidence matrix are in `docs/DEPENDENCY_POLICY.md`.

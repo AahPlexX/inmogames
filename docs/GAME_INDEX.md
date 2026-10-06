@@ -6,3 +6,4 @@ One row per game. Update when a game is added, changes status, or is removed.
 | --- | --- | --- | --- | --- | --- |
 | `threefold` | Threefold | puzzle | single | localStorage (guest), Firestore (account) | verified game; account saves emulator-verified, live Firebase setup blocked by TASK-003 |
 | `royal-palace-blackjack` | Royal Palace Blackjack | card-board | single | localStorage (guest), Firestore (account) | verified game; account saves emulator-verified, live Firebase setup blocked by TASK-003 |
+| `mergrove` | Mergrove | puzzle | single | localStorage (guest), Firestore (account) | implementing; local engine/save probes green, integrated CI/browser/Pages evidence pending; live Firebase setup blocked by TASK-003 |
