@@ -1,4 +1,4 @@
-import { SchemaNewerError, validateState, type AccountRepository, type GameSaveDefinition, type GameSaveRepository } from './contracts';
+import { validateState, type AccountRepository, type GameSaveDefinition, type GameSaveRepository } from './contracts';
 import type { LocalRepository } from './local';
 
 export interface SaveSnapshot<T> {
@@ -59,9 +59,8 @@ export class SaveSession<T> implements GameSaveRepository<T> {
       this.pending = null;
       this.publish({ state: value, ready: true, revision: this.snapshot.revision + 1, status: 'Account progress loaded.', error: this.local.warning });
       return state;
-    } catch (failure) {
-      if (this.active && epoch === this.loadEpoch && failure instanceof SchemaNewerError) this.publish({ ready: true, status: 'Playing with this account’s browser cache.', error: failure.message });
-      else if (this.active && epoch === this.loadEpoch) this.publish({ ready: true, status: 'Playing with this account’s browser cache.', error: 'Cloud progress could not load. Check your connection and retry. If this continues, contact the site owner. Account progress will take precedence when it loads.' });
+    } catch {
+      if (this.active && epoch === this.loadEpoch) this.publish({ ready: true, status: 'Playing with this account’s browser cache.', error: 'Cloud progress could not load. Check your connection and retry. If this continues, contact the site owner. Account progress will take precedence when it loads.' });
       return cached;
     } finally { clearTimeout(timer); }
   }
@@ -98,9 +97,8 @@ export class SaveSession<T> implements GameSaveRepository<T> {
           this.pending = null;
           this.publish({ status: operation === 'delete' ? 'Account game progress reset.' : 'Account progress saved.', error: this.local.warning });
         }
-      } catch (failure) {
-        if (sequence === this.sequence && failure instanceof SchemaNewerError) this.publish({ status: 'Account progress was not saved.', error: failure.message });
-        else if (sequence === this.sequence) this.publish({ status: 'Account progress is waiting to sync.', error: 'Cloud sync failed. This account’s changes remain in this browser session. Check your connection and retry before leaving. If this continues, contact the site owner.' });
+      } catch {
+        if (sequence === this.sequence) this.publish({ status: 'Account progress is waiting to sync.', error: 'Cloud sync failed. This account’s changes remain in this browser session. Check your connection and retry before leaving. If this continues, contact the site owner.' });
       }
     });
     return this.queue;

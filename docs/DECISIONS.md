@@ -97,10 +97,3 @@ A game's authoritative spec sheet and live tracker are part of that game's imple
 `scripts/game-doc-sync.mjs` is the history-aware enforcement layer behind `pnpm game:check`. Normal push validation fetches full history and supplies the pre-push base; each commit in the pushed range is evaluated separately, so a later documentation-only commit cannot retroactively repair an earlier stale game commit. Generic test files are mapped to games when they reference `src/games/<slug>` or `#/games/<slug>`. Local and maintenance validation also checks staged/working changes and a previous-commit fallback.
 
 This rule exists so any provider or agent can resume from any integrated checkpoint using repository state alone. Hidden chat history, provider memory, or a promise to update docs later is never a valid continuation mechanism.
-
-## D-020 Shared save migration and downgrade protection (2026-10-07)
-
-The shared save platform gains optional per-game schema migrations, prior-version local-key fallback, a transactional cloud write that refuses to overwrite a newer schema, and a Firestore rule that rejects schema downgrades on update. This is required by Mergrove's save schema v2 (roadmap MER-020) and is backward compatible: a definition without `migrations` behaves exactly as before, and existing Threefold, Royal Palace Blackjack and Cloudline Couriers saves are unaffected.
-
-Consequences: `FirestoreRepository.save` now runs a transaction (one extra read per cloud checkpoint); an older client talking to a newer cloud save sees a refresh message and cannot overwrite it. Verification status: unit-tested; the new Firestore rule has a rules test (`an owner can upgrade a save to a newer schema but never downgrade it`) that **has not yet been executed** because the Firestore emulator would not start in the authoring sandbox. It must pass in CI before this decision is treated as verified. Live-project verification remains under TASK-003.
-

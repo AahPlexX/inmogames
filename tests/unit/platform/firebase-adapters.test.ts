@@ -28,9 +28,8 @@ it('wires all email/password operations and observes the resolved Firebase user'
 });
 it('uses account-scoped document paths and a server timestamp; rejects writes after the account changes', async () => {
   const current=vi.fn(()=>true);const repo=new FirestoreRepository({} as Firestore,'alice',threefoldSaveDefinition,current);
-  const tx={get:vi.fn(async()=>({exists:()=>false})),set:vi.fn()};mocks.transaction.mockImplementation((_db,fn)=>fn(tx));
-  await repo.save('threefold',1,{bestScore:120});expect(mocks.doc).toHaveBeenCalledWith({},'users','alice','games','threefold');expect(tx.set).toHaveBeenCalledWith('reference',{schemaVersion:1,state:{bestScore:120},updatedAt:'server-time'});
-  current.mockReturnValue(false);await expect(repo.save('threefold',1,{bestScore:500})).rejects.toThrow(/session changed/);expect(tx.set).toHaveBeenCalledTimes(1);
+  await repo.save('threefold',1,{bestScore:120});expect(mocks.doc).toHaveBeenCalledWith({},'users','alice','games','threefold');expect(mocks.write).toHaveBeenCalledWith('reference',{schemaVersion:1,state:{bestScore:120},updatedAt:'server-time'});
+  current.mockReturnValue(false);await expect(repo.save('threefold',1,{bestScore:500})).rejects.toThrow(/session changed/);expect(mocks.write).toHaveBeenCalledTimes(1);
 });
 it('atomically seeds only absent documents and never overwrites existing or unsupported account saves', async () => {
   const repo=new FirestoreRepository({} as Firestore,'alice',threefoldSaveDefinition,()=>true);

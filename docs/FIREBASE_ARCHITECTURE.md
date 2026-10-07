@@ -58,15 +58,6 @@ interface CloudGameSave<TState> {
 
 `updatedAt` is written using `serverTimestamp()` at the adapter boundary. Game decoders reject unsupported versions and invalid values while projecting only durable fields. Unknown cloud schemas are not silently reinterpreted or overwritten by migration.
 
-### Schema migration and downgrade protection
-
-A `GameSaveDefinition` may declare `migrations: [{ fromVersion, storageKey, migrate }]`. Each `migrate` converts a save written at `fromVersion` into input that the current `decode` accepts; `decode` still validates the result, so a migration can never smuggle in invalid state. A version with no declared migration is rejected as before. Ordering and safety rules:
-
-- `decodeEnvelope` migrates only declared older versions. A version **newer** than the client raises `SchemaNewerError`, which the save session turns into a "refresh the page" message instead of silently ignoring or overwriting the save.
-- `LocalRepository.load` reads the current key first and falls back to the prior-version key (guests: the migration's `storageKey`; accounts: `inmogames:account:{uid}:{slug}:v{fromVersion}`). A guest key is never used for an account mirror. The prior key is left in place until a write to the new key succeeds, then removed. `delete` removes every version key so a reset cannot be undone by migration.
-- `FirestoreRepository.save` is a transaction that reads the stored `schemaVersion` and throws `SchemaNewerError` if it is greater than the client's. `loadOrSeed` and `load` migrate an older cloud document in memory; the migrated state is written only by the next ordinary save.
-- Migrations must be pure, deterministic, never drop durable progress, and be covered by unit tests with fixtures of the older shape.
-
 The modular Firestore Lite SDK reads directly from the server and does not provide an implicit offline queue. The platform owns local fallback, retry and operation ordering explicitly. Document reads/writes do not require composite indexes or a realtime subscription.
 
 ## Guest/local behavior
@@ -104,7 +95,7 @@ Threefold (`threefold`) stores only `{ bestScore }`, updated after a completed f
 
 ## Security Rules
 
-`firestore.rules` denies access by default. For `users/{userId}/games/{gameId}`, reads/deletes require `request.auth != null && request.auth.uid == userId`. Creates/updates also require a valid slug, exactly `schemaVersion`, `state`, `updatedAt`, a positive integer version, a map state and `updatedAt == request.time`. Updates additionally require `request.resource.data.schemaVersion >= resource.data.schemaVersion`, so a stale client cannot downgrade a newer save even if it bypasses its own transaction check (deleting and recreating a save is still the owner's right, which is how a reset works). Hiding controls is not authorization. Game-state decoding is client-side integrity checking; virtual game scores are not trusted competitive results.
+`firestore.rules` denies access by default. For `users/{userId}/games/{gameId}`, reads/deletes require `request.auth != null && request.auth.uid == userId`. Creates/updates also require a valid slug, exactly `schemaVersion`, `state`, `updatedAt`, a positive integer version, a map state and `updatedAt == request.time`. Hiding controls is not authorization. Game-state decoding is client-side integrity checking; virtual game scores are not trusted competitive results.
 
 `firebase.json` retains Hosting and adds the Firestore rules path plus local emulator settings. No permissive rule or privileged credential is introduced.
 

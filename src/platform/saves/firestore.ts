@@ -1,5 +1,5 @@
-import { doc, getDoc, deleteDoc, runTransaction, serverTimestamp, type Firestore } from 'firebase/firestore/lite';
-import { SchemaNewerError, decodeEnvelope, validateSlug, validateState, type AccountRepository, type GameSaveDefinition } from './contracts';
+import { doc, getDoc, setDoc, deleteDoc, runTransaction, serverTimestamp, type Firestore } from 'firebase/firestore/lite';
+import { decodeEnvelope, validateSlug, validateState, type AccountRepository, type GameSaveDefinition } from './contracts';
 export class FirestoreRepository<T> implements AccountRepository<T> {
   constructor(private readonly db: Firestore, private readonly uid: string, private readonly definition: GameSaveDefinition<T>, private readonly canWrite: () => boolean) {
     if (!uid || uid.includes('/')) throw new Error('Invalid account identifier.');
@@ -16,15 +16,7 @@ export class FirestoreRepository<T> implements AccountRepository<T> {
   }
   async save(slug: string, version: number, state: T): Promise<void> {
     const value = validateState(slug, version, state, this.definition);
-    const ref = this.reference(slug);
-    await runTransaction(this.db, async transaction => {
-      if (!this.canWrite()) throw new Error('The account session changed.');
-      const snapshot = await transaction.get(ref);
-      const stored = snapshot.exists() ? (snapshot.data() as { schemaVersion?: unknown }).schemaVersion : undefined;
-      if (typeof stored === 'number' && stored > version) throw new SchemaNewerError();
-      if (!this.canWrite()) throw new Error('The account session changed.');
-      transaction.set(ref, { schemaVersion: version, state: value, updatedAt: serverTimestamp() });
-    });
+    await setDoc(this.reference(slug), { schemaVersion: version, state: value, updatedAt: serverTimestamp() });
   }
   async delete(slug: string): Promise<void> { await deleteDoc(this.reference(slug)); }
   async loadOrSeed(slug: string, version: number, seed: T | null): Promise<T | null> {

@@ -45,13 +45,3 @@ test('a game reset cannot delete a different game; writes must use a valid versi
   await assertFails(setDoc(own(db), { ...payload(), updatedAt: Timestamp.fromMillis(0) }));
   await assertFails(setDoc(own(db), { ...payload(), extra: true }));
 });
-test('an owner can upgrade a save to a newer schema but never downgrade it', async () => {
-  const db = env.authenticatedContext('alice').firestore();
-  await assertSucceeds(setDoc(own(db, 'mergrove'), { ...payload(), schemaVersion: 1 }));
-  await assertSucceeds(setDoc(own(db, 'mergrove'), { ...payload(), schemaVersion: 2 }));
-  await assertSucceeds(setDoc(own(db, 'mergrove'), { ...payload(), schemaVersion: 2, state: { bestScore: 9 } }));
-  await assertFails(setDoc(own(db, 'mergrove'), { ...payload(), schemaVersion: 1 }));
-  assert.equal((await getDoc(own(db, 'mergrove'))).data().schemaVersion, 2);
-  await assertSucceeds(deleteDoc(own(db, 'mergrove')));
-  await assertSucceeds(setDoc(own(db, 'mergrove'), { ...payload(), schemaVersion: 1 }));
-});
