@@ -116,6 +116,11 @@ New game-local work reopens the game under the continuity contract. The save sch
 
 The explicit v1 exclusions are unchanged: no timer, daily or date-gated challenge (rejected permanently), leaderboard, or ninth tier. Undo and audio are no longer excluded: undo shipped as PRD MER-028 and audio is planned as an opt-in procedural layer. The preview reveals information the deterministic engine already fixes; it does not create a reroll or any new randomness.
 
+## Owner scope decisions (2026-10-07)
+
+- **First release.** Mergrove has never had players. There is no earlier save to migrate or keep compatible, so the save stays at schema version 1 and takes its final shape directly; no migration code, dual storage keys or shared-platform change is needed. Ruleset `v2` (large-group bonus) becomes the default for new games; `v1` remains a frozen baseline used by tests and the simulator.
+- **Linear progression.** There is no daily puzzle, weekly event, date-keyed seed, calendar streak or share text, now or later. Progression is the Journey of Biomes, unlocked level by level by winning; Endless is free play. Play modes are `endless` and `journey`.
+
 ## Verification requirements
 
 - Pure-engine tests cover deterministic creation, orthogonal grouping, basic merge, cascade scoring, ancient bloom, terminal/recoverable full boards, compost and invalid actions.

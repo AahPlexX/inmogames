@@ -42,12 +42,17 @@ Same seeds, two-ply bot, n=24 (2026-10-07): classic-5 median 286 turns, Sapling 
 
 Two-ply bot, 24 seeds, v1 to v2 Sapling reach: classic-5 38% to 50%, crossroads-6 67% to 83%, standard-6 54% to 96%. Lantern Tree and above are still 0% everywhere for this bot, so the late game is an open balance question (bot weakness vs rules not separated).
 
+## Scope decisions (owner, 2026-10-07)
+
+- Mergrove has never had players: this is the first release. There is no v1 data to migrate, so the save stays at schema version 1 and takes its final shape directly. The shared-platform migration work was reverted.
+- No daily puzzle, weekly event, date-keyed seed or calendar streak (roadmap MER-014 rejected). Progression is linear through the Journey of Biomes; Endless is free play.
+
 ## Current handoff
 
 **Implementation state:** implementing  
 **Last verified revision:** `965c91a5b9090da321ae3eb0d11f9383678b02c6` in GitHub Actions run `37553471015` (v1.0 only). v1.1 has no CI-verified revision yet.  
 **Open game-local work:** v1.1 awaits the full CI validation chain and a Pages deployment with a fresh render check. Locally verified (Node 24.21.0): typecheck, `pnpm test:unit`, `pnpm game:check` and `tests/browser/mergrove-design.mjs`. Not run in the authoring sandbox: Firestore rules tests, Auth/Firestore emulator browser tests, `design:check`, dependency gates and production builds.  
 **External blockers:** TASK-003 still blocks real configured-project Firebase account-save verification only; it does not block v1.1.  
-**Next action:** CI (`pages.yml`) only runs on pushes to `main` or manual dispatch, so merge branch `mergrove-v1.1-balance-and-presentation` to `main` (the repo rule is direct commits to `main`), let CI run, and fix any failure it reports. When every gate is green, record the revision and run id, tick the two open spec gates, set every started row to verified, set Implementation state to verified, and change the GAME_INDEX row back to `verified game`. Do not start schema-v2 features (hold, undo, modes, stats, codex) until roadmap MER-020 has its shared-platform change. Next game-local candidates that need no save change: MER-012 large-group bonus as a NEW ruleset id (then re-simulate; it is the main lever for the late tiers), and a stronger bot. Everything that persists new data (layoutId, rulesetId, hold, undo, modes, stats, codex) needs roadmap MER-020 first.
+**Next action:** CI (`pages.yml`) only runs on pushes to `main` or manual dispatch, so merge branch `mergrove-v1.1-balance-and-presentation` to `main` (the repo rule is direct commits to `main`), let CI run, and fix any failure it reports. When every gate is green, record the revision and run id, tick the two open spec gates, set every started row to verified, set Implementation state to verified, and change the GAME_INDEX row back to `verified game`. Do not start schema-v2 features (hold, undo, modes, stats, codex) until roadmap MER-020 has its shared-platform change. Next, in order: define the final save shape at schema version 1 (no migration), then the linear Journey of Biomes (MER-015), Herbarium and achievements (MER-017/019), then presentation, animation and procedural audio (MER-029). Earlier candidates, now mostly done: MER-012 large-group bonus as a NEW ruleset id (then re-simulate; it is the main lever for the late tiers), and a stronger bot. Everything that persists new data (layoutId, rulesetId, hold, undo, modes, stats, codex) needs roadmap MER-020 first.
 
 Product scope and final feature state are mirrored in `src/games/mergrove/PRD.md` and `src/games/mergrove/todo.md`; chat history is not required to resume this game.
