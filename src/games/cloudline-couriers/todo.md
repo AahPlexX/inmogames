@@ -2,7 +2,7 @@
 
 **Status:** Implementing  
 **Last synchronized:** 2026-10-06  
-**Architecture & Engine:** Original static React/Vite 16-stop skyway strategy game with pure deterministic TypeScript rules, planned repository-authored SVG sprites, and planned shared versioned save integration.  
+**Architecture & Engine:** Original static React/Vite 16-stop skyway strategy game with pure deterministic TypeScript rules, planned repository-authored SVG sprites, and CLC-009 entering TDD for shared versioned save integration.  
 **Dependencies Used:**
 - [x] `react@19.3.0`
 - [x] `react-dom@19.3.0`
@@ -101,9 +101,11 @@
 **Inputs:** Credits, fuel, position, district, landmark stages, shield/streak and career counters.  
 **Dependencies Touched:** Shared save contract; Firebase only through shared platform.  
 **Technical Notes & Edge Cases:** Defensive decoder; game-scoped reset; failure cannot block play; live Firebase remains TASK-003.  
-**Implementation Details:** Add versioned persistence definition and shared `useGameSave` integration without direct Firebase calls.  
+**Implementation Details:** After the RED guest-reload regression is observed, add a versioned persistence definition and shared `useGameSave` integration without direct Firebase calls.  
 **Verification & State Sign-off:**
-- [ ] Guest reload persistence implemented and covered.
+- [x] Behavior-level RED regression added: upgrading Aerie Post to stage one must survive page reload.
+- [ ] Observe that regression fail for the intended missing-persistence reason before implementation.
+- [ ] Guest reload persistence implemented and green.
 - [ ] Emulator account checkpoint/reset evidence green; real configured project remains TASK-003.
 
 ### CLC-010 — Catalog, Documentation, and Production Integration

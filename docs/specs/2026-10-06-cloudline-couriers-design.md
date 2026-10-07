@@ -19,11 +19,11 @@ Four landmarks—Aerie Post, Cloud Garden, Signal Spire and Skyforge Hangar—ea
 The board is a 5×5 CSS grid perimeter, yielding exactly 16 stops while reserving the center for roll/boost controls. Important controls use a 44 CSS-pixel baseline, native buttons preserve keyboard/touch parity, active position and boost are non-color states, status feedback uses a live region, no drag/timing is required, and nonessential motion must honor reduced motion. Rendered evidence at 320 CSS px and 200% text is mandatory before verification.
 
 ## Architecture
-`engine.ts` is pure deterministic TypeScript and owns movement/events/economy/progression. React does not reimplement rules. The current source tranche introduces no dependency. Durable save integration will use the shared repository platform rather than direct Firebase calls. Original SVG sprites remain a required next tranche.
+`engine.ts` is pure deterministic TypeScript and owns movement/events/economy/progression. React does not reimplement rules. The current source tranche introduces no dependency. CLC-009 must use the shared versioned save platform (`useGameSave`/shared repository) rather than direct Firebase calls. A behavior-level browser regression now requires guest landmark progress to survive reload; it is intentionally expected to fail until persistence is implemented. Original SVG sprites remain a required later tranche.
 
 ## Completion contract
 **Completion state:** implementing  
-**Completion evidence:** source/UI/unit core tranche is integrated; central PRD/todo governance is being enforced; exact-revision CI/browser/Pages evidence remains pending.
+**Completion evidence:** core source/UI/unit work and central PRD/todo governance are integrated. CLC-009 has entered TDD RED with a guest-reload browser regression; persistence implementation and exact-revision browser/Pages evidence remain pending.
 - [ ] Complete roll → move → event → earn → upgrade → district loop is playable and verified.
 - [ ] Deterministic engine covers movement, boost, circuit, event, Cargo Cache, streak/shield, fuel recovery and progression edge cases.
 - [ ] Versioned durable guest save and shared account-save/reset path have unit/browser/emulator evidence.
