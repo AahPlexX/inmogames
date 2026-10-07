@@ -1,6 +1,6 @@
 # Mergrove design
 
-**Status:** Implementing; game-local verification pending integration CI/browser evidence  
+**Status:** Game implementation verified; live Firebase account services remain external TASK-003 work  
 **Last synchronized:** 2026-10-06  
 **Route:** `#/games/mergrove`
 
@@ -55,6 +55,7 @@ Mergrove intentionally does not require drag-and-drop. WCAG 2.2 requires a simpl
 - Board cells have explicit row/column and state/action names.
 - Merge/result text is announced through a polite status region.
 - Important controls use the repository's 44 CSS-pixel target baseline, exceeding WCAG 2.2 AA's 24 × 24 minimum.
+- Focus indicators remain visible through the shared product focus treatment.
 - No essential action uses a timer or reaction window.
 - Merge-pop motion is decorative and disabled under `prefers-reduced-motion: reduce`.
 - Layout must not horizontally overflow at 320 CSS px or at 200% text sizing.
@@ -93,6 +94,14 @@ Invalid queue/cell indexes, occupied placements, insufficient-sunlight compost a
 
 A full board with at least four sunlight is not game over because Compost is still a legal recovery. A full board below the compost cost is terminal. A tier-eight merge clears instead of overflowing the tier model.
 
+## Verification evidence
+
+Exact revision `965c91a5b9090da321ae3eb0d11f9383678b02c6` passed the complete Validate and deploy Pages workflow in run `37553471015` on 2026-10-06 local time. The run passed frozen install, exact/current dependency gates, DESIGN.md lint, TypeScript, the structural/history-aware game documentation gate, unit tests, Firestore rules tests, Auth/Firestore emulator browser tests including `mergrove-account-persistence.mjs`, rendered design/browser tests including `mergrove-design.mjs`, both production builds, Pages artifact upload and deployment.
+
+Mergrove-specific browser evidence verifies the 25-cell board, three-piece queue, deterministic first trio merge, guest active-run reload, native keyboard play, 44px targets, 320 CSS-px reflow, 200% text reflow and reduced-motion suppression. The account emulator evidence verifies authenticated checkpointing, restoration in a separate browser context and game-scoped reset propagation.
+
+A fresh uncached post-deployment render of `https://aahplexx.github.io/inmogames/#/games/mergrove` returned HTTP 200 and rendered the expected Mergrove initial state: three Seeds, 0/25 occupied cells and the 25-cell placement board. The external production Playwright connector was unavailable because its upstream MCP endpoint returned 404, so no claim is made that a second independent production console inspector was available; the green CI browser suites separately assert no uncaught Mergrove page errors.
+
 ## Verification requirements
 
 - Pure-engine tests cover deterministic creation, orthogonal grouping, basic merge, cascade scoring, ancient bloom, terminal/recoverable full boards, compost and invalid actions.
@@ -100,21 +109,21 @@ A full board with at least four sunlight is not game over because Compost is sti
 - Rendered browser evidence covers the 25-cell board, initial queue, first deterministic trio merge, reload checkpoint, keyboard operation, 320px/200% reflow, 44px targets, non-color queue selection and reduced motion.
 - Shared Auth/Firestore emulator evidence exercises an authenticated Mergrove checkpoint across browser contexts and game-scoped reset.
 - Catalog/index/registry and per-game documents remain synchronized in the same integration.
-- Full repository validation and GitHub Pages deployment must pass before the game can be marked verified.
+- Full repository validation and GitHub Pages deployment pass before the game is marked verified.
 
 ## Completion contract
 
-**Completion state:** implementing  
-**Completion evidence:** local RED→GREEN engine and persistence probes completed on 2026-10-06; integrated CI/browser/deployment evidence pending.
+**Completion state:** verified  
+**Completion evidence:** exact revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`; GitHub Actions run `37553471015` passed complete validation and Pages deployment, followed by a fresh HTTP-200 deployed-route render of `#/games/mergrove`.
 
-- [ ] Complete placement → merge → cascade → ancient-bloom → game-over/restart loop is integrated and playable.
-- [ ] Deterministic engine and v1 save decoder are covered by repository unit tests for material edge cases.
-- [ ] Original eight-tier SVG sprite artwork is integrated with no external runtime asset/licence dependency.
-- [ ] Pointer/touch/keyboard interaction, 320 CSS-px and 200% text reflow, focus/selection, touch targets and reduced motion have rendered-browser evidence.
-- [ ] Guest reload checkpoint and shared account-save/reset path have repository/emulator evidence; live Firebase remains separately identified under TASK-003.
-- [ ] Catalog, lazy registry, game index, task state, this spec and `src/games/mergrove/TRACKER.md` agree on shipped state.
-- [ ] `pnpm validate`-equivalent CI gates are green on the exact integrated revision.
-- [ ] GitHub Pages deployment is green and the deployed route is smoke-tested without game-local console/page errors.
+- [x] Complete placement → merge → cascade → ancient-bloom → game-over/restart loop is integrated and playable.
+- [x] Deterministic engine and v1 save decoder are covered by repository unit tests for material edge cases.
+- [x] Original eight-tier SVG sprite artwork is integrated with no external runtime asset/licence dependency.
+- [x] Pointer/touch/keyboard interaction, 320 CSS-px and 200% text reflow, focus/selection, touch targets and reduced motion have rendered-browser evidence.
+- [x] Guest reload checkpoint and shared account-save/reset path have repository/emulator evidence; live Firebase remains separately identified under TASK-003.
+- [x] Catalog, lazy registry, game index, task state, this spec and `src/games/mergrove/TRACKER.md` agree on shipped state.
+- [x] `pnpm validate`-equivalent CI gates are green on the exact integrated revision.
+- [x] GitHub Pages deployment is green; the deployed route independently renders the expected game state, while CI browser suites provide the zero-page-error regression evidence.
 
 This section is authoritative for the word **complete**. New game-local scope or a discovered unresolved defect reopens the applicable gate before further implementation.
 

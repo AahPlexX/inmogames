@@ -7,16 +7,17 @@
 
 | Capability | Status | Verification |
 | --- | --- | --- |
-| Deterministic 5 × 5 engine and queue | started | Local TypeScript/Node RED→GREEN probe passes; repository CI pending. |
-| Orthogonal merge + cascade resolution | started | Local probes cover trio, two-stage cascade and scoring formula; CI pending. |
-| Sunlight + compost recovery | started | Local probes cover full-board recovery threshold and compost spend; CI pending. |
-| Tier-eight ancient bloom | started | Local probe verifies board-clearing terminal-tier merge; CI pending. |
-| Eight-tier original SVG sprite bank | started | Repository-authored vector symbols implemented; rendered QA pending. |
-| Responsive pointer/touch/keyboard UI | started | React/native-button implementation prepared; rendered browser evidence pending. |
-| Guest active-run persistence | started | v1 decoder locally typechecked/probed; browser reload evidence pending. |
-| Shared account checkpoint/reset | blocked externally | Shared emulator path will be tested in CI; real Firebase remains TASK-003. |
-| Catalog/registry/index integration | started | Integration prepared; CI/document checker pending. |
-| Production deployment | planned | Requires full validated `main` workflow and Pages smoke test. |
+| Deterministic 5 × 5 engine and queue | verified | Unit suite passed on revision `965c91a5b9090da321ae3eb0d11f9383678b02c6` in run `37553471015`. |
+| Orthogonal merge + cascade resolution | verified | Unit coverage for trio merge, cascade scoring, grouping and invalid actions passed in run `37553471015`. |
+| Sunlight + compost recovery | verified | Unit coverage for compost spend plus terminal/recoverable full-board behavior passed in run `37553471015`. |
+| Tier-eight ancient bloom | verified | Unit coverage verifies Groveheart group clearing and ancient-bloom accounting; run `37553471015` green. |
+| Eight-tier original SVG sprite bank | verified | Repository-authored inline SVG symbols shipped; Mergrove rendered-browser suite passed in run `37553471015`. |
+| Responsive pointer/touch/keyboard UI | verified | `mergrove-design.mjs` passed 320px, 200% text, keyboard, 44px targets and reduced-motion checks in run `37553471015`. |
+| Guest active-run persistence | verified | Browser reload checkpoint plus v1 decoder unit coverage passed in run `37553471015`. |
+| Shared account checkpoint/reset | verified | Auth/Firestore emulator test verifies authenticated checkpoint, second-browser restoration and scoped reset in run `37553471015`. |
+| Live Firebase account verification | blocked externally | TASK-003 owns real configured-project Auth/Firestore/rules/password-reset/cross-browser verification; emulator evidence is not represented as live verification. |
+| Catalog/registry/index integration | verified | Catalog, lazy workspace and documentation checks passed on revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`. |
+| Production deployment | verified | Pages deploy job succeeded in run `37553471015`; a fresh uncached live render returned HTTP 200 and the expected 25-cell Mergrove initial state. |
 
 ## Asset and network record
 
@@ -24,8 +25,10 @@ All Mergrove art is original repository-authored SVG in `src/games/mergrove/spri
 
 ## Current handoff
 
-**Implementation state:** implementing  
-**Last verified revision:** none yet; this is new game-local work.  
-**Open game-local work:** pass repository CI/rendered browser coverage, smoke-test deployed route, then reconcile completion evidence. Product planning/execution state is maintained in `src/games/mergrove/PRD.md` and `src/games/mergrove/todo.md`.  
-**External blockers:** TASK-003 blocks real configured-project Firebase account-save verification only; it does not block game-local implementation or emulator evidence.  
-**Next action:** validate the integrated Mergrove revision on live `main`, preserving any parallel-agent changes, then record evidence and fix any evidence-backed defects before marking the game verified.
+**Implementation state:** verified  
+**Last verified revision:** `965c91a5b9090da321ae3eb0d11f9383678b02c6` in GitHub Actions run `37553471015`.  
+**Open game-local work:** none; Mergrove satisfies its authoritative completion contract.  
+**External blockers:** TASK-003 blocks real configured-project Firebase account-save verification only; repository/emulator account-save behavior is verified and this external platform task does not reopen Mergrove.  
+**Next action:** none for game-local v1. Do not reopen Mergrove unless a reproducible defect is discovered or new scope is explicitly added. If TASK-003 is later completed, record the shared live-Firebase evidence without changing Mergrove gameplay unless that verification exposes a Mergrove-specific defect.
+
+Product scope and final feature state are mirrored in `src/games/mergrove/PRD.md` and `src/games/mergrove/todo.md`; chat history is not required to resume this game.

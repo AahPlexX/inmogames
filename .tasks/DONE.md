@@ -1,5 +1,9 @@
 # Done
 
+## GAME-003: Mergrove
+
+Completed game-locally on 2026-10-06. Mergrove ships an original deterministic 5 × 5 placement/cascade merge loop, eight repository-authored SVG spirit tiers, orthogonal merges and cascades, chain scoring, sunlight/Compost recovery, bounded Groveheart ancient blooms, guest active-run persistence and shared account-save integration. Exact revision `965c91a5b9090da321ae3eb0d11f9383678b02c6` passed dependency freshness, design lint, TypeScript, game/document integrity, unit tests, Firestore rules, Mergrove Auth/Firestore emulator cross-browser/reset checks, rendered Mergrove responsive/keyboard/reduced-motion checks, both builds and GitHub Pages deployment in run `37553471015`. A fresh uncached production render of `#/games/mergrove` returned HTTP 200 with the expected three-Seed queue and empty 25-cell board. TASK-003 remains the shared external blocker for real configured-project Firebase verification and is not part of this game-local completion claim.
+
 ## TASK-000: Repository foundation
 Docs, governance, task tracking, Pages workflow and an empty-catalog app shell. See `.tasks/WORK_LOG.md`.
 
@@ -8,7 +12,7 @@ Committed `pnpm-lock.yaml`, restored pnpm caching, and switched CI to `pnpm inst
 
 ## PLATFORM-001 repository implementation
 
-Shared optional Auth/Firestore account-save code and both game migrations are implemented and emulator-verified. Live Firebase platform completion remains tracked in `.tasks/IN_PROGRESS.md` and blocked on TASK-003 only. See `docs/FIREBASE_SETUP.md` and the additive work-log entry for validation scope.
+Shared optional Auth/Firestore account-save code and game migrations are implemented and emulator-verified. Live Firebase platform completion remains tracked in `.tasks/IN_PROGRESS.md` and blocked on TASK-003 only. See `docs/FIREBASE_SETUP.md` and the additive work-log entry for validation scope.
 
 ## TASK-001: Enable GitHub Pages
 
