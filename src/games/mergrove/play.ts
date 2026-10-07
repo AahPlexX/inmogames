@@ -6,7 +6,9 @@ import { resolveLayout, type BoardLayout } from './layout';
 import { resolveRuleset, rulesOf } from './ruleset';
 
 /** Pure play-state layer: hold slot, single-step undo and in-run wishes on top of the frozen engine. */
-export type PlayMode = 'endless' | 'daily' | 'expedition';
+/** Endless is free play. Journey is the linear, chaptered progression. There is no daily or timed mode. */
+export type PlayMode = 'endless' | 'journey';
+export const PLAY_MODES: readonly PlayMode[] = Object.freeze(['endless', 'journey']);
 
 export const UNDO_COST = 2;
 export const MAX_WISHES = 2;
@@ -108,6 +110,7 @@ function fillWishes(wishes: ActiveWish[], wishRng: number, highestTier: number, 
 }
 
 export function newPlay(input: NewPlayInput): PlayState {
+  if (!PLAY_MODES.includes(input.mode)) throw new Error(`Unknown mode "${String(input.mode)}".`);
   const ruleset = resolveRuleset(input.rulesetId);
   if (!ruleset) throw new Error(`Unknown ruleset "${input.rulesetId}".`);
   const layout = resolveLayout(input.layoutId);
@@ -125,7 +128,7 @@ function snapshotOf(state: PlayState): UndoSnapshot {
 }
 
 function keepsUndo(state: PlayState, next: MergroveRun): UndoSnapshot | null {
-  if (state.mode !== 'endless' || next.gameOver) return null;
+  if (next.gameOver) return null;
   return snapshotOf(state);
 }
 
@@ -188,7 +191,7 @@ export function holdPiece(state: PlayState, queueIndex: number): PlayState {
 }
 
 export function canUndo(state: PlayState): boolean {
-  return state.mode === 'endless' && state.undo !== null && !state.run.gameOver && state.undo.run.sunlight >= UNDO_COST;
+  return state.undo !== null && !state.run.gameOver && state.undo.run.sunlight >= UNDO_COST;
 }
 
 /** Restores the position before the last move, then charges UNDO_COST. The RNG is restored too, so nothing can be rerolled. */

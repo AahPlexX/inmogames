@@ -41,9 +41,12 @@ describe('placeAt / compostAt', () => {
     expect(r.state.run.turns).toBe(1);
     expect(r.state.undo?.run).toEqual(s.run);
   });
-  it('does not snapshot outside endless mode', () => {
-    expect(placeAt(fresh({ mode: 'daily' }), 0, 0).state.undo).toBeNull();
-    expect(placeAt(fresh({ mode: 'expedition' }), 0, 0).state.undo).toBeNull();
+  it('snapshots in journey mode too: progression is linear and nothing is compared between players', () => {
+    expect(placeAt(fresh({ mode: 'journey' }), 0, 0).state.undo).not.toBeNull();
+  });
+  it('knows only the two supported modes', () => {
+    expect(() => fresh({ mode: 'daily' as never })).toThrow(/mode/i);
+    expect(() => fresh({ mode: 'expedition' as never })).toThrow(/mode/i);
   });
   it('uses the ruleset: v2 leaves a bonus piece for a five-group, v1 does not', () => {
     const base = (id: string) => { const s = fresh({ rulesetId: id, wishes: false }); return withRun(s, { board: boardOf({ 1: 1, 5: 1, 7: 1, 11: 1 }) }); };
@@ -121,8 +124,9 @@ describe('undo', () => {
     expect(canUndo(poor)).toBe(false);
     expect(() => undoLast(poor)).toThrow(/undo/i);
   });
-  it('is endless-only', () => {
-    expect(canUndo({ ...setup(), mode: 'daily' })).toBe(false);
+  it('is available in endless and journey modes', () => {
+    expect(canUndo({ ...setup(), mode: 'endless' })).toBe(true);
+    expect(canUndo({ ...setup(), mode: 'journey' })).toBe(true);
   });
   it('is blocked across a game-over transition', () => {
     const nearlyFull = Array<number | null>(25).fill(1); nearlyFull[0] = null;

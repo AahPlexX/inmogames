@@ -92,7 +92,7 @@
   - [ ] **Verification & State Sign-off:** Unit and rendered-browser checks pass locally; needs a CI-verified revision.
 
 - [ ] **Ruleset Registry and Deterministic Replay (shipped part)** `{id: 'MER-025'}` — `[feature development status: = 'Started']`
-  - [x] **Purpose:** Make released rules provably unchangeable so shared, daily and in-progress runs can never silently shift.
+  - [x] **Purpose:** Make released rules provably unchangeable so in-progress and replayed runs can never silently shift.
   - [x] **Inputs / Parameters:** A seed, a ruleset id and an action list.
   - [x] **Dependencies Touched:** `engine.ts` (read-only) and the new `ruleset.ts`; no UI or save changes.
   - [x] **Technical Notes & Edge Cases:** Unknown ids such as `__proto__` resolve to null; replay reports the first illegal action instead of throwing; changing a released rule must fail the goldens.

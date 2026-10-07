@@ -26,7 +26,7 @@ Planned Functional Features Specification:
     route: "#/games/mergrove"
     production_url: "https://aahplexx.github.io/inmogames/#/games/mergrove"
     genre_description: "Original single-player placement-and-cascade merge puzzle: the player grows woodland spirits on a compact 5x5 board, weighing immediate fusions against future space."
-    product_north_star: "A woodland placement-merge game that never charges and never cheats, with layered long-term play: Endless Grove, Daily Grove and Weekly Expedition, a Journey of Biomes, and a Herbarium collection. All of it is deterministic, keyboard/touch accessible and asset-independent."
+    product_north_star: "A woodland placement-merge game that never charges and never cheats, with linear, chaptered progression: a Journey of Biomes that unlocks level by level as the player wins, free-play Endless Grove, and a Herbarium collection. There is deliberately no daily puzzle, weekly event, calendar streak or timed content: the player sets the pace. All of it is deterministic, keyboard/touch accessible and asset-independent."
 
   technical_foundation:
     architecture_and_engine: "Static React/Vite client. Pure deterministic TypeScript 5x5 merge engine; React presentation; repository-authored inline SVG sprite bank; versioned shared save contract using localStorage for guests and the shared optional Firebase account-save platform for authenticated players. No game-specific runtime network or external asset dependency."
@@ -655,7 +655,7 @@ Planned Functional Features Specification:
           evidence: "direct: play.test 'holdPiece' suite."
         - function_id: "MER-028-F02"
           title: "Single-step undo (roadmap MER-011)"
-          requirement: "Every placement or compost in endless mode stores a full snapshot (run including rngState, hold, wishes, wish RNG). undoLast restores it and then subtracts UNDO_COST (2) sunlight, so it requires at least 2 sunlight at the restored point. Because rngState is restored, replaying the same move draws the same replacement: undo cannot reroll. One level only; the snapshot is dropped on undo and whenever a move ends the run; daily and expedition modes never store one. Best-score records are not touched."
+          requirement: "Every placement or compost in endless or journey mode stores a full snapshot (run including rngState, hold, wishes, wish RNG). undoLast restores it and then subtracts UNDO_COST (2) sunlight, so it requires at least 2 sunlight at the restored point. Because rngState is restored, replaying the same move draws the same replacement: undo cannot reroll. One level only; the snapshot is dropped on undo and whenever a move ends the run. Undo is allowed in both modes (endless, journey) because nothing is compared between players. Best-score records are not touched."
           source: "play.ts placeAt, compostAt, canUndo, undoLast, UNDO_COST"
           evidence: "direct: exact restore, no-reroll, one level, sunlight gate, endless-only, game-over block, hold undone with the move."
         - function_id: "MER-028-F03"
@@ -705,8 +705,8 @@ Planned Functional Features Specification:
     - "Ryan, R. M., Rigby, C. S., & Przybylski, A. (2006). The Motivational Pull of Video Games: A Self-Determination Theory Approach. Motivation and Emotion 30, 347–363. https://selfdeterminationtheory.org/SDT/documents/2006_RyanRigbyPrzybylski_MandE.pdf"
 
   v1_explicit_exclusions:
-    - "No drag-only controls, timer, leaderboard, multiplayer, ads, purchases, analytics, remote sprite service, external font, audio, undo stack, daily challenge or ninth merge tier. A richer animation/audio layer may be proposed later only as new scope with fresh completion evidence."
-    - "Roadmap note: undo (MER-011) and a daily challenge (MER-014) are planned below. Each remains excluded from v1 until promoted under the Promotion rule with fresh completion evidence."
+    - "No drag-only controls, timer, leaderboard, multiplayer, ads, purchases, analytics, remote sprite service, external font, audio, undo stack, daily challenge or ninth merge tier (as drafted for v1.0). Since then: undo shipped (MER-028), audio and a richer animation layer are planned as opt-in features (PRD MER-029), and a daily challenge was permanently rejected."
+    - "Roadmap note: undo (MER-011) is promoted and a daily challenge (MER-014) was rejected by the owner on 2026-10-07."
 
   competitive_research:
     method: "Public primary/official sources (developer help centers, store listings) plus secondary references (Wikipedia, community wikis, industry analysis). Mechanics are cited as observed; Mergrove adopts design patterns, never names, art, text or code."
@@ -726,12 +726,12 @@ Planned Functional Features Specification:
         relevance: "Benchmark for a daily habit loop."
         observed_mechanics: "One puzzle per day, to be solved before local midnight; statistics including streaks; a spoiler-free Share result."
         sources: "https://help.nytimes.com/360011158491-New-York-Times-Games/24611727334932-Wordle"
-        adopt: "Daily Grove keyed to the local date, puzzle number, spoiler-free share text (MER-014)."
+        adopt: "Not adopted: a date-keyed daily was rejected by the owner on 2026-10-07 in favor of linear progression."
       - title: "Two Dots / Royal Match / Candy Crush Saga"
         relevance: "Market-leading content cadence for level-based puzzles."
         observed_mechanics: "Two Dots unlocks weekly Expeditions after about main-map level 55; Royal Match adds new levels every two weeks; Candy Crush releases levels in episodes on a regular cadence."
         sources: "https://twodots.fandom.com/wiki/Expeditions ; https://play.google.com/store/apps/details?id=com.dreamgames.royalmatch ; https://candycrush.fandom.com/wiki/Level"
-        adopt: "Chaptered Journey of Biomes (MER-015), Weekly Expedition (MER-014), a content-pack pipeline sized for a regular cadence (MER-021)."
+        adopt: "Chaptered Journey of Biomes (MER-015) as the central progression, a content-pack pipeline sized for a regular cadence (MER-021)."
       - title: "Merge Dragons! (Gram Games)"
         relevance: "Large-group merge incentive."
         observed_mechanics: "Merging 5 objects yields 2 upgraded objects instead of 1."
@@ -748,17 +748,17 @@ Planned Functional Features Specification:
         observed_mechanics: "Quests on placed tiles award extra tiles to the stack when completed."
         sources: "https://dorfromantik.fandom.com/wiki/Quests"
         adopt: "Grove Wishes that grant sunlight, so success lengthens the run (MER-013)."
-    motivation_model: "Self-determination theory (Ryan, Rigby & Przybylski 2006): perceived competence, autonomy and relatedness predict enjoyment and continued play. Mergrove maps these to mastery tools (hold, preview, readable scoring, fair RNG), meaningful choice (modes, optional goals) and light social connection (shareable daily result), and rejects coercive retention (energy, purchase pressure, punishing streaks)."
+    motivation_model: "Self-determination theory (Ryan, Rigby & Przybylski 2006): perceived competence, autonomy and relatedness predict enjoyment and continued play. Mergrove maps these to mastery tools (hold, preview, readable scoring, fair RNG), meaningful choice (modes, optional goals) and a sense of steady progress through a linear Journey with a Herbarium to fill, and rejects coercive retention (energy, purchase pressure, streaks, date-gated content)."
 
   final_product_vision:
     layers:
       - "L1 Endless Grove: the v1 core on a selectable layout, plus Storehouse, next-piece preview, optional limited undo and Grove Wishes."
-      - "L2 Daily Grove and Weekly Expedition: one seeded run per local date with spoiler-free share text; a weekly seeded run with a modifier (briars, stones, pocket layout, fog)."
+      - "L2 (removed by owner decision 2026-10-07): daily and weekly seeded modes were dropped. Progression is linear instead; see L3."
       - "L3 Journey of Biomes: handcrafted chaptered levels; each biome adds one species line, one layout family and one mechanic (Threes-style restraint)."
       - "L4 Herbarium and Milestones: a collection codex with first-discovery reveals, lifetime stats and achievements whose thresholds come from simulation."
     biome_concepts_for_content_packs: "Mossy Hollow (v1 woodland, classic-5), Fen Lanterns (wetland species, standard-6, Briar hazard), Stonecrest (alpine species, ring/cross layouts, Stone blockers), Emberwood (autumn species, Wildseed), Moonglade (nocturnal species, finale chapter with a hidden final codex entry)."
     board_size_decision: "Undecided by design. Triple Town's standard is 6x6. v1's 5x5 makes ancient blooms (three Grovehearts = 6561 Seed-equivalents with trio merges) likely very rare. Decide with MER-023 simulation across classic-5, standard-6 and shaped layouts. First results (MER-026-F05) show larger boards lengthen runs but do not make Lantern Tree or ancient blooms reachable for the current bots, so the earlier hypothesis that standard-6 becomes the default is unproven; classic-5 survives as 'Pocket Grove' hard mode and as the migration target for every v1 run."
-    retention_guardrails: "No energy, turn caps, purchases, ads, analytics, push notifications or loss-aversion streak penalties. Streaks include grace days. Every mode stays playable offline as a guest."
+    retention_guardrails: "No energy, turn caps, purchases, ads, analytics, push notifications, calendar streaks or any date-gated content. Every mode stays playable offline as a guest."
 
   post_release_content_safety:
     known_current_risks:
@@ -790,15 +790,8 @@ Planned Functional Features Specification:
         - "MER-009-F06 Runs record rulesetId (and optionally a bounded action log) in the save; blocked on MER-020."
     - roadmap_feature: "Daily Grove and Weekly Expedition"
       roadmap_id: "MER-014"
-      scope: "One seeded daily run per local calendar date (Wordle convention; the same date string gives the same puzzle everywhere) and one weekly run with a modifier. Fully client-side; no leaderboard. One scored attempt each; replays allowed but unscored."
-      roadmap_status: "Planned — not implemented"
-      functional_requirements:
-        - "MER-014-F01 dailySeed(localDate 'YYYY-MM-DD', rulesetId): FNV-1a 32-bit (offset 2166136261, prime 16777619); 0 remapped to non-zero."
-        - "MER-014-F02 puzzleNumber(localDate): days since a fixed launch date, used in share text."
-        - "MER-014-F03 weeklyExpedition(isoWeek): seed + modifier id (briar, stones, pocket layout, fog)."
-        - "MER-014-F04 recordDailyResult: last completed date, current/max streak, and one grace day per 7-day streak so one missed day is not punitive."
-        - "MER-014-F05 formatShare(result): spoiler-free text, e.g. 'Mergrove #123 · Lantern Tree · 4,820 · 1 bloom · streak 6', copied via a native button with an announced success or failure; no board positions revealed."
-        - "MER-014-F06 The mode is locked per run (activeRunMode 'endless' | 'daily' | 'expedition' | 'journey'); the daily seed cannot be edited or rerolled."
+      scope: "REJECTED by the owner on 2026-10-07. The game is linearly progressive; there is no daily puzzle, weekly modifier run, date-keyed seed, calendar streak or share text. Not planned and not to be built."
+      roadmap_status: "Rejected — do not implement"
     - roadmap_feature: "Journey of Biomes"
       roadmap_id: "MER-015"
       scope: "Handcrafted levels in chapters. Each biome adds one species line, one layout family and one mechanic. Goals: reach tier X, clear N briars, finish within N placements. Scored 1–3 stars. Win-gated unlocks only; no energy or turn timers."
@@ -835,17 +828,17 @@ Planned Functional Features Specification:
         - "MER-019-F01 accumulateStats(stats, events, action): pure. Fields: runsPlayed, placements, cascades, longestChain, ancientBlooms, sunlightEarned, compostsUsed, holdsUsed, undosUsed."
         - "MER-019-F02 evaluateAchievements(stats, run, earned): append-only list of earned ids; returns newUnlocks."
         - "MER-019-F03 Toasts use role=status; never modal, never dismissed only by a timer."
-        - "MER-019-F04 Candidate achievements (ids permanent; thresholds marked sim must be validated by MER-018): first_sprout (first Seed trio), canopy_builder (first Lantern Tree), heart_of_the_grove (first Groveheart), primordial_rebirth (first ancient bloom), sun_reservoir (hold N sunlight at once, sim), century_grove (100 placements in one run, sim), cascade_conductor (4-stage cascade, sim), forest_sovereign (multiple blooms in one run, sim; the draft's '5 in a single run' is likely unreachable on classic-5), constant_gardener (7-day daily streak), herbalist (complete a biome codex)."
+        - "MER-019-F04 Candidate achievements (ids permanent; thresholds marked sim must be validated by MER-018): first_sprout (first Seed trio), canopy_builder (first Lantern Tree), heart_of_the_grove (first Groveheart), primordial_rebirth (first ancient bloom), sun_reservoir (hold N sunlight at once, sim), century_grove (100 placements in one run, sim), cascade_conductor (4-stage cascade, sim), forest_sovereign (multiple blooms in one run, sim; the draft's '5 in a single run' is likely unreachable on classic-5), herbalist (complete a biome codex), trailblazer (finish a chapter of the Journey). The former constant_gardener (daily streak) is dropped with the daily mode."
         - "MER-019-F05 Badge art is repository-authored SVG, consistent with MER-005-F18."
     - roadmap_feature: "Save Schema v2 and Migration"
       roadmap_id: "MER-020"
-      scope: "Adds layoutId, rulesetId, mode, hold, undo snapshot, wish state, stats, achievements, codex discoveries, daily history and level progress. Requires shared-platform changes: a migrate hook, reading the old versioned key, and a transactional cloud write that refuses to downgrade."
+      scope: "Adds layoutId, rulesetId, mode, hold, undo snapshot, wish state, stats, achievements, codex discoveries and level progress. Superseded 2026-10-07: Mergrove has never shipped to players, so there is no v1 data to migrate. The game keeps save schema version 1 and takes this shape directly, with no migrate hook, no dual keys and no shared-platform change (the draft platform work was reverted)."
       roadmap_status: "Planned — not implemented; blocked on a shared platform change (coordinate with TASK-003)"
       functional_requirements:
         - "MER-020-F01 migrateV1toV2(state): v1 run → classic-5 / ruleset 'v1'; never drops bestScore or bestTier; seeds stats from v1 counters where derivable."
         - "MER-020-F02 Platform: GameSaveDefinition.migrate(fromVersion, state); LocalRepository reads the prior-version key and keeps it until the new write succeeds."
         - "MER-020-F03 Platform: a transactional Firestore write rejects a save when the stored schemaVersion is newer than the client's, and tells the player to refresh."
-        - "MER-020-F04 Compact history: last daily date + current/max streak + grace state, not an unbounded date list; bounded codex and achievement arrays."
+        - "MER-020-F04 Bounded arrays: codex discoveries and achievements are deduplicated, sorted and capped; no date history exists."
         - "MER-020-F05 Firestore rules validated against the v2 envelope in the rules test suite."
     - roadmap_feature: "Content Pack Pipeline"
       roadmap_id: "MER-021"
@@ -866,11 +859,11 @@ Planned Functional Features Specification:
         - "MER-022-F04 Layout-aware sizing tokens (for example board max 34rem, cell size derived from layout width) preserving >=44px targets, 320px/200% reflow and the reduced-motion path. Needed only once MER-008 adds a second layout."
         - "MER-022-F05 Optional audio layer only as separate future scope, off by default, repository-authored, with a visible mute control."
 
-  recommended_sequence: "1) MER-018 simulation harness (done as MER-023, v1 baseline recorded) → 2) MER-009 ruleset/replay (library part done as MER-025) + MER-020 migration (with platform change) → 3) MER-008 layouts (engine done as MER-026; default board still undecided, see MER-026-F05) → 4) MER-010 Storehouse + MER-022 preview → 5) MER-014 Daily Grove → 6) MER-017 Herbarium + MER-019 achievements → 7) MER-011/012/013 → 8) MER-015/016/021 Journey and content packs."
+  recommended_sequence: "Done: MER-018 (as MER-023), MER-009 F01-F04 (MER-025), MER-008 engine (MER-026), MER-012 (MER-027), MER-010/011/013 (MER-028). Next: save shape at schema version 1 (no migration, first release) -> MER-015 Journey of Biomes as the central linear progression -> MER-017 Herbarium + MER-019 stats/achievements -> presentation, animation and procedural audio (MER-029) -> MER-016 hazards and MER-021 content packs only if time allows. MER-014 (daily/weekly) is rejected."
 
   draft_reconciliation:
     note: "Disposition of a 2026-10-07 externally drafted PRD variant, recorded so none of its ideas are lost and none of its inaccurate claims enter the authoritative record."
-    adopted_as_planned: "Hold slot (MER-010), undo (MER-011), daily challenge with FNV-1a seed and share snippet (MER-014), codex modal and entry metadata (MER-017), lifetime telemetry and achievement table (MER-019), keyboard shortcuts H/Z/Escape and grid navigation (MER-010/011/022), layout CSS tokens (MER-022), semantic release line (game_identity.release_line)."
+    adopted_as_planned: "Hold slot (MER-010), undo (MER-011), codex modal and entry metadata (MER-017), lifetime telemetry and achievement table (MER-019), keyboard shortcuts H/Z/Escape and grid navigation (MER-010/011/022), layout CSS tokens (MER-022), semantic release line (game_identity.release_line)."
     corrected_against_main:
       - "Draft says Mulberry32 PRNG; main uses xorshift32 (13,17,5)."
       - "Draft says 2D BoardCell grid with ids; main uses a flat 25-entry number|null array."
