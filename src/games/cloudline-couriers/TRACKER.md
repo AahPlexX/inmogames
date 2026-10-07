@@ -15,7 +15,7 @@
 | Expeditions/region finales/post-campaign | planned | CLC-023 through CLC-025 binding; no implementation claim yet |
 | Objective clarity/reward cadence/audio/challenge options | planned | CLC-026 through CLC-029 binding; no implementation claim yet |
 | Ethical engagement guardrails | started | CLC-030 binding: progression derives engagement from mastery/progress/collection/fun; dark-pattern/punitive-absence/paid-random-reward mechanics excluded |
-| Professional art/sprite/VFX/motion system | started | CLC-007 RED was established on `b202378e`; first cohesive illustrated vector family, tile scenes, landmark art, cargo pods and reduced-motion-safe courier arrival are now integrated in source. Rendered CI/design review remains pending; this is not final CLC-007 sign-off. |
+| Professional art/sprite/VFX/motion system | started | CLC-007 RED was established on `b202378e`; first cohesive illustrated vector family, tile scenes, landmark art, cargo pods and reduced-motion-safe courier arrival are integrated. Exact-revision rendered quality evidence remains open; this is not final CLC-007 sign-off. |
 | Responsive accessible game surface | started | Visual tranche preserves native controls and responsive breakpoints; expanded full-game responsive/accessibility evidence pending |
 | Durable guest/account career save | verified | Revision `232102f4`, workflow `37555538295` verified schema-v1; expanded systems require versioned migrations. Live configured Firebase remains TASK-003. |
 | Catalog/governance/release integration | started | Canonical docs/routing exist; expanded game cannot be Complete until all 30 feature contracts and final deployment evidence close |
@@ -24,10 +24,14 @@
 
 **Implementation state:** implementing; product scope intentionally reopened/expanded after teleological UX review.  
 **Last verified revision:** `232102f4` verifies CLC-009 schema-v1 persistence only.  
-**Current main development edge:** CLC-007 GREEN candidate integrates `sprites.tsx`, illustrated board/landmark/cargo presentation and motion; exact-revision workflow evidence is pending.  
-**Open game-local work:** verify the CLC-007 regression turns GREEN for the intended sprite/reduced-motion conditions. CLC-007 still requires later campaign-quality art/VFX/state breadth before final production sign-off. Then implement CLC-011 onboarding and CLC-012–CLC-016 progression architecture before multiplying content.  
+**Current main development edge:** CLC-007 GREEN candidate integrates `sprites.tsx`, illustrated board/landmark/cargo presentation and motion. The first post-integration workflow exposed a stale account-reset browser interaction; that interaction was corrected at `fab7e07a`, but its workflow then stopped at the repository's documentation-sync guard because the test change lacked same-integration Cloudline tracker/spec updates. This tracker/spec synchronization closes that governance failure before re-running exact-revision validation.  
+**Open game-local work:** verify the synchronized CLC-007 regression turns GREEN for intended sprite/reduced-motion/account-persistence conditions. CLC-007 still requires later campaign-quality art/VFX/state breadth before final production sign-off. Then implement CLC-011 onboarding and CLC-012–CLC-016 progression architecture before multiplying content.  
 **External blockers:** TASK-003 blocks real configured-project Firebase verification only.  
-**Next action:** inspect exact-revision CI for the visual integration, repair only evidence-backed failures, then begin onboarding/progression TDD.
+**Next action:** run exact-revision CI after this documentation synchronization; repair only evidence-backed failures, then begin onboarding/progression TDD.
+
+## Development-tooling review (2026-10-07)
+
+The repo currently has TypeScript, Vitest, Playwright and dependency-current enforcement but no static ESLint pass or unit coverage gate. Before the next broad gameplay tranche, evaluate and integrate only tools that produce a concrete quality signal without duplicating existing checks. Current candidates, verified against official/current package documentation, are ESLint flat config + `@eslint/js` + `typescript-eslint` for typed linting, official `eslint-plugin-react-hooks`, Vite-oriented `eslint-plugin-react-refresh`, and `@vitest/coverage-v8` matching the installed Vitest major. Playwright already supports ARIA snapshots and visual comparisons, so do not add a duplicate browser/a11y snapshot dependency merely to recreate those capabilities. Exact versions must be verified by the repository's dependency-current gate at integration time.
 
 ## Product direction now binding
 

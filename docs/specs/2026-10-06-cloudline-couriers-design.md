@@ -43,12 +43,18 @@ Complete gameplay remains equivalent across phone/tablet/laptop/desktop/large di
 ## Persistence evidence
 Workflow `37554746482` is CLC-009 RED evidence. Revision `232102f4` / workflow `37555538295` is schema-v1 GREEN: decoder unit coverage, guest reload, Auth/Firestore emulator cross-browser restoration/reset, design-browser checks, builds and Pages deployment succeeded. Real configured Firebase remains external TASK-003. Expanded systems must migrate this schema without silently discarding earned state.
 
+## Validation evidence and current CI edge
+The CLC-007 illustrated integration reached repository CI but its first run exposed an account-persistence browser script that still assumed the destructive reset action was always visible. Revision `fab7e07a` corrected the test to open the disclosed Route options first. Workflow `37666102825` then stopped earlier at `pnpm game:check`, not at browser persistence: governance correctly reported that a Cloudline implementation/test change must update both this authoritative spec and `TRACKER.md` in the same integration. This synchronization is the evidence-backed repair for that failure. No CLC-007 GREEN claim is made until a subsequent exact-revision workflow completes successfully.
+
+## Development quality tooling
+Current repository gates already cover exact/latest dependency versions, TypeScript compilation, game documentation synchronization, Vitest unit tests, Firestore rules, Playwright browser/design regressions and both Firebase/Pages builds. A 2026-10-07 tooling review identified two non-duplicative gaps worth evaluating before broad progression implementation: static typed linting and unit-test coverage measurement. Official/current candidates are ESLint flat config with `@eslint/js` and `typescript-eslint`, React's official hooks ESLint plugin, Vite-oriented React Refresh linting, and Vitest's V8 coverage provider. Playwright itself already supplies ARIA snapshots and visual comparisons, so a separate browser snapshot/a11y assertion dependency is not justified solely to duplicate those capabilities. Any added package must remain an exact pin and pass `dependency:current` at the revision where it is introduced.
+
 ## Research basis
 Authoritative sources reviewed 2026-10-07 include Apple game/onboarding/feedback guidance and Game Center, Google Play Games achievements, Microsoft achievement/accessibility guidance, FTC enforcement on deceptive game purchase patterns and WHO gaming-disorder guidance. Google explicitly recommends achievements spread across the lifetime of a game and incremental progress that is measurable and visible; Microsoft describes achievements as a way to direct/reward in-game actions and extend a game's lifetime. These principles inform CLC-016/018 and do not license copying proprietary implementations.
 
 ## Completion contract
 **Completion state:** implementing  
-**Completion evidence:** CLC-009 only is verified at `232102f4` / `37555538295`; CLC-007 RED is established on `b202378e`; the first cohesive visual implementation is now integrated as a GREEN candidate pending exact-revision browser evidence. The 2026-10-07 teleological review expands release scope to CLC-001..CLC-030.
+**Completion evidence:** CLC-009 only is verified at `232102f4` / `37555538295`; CLC-007 RED is established on `b202378e`; the first cohesive visual implementation is integrated as a GREEN candidate pending exact-revision browser evidence. The 2026-10-07 teleological review expands release scope to CLC-001..CLC-030.
 - [ ] All 30 PRD/todo feature IDs are implemented or explicitly excluded with evidence/rationale.
 - [ ] First-session onboarding is playable, optional/replayable and comprehension-tested.
 - [ ] Full five-region/twenty-district campaign target is authored and pacing/playtime measured; 20–40h target adjusted from evidence if needed.
