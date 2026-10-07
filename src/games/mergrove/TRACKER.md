@@ -23,6 +23,7 @@
 | Data-driven layouts + layout-aware engine (MER-026) | started | `layout.ts`, `mergrove-layout.test.ts`, `mergrove-engine-layouts.test.ts` pass locally; classic-5 equivalence proven by unchanged v1 and golden tests; two mutations confirmed to fail. Library/simulator only, no UI or save change. No CI-verified revision yet. |
 | Ruleset v2 large-group bonus (MER-027) | started | `mergrove-bonus.test.ts` passes locally; threshold mutation fails it; v1 goldens untouched. Not yet selectable by players. No CI-verified revision yet. |
 | Play-state layer: Storehouse, undo, wishes (MER-028) | started | `mergrove-play.test.ts` (25 tests) passes locally. Logic only; not yet in the UI or the save. No CI-verified revision yet. |
+| Quality tooling + accessibility gates (MER-029) | started | oxlint, fast-check, Testing Library, coverage ratchet, knip and axe-core with a validated contrast checker pass locally; wired into pages.yml. Not yet run in CI. |
 | Catalog/registry/index integration | verified | Catalog, lazy workspace and documentation checks passed on revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`. |
 | Production deployment | verified | Pages deploy job succeeded in run `37553471015`; a fresh uncached live render returned HTTP 200 and the expected 25-cell Mergrove initial state. |
 
@@ -46,6 +47,10 @@ Two-ply bot, 24 seeds, v1 to v2 Sapling reach: classic-5 38% to 50%, crossroads-
 
 - Mergrove has never had players: this is the first release. There is no v1 data to migrate, so the save stays at schema version 1 and takes its final shape directly. The shared-platform migration work was reverted.
 - No daily puzzle, weekly event, date-keyed seed or calendar streak (roadmap MER-014 rejected). Progression is linear through the Journey of Biomes; Endless is free play.
+
+## Quality tooling notes
+
+Nine dev-only packages were added with exact pins and recorded evidence. oxlint replaces ESLint because typescript-eslint does not support TypeScript 7. axe-core cannot resolve this game's gradient backgrounds, so `tests/browser/mergrove-axe.mjs` carries its own contrast checker; if the board markup changes, re-validate that checker with a known-bad element. Not run in the authoring sandbox: Firestore rules tests and the Auth/Firestore emulator browser tests (the emulator did not start there).
 
 ## Current handoff
 

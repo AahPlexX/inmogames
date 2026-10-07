@@ -116,6 +116,10 @@ New game-local work reopens the game under the continuity contract. The save sch
 
 The explicit v1 exclusions are unchanged: no timer, daily or date-gated challenge (rejected permanently), leaderboard, or ninth tier. Undo and audio are no longer excluded: undo shipped as PRD MER-028 and audio is planned as an opt-in procedural layer. The preview reveals information the deterministic engine already fixes; it does not create a reroll or any new randomness.
 
+## Quality tooling and accessibility gates (PRD MER-029)
+
+Dev-only tooling now guards Mergrove: oxlint (zero warnings), fast-check property tests, Testing Library component tests, a coverage ratchet, knip, and an axe-core audit with an in-page contrast checker, all documented in `docs/DEPENDENCY_POLICY.md` and `AGENTS.md`. The audit found a real accessibility defect in the earlier UI (the board's name was an `aria-label` on a generic `div`, which ARIA prohibits); the board and queue are now native `fieldset` groups with hidden legends and the result line is a native `output`. Escape cancels Compost through a document listener that exists only while Compost is armed. The sandbox could not run the Firestore or Auth emulators, so the account-persistence browser suite remains for CI.
+
 ## Owner scope decisions (2026-10-07)
 
 - **First release.** Mergrove has never had players. There is no earlier save to migrate or keep compatible, so the save stays at schema version 1 and takes its final shape directly; no migration code, dual storage keys or shared-platform change is needed. Ruleset `v2` (large-group bonus) becomes the default for new games; `v1` remains a frozen baseline used by tests and the simulator.
@@ -149,6 +153,7 @@ The explicit v1 exclusions are unchanged: no timer, daily or date-gated challeng
 - [x] v1.1: layout module and layout-aware engine exist, classic-5 is proven byte-identical, and the layout comparison is recorded (PRD MER-026).
 - [x] v1.1: ruleset v2 with the large-group bonus exists, is invariant-tested and mutation-checked, and its measured effect is recorded (PRD MER-027).
 - [x] v1.1: hold, undo and wish logic exist as a pure layer with unit coverage (PRD MER-028).
+- [x] v1.1: quality tooling (lint, property, component, coverage, axe) is installed with evidence, wired into CI and passing locally; it found and fixed a real board-labelling defect (PRD MER-029).
 - [x] v1.1: next-draw preview and Escape-to-cancel compost are implemented with unit and rendered-browser assertions that were mutation-checked to fail when the behavior is removed (PRD MER-024).
 - [ ] v1.1: the full `pnpm validate`-equivalent CI chain, including Auth/Firestore emulator browser tests and the Firebase rules tests that could not run in the authoring sandbox, is green on the exact integrated revision.
 - [ ] v1.1: GitHub Pages deployment is green and a fresh deployed render of `#/games/mergrove` shows the "Next to arrive" line.

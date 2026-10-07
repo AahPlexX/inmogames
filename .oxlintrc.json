@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "jsx-a11y", "unicorn", "oxc", "import", "promise", "vitest"],
+  "categories": { "correctness": "error", "suspicious": "error", "perf": "warn" },
+  "env": { "browser": true, "es2022": true, "node": true },
+  "ignorePatterns": ["dist", "node_modules", "pnpm-lock.yaml"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "unicorn/no-array-sort": "off",
+    "import/no-unassigned-import": "off",
+    "eslint/no-underscore-dangle": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "vitest/require-mock-type-parameters": "off",
+    "react/no-array-index-key": "off"
+  },
+  "overrides": [
+    { "files": ["tests/browser/**", "scripts/**"], "rules": { "eslint/no-await-in-loop": "off" } }
+  ]
+}

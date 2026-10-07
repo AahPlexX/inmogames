@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameSave } from '../../platform/PlatformProvider';
 import { SaveStatus } from '../../platform/SaveStatus';
 import { BOARD_CELLS, BOARD_SIZE, COMPOST_COST, compostCell, createRun, placePiece, previewNextDraw, type MergeEvent, type MergroveRun } from './engine';
@@ -104,15 +104,22 @@ function MergroveGame({ initial, persist, reset }: { initial: MergroveSave; pers
     ? 'Run complete'
     : `${tierName(nextDraw.tier)}${nextDraw.sproutIfBud ? ' (a Sprout if this placement reaches Bud)' : ''}`;
 
-  function onKeyDown(event: KeyboardEvent<HTMLElement>) {
-    if (event.key === 'Escape' && compostMode) {
+  // Escape is a convenience on top of the Cancel button. The listener exists only while Compost is armed,
+  // so a non-interactive section never carries key handlers.
+  useEffect(() => {
+    if (!compostMode) return undefined;
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return;
       event.preventDefault();
-      setCompost(false);
-    }
-  }
+      setCompostMode(false);
+      setMessage('Compost cancelled. Choose a spirit and an empty cell.');
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [compostMode]);
 
   return (
-    <section className="mg" aria-labelledby="mg-title" onKeyDown={onKeyDown}>
+    <section className="mg" aria-labelledby="mg-title">
       <MergroveSpriteBank />
       <header className="mg-header">
         <div>
@@ -136,7 +143,8 @@ function MergroveGame({ initial, persist, reset }: { initial: MergroveSave; pers
               <span>{occupied}/{BOARD_CELLS} cells used</span>
             </div>
             <p className="mg-next" data-mg="next-draw">Next to arrive: <strong>{nextDrawText}</strong></p>
-            <div className="mg-queue" role="group" aria-label="Spirit queue">
+            <fieldset className="mg-queue">
+              <legend className="mg-sr-only">Spirit queue</legend>
               {run.queue.map((tier, index) => (
                 <button
                   key={`${index}-${tier}`}
@@ -151,11 +159,12 @@ function MergroveGame({ initial, persist, reset }: { initial: MergroveSave; pers
                   <span>{tierName(tier)}</span>
                 </button>
               ))}
-            </div>
+            </fieldset>
           </div>
 
           <div className="mg-board-wrap">
-            <div className="mg-board" aria-label="Mergrove 5 by 5 board">
+            <fieldset className="mg-board">
+              <legend className="mg-sr-only">Mergrove 5 by 5 board</legend>
               {run.board.map((tier, index) => {
                 const row = Math.floor(index / BOARD_SIZE) + 1;
                 const column = (index % BOARD_SIZE) + 1;
@@ -178,10 +187,10 @@ function MergroveGame({ initial, persist, reset }: { initial: MergroveSave; pers
                   </button>
                 );
               })}
-            </div>
+            </fieldset>
           </div>
 
-          <p className="mg-status" role="status" aria-live="polite">{message}</p>
+          <output className="mg-status" aria-live="polite">{message}</output>
 
           {run.gameOver && (
             <div className="mg-complete">

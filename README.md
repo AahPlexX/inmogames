@@ -44,6 +44,9 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract. See
 - `pnpm dependency:check` - reject dependency ranges so installs remain reproducible.
 - `pnpm dependency:current` - require every direct dependency/devDependency to match the researched manifest and npm's current stable `latest` tag.
 - `pnpm design:check` - validate the durable `DESIGN.md` contract with the exact pinned validator.
+- `pnpm lint` - oxlint (React hooks, jsx-a11y, correctness, suspicious) over the Mergrove sources and tests; zero warnings allowed. `pnpm lint:all` reports the whole repo, including other games' existing findings, without gating.
+- `pnpm test:coverage` - the unit suite with a v8 coverage ratchet on `src/games/mergrove` (thresholds in `vite.config.ts` sit just under measured values; raise them, never lower them to pass).
+- `pnpm knip` - find unused files, exports and dependencies (advisory; run before large refactors).
 - `pnpm game:check` - validate per-game spec/tracker/PRD/todo/completion structure **and** reject game changes whose required documentation was not updated in the same integration.
 - `pnpm test:design-browser` - rendered UI regression checks for responsive composition, 200% text reflow, keyboard focus/selection, touch targets and reduced motion.
 - `pnpm validate` - dependency/design policy, typecheck, game documentary checks, unit tests, rules/account browser tests, design-browser tests and both production builds.

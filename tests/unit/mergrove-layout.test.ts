@@ -24,7 +24,7 @@ describe('Mergrove board layouts (src/games/mergrove)', () => {
 
   it('freezes released layouts', () => {
     expect(Object.isFrozen(CLASSIC_5)).toBe(true);
-    expect(() => { (CLASSIC_5 as { width: number }).width = 9; }).toThrow();
+    expect(() => { (CLASSIC_5 as { width: number }).width = 9; }).toThrow(/read only|read-only|frozen/i);
   });
 
   it('hands out neighbor copies so callers cannot corrupt the shared table', () => {

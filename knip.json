@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/games/workspaces.tsx",
+    "tests/unit/**/*.test.ts",
+    "tests/browser/*.mjs",
+    "tests/rules/*.mjs",
+    "scripts/*.mjs"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}",
+    "tests/**/*.{ts,mjs}",
+    "scripts/*.mjs"
+  ],
+  "ignoreDependencies": []
+}

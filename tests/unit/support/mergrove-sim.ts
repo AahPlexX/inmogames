@@ -1,13 +1,13 @@
 // Dev-only balance harness for src/games/mergrove (MER-018). Never imported by the shipped bundle.
 import {
-  COMPOST_COST, MAX_TIER, BOARD_CELLS, compostCell, createRun, placePiece,
+  MAX_TIER, compostCell, createRun, placePiece,
   type MergroveRun,
 } from '../../../src/games/mergrove/engine';
 import { CLASSIC_5, type BoardLayout } from '../../../src/games/mergrove/layout';
 import { RULESET_V1, rulesOf, type Ruleset } from '../../../src/games/mergrove/ruleset';
 import type { EngineRules } from '../../../src/games/mergrove/engine';
 
-export type BotAction =
+type BotAction =
   | { kind: 'place'; queueIndex: number; cellIndex: number }
   | { kind: 'compost'; cellIndex: number };
 
@@ -122,7 +122,7 @@ function percentile(sorted: number[], fraction: number): number {
   return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))];
 }
 
-export function summarize(results: RunSummary[]): SimulationSummary {
+function summarize(results: RunSummary[]): SimulationSummary {
   const turns = results.map(r => r.turns).sort((a, b) => a - b);
   const scores = results.map(r => r.score).sort((a, b) => a - b);
   const total = results.length;
@@ -147,4 +147,3 @@ export function seedRange(count: number, start = 1): number[] {
   return Array.from({ length: count }, (_, i) => Math.imul(start + i, 2654435761) >>> 0 || 1);
 }
 
-export { BOARD_CELLS, COMPOST_COST };

@@ -30,7 +30,7 @@ describe('Mergrove rulesets and replay (src/games/mergrove)', () => {
 
   it('freezes the released ruleset so it cannot be altered at runtime', () => {
     expect(Object.isFrozen(RULESET_V1)).toBe(true);
-    expect(() => { (RULESET_V1 as { id: string }).id = 'hacked'; }).toThrow();
+    expect(() => { (RULESET_V1 as { id: string }).id = 'hacked'; }).toThrow(/read only|read-only|frozen/i);
   });
 
   it('replays an empty action list to the freshly created run', () => {

@@ -27,6 +27,22 @@ describe('newPlay', () => {
     expect(s.wishes).toEqual([]);
     expect(s.wishRng).toBeNull();
   });
+  it('draws wishes from a stream that is independent of the queue stream', () => {
+    // The wish stream starts from the seed, not from the queue generator's state, and wishes on or off give the same queue.
+    const on = fresh();
+    const off = fresh({ wishes: false });
+    expect(on.run.queue).toEqual(off.run.queue);
+    expect(on.run.rngState).toBe(off.run.rngState);
+    // Pinned origin of the wish stream (seed 99): a change here re-rolls every player's wishes, so it must be deliberate.
+    expect(on.wishRng).toBe(2035679789);
+    expect(on.wishes).toEqual([{ id: 'reach-sapling', deadline: 18 }, { id: 'cascade-two', deadline: 10 }]);
+    // Playing identical moves with a wish completing must not change which pieces arrive.
+    const moves = [0, 1, 2, 5, 6, 7];
+    let a = on; let b = off;
+    for (const cell of moves) { a = placeAt(a, 0, cell).state; b = placeAt(b, 0, cell).state; }
+    expect(a.run.rngState).toBe(b.run.rngState);
+    expect(a.run.queue).toEqual(b.run.queue);
+  });
   it('rejects unknown ruleset or layout ids', () => {
     expect(() => fresh({ rulesetId: 'nope' })).toThrow(/ruleset/i);
     expect(() => fresh({ layoutId: 'nope' })).toThrow(/layout/i);

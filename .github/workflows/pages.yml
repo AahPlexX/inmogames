@@ -37,12 +37,13 @@ jobs:
       - run: pnpm dependency:current
       - run: pnpm design:check
       - run: pnpm typecheck
+      - run: pnpm lint
       - run: pnpm game:check
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 21
-      - run: pnpm test:unit
+      - run: pnpm test:coverage
       - run: pnpm test:rules
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:browser

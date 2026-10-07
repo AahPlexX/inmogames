@@ -123,6 +123,14 @@
   - [x] **Implementation Details:** Snapshot-based undo; deterministic wish drawing; id-resolved layout and ruleset.
   - [ ] **Verification & State Sign-off:** Unit tests pass locally; needs UI wiring, browser evidence and a CI-verified revision.
 
+- [ ] **Quality Tooling and Accessibility Gates** `{id: 'MER-029'}` — `[feature development status: = 'Started']`
+  - [x] **Purpose:** Catch broken or missing code and accessibility defects before release.
+  - [x] **Inputs / Parameters:** Mergrove sources, tests and the rendered UI in dark and light.
+  - [x] **Dependencies Touched:** Nine exact-pinned dev dependencies; `.oxlintrc.json`, `knip.json`, `vite.config.ts`, `pages.yml`.
+  - [x] **Technical Notes & Edge Cases:** oxlint instead of ESLint (TypeScript 7); axe contrast is incomplete here so a custom checker is used; properties must assert unconditionally and are mutation-verified.
+  - [x] **Implementation Details:** 16 properties, 9 component tests, axe audit in 4 states x 2 schemes, coverage ratchet.
+  - [ ] **Verification & State Sign-off:** Passing locally; needs a CI-verified revision.
+
 ---
 
 ## Final Game Assembly & Verification Checklist

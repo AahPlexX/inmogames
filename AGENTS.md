@@ -91,3 +91,11 @@ Older chat messages, summaries or provider memory never override the current per
 - Responsive layout with flexbox/grid and CSS `clamp()` typography; no horizontal overflow at 320 CSS px.
 - Keyboard and touch operable; respect `prefers-reduced-motion`.
 - YAGNI, KISS, DRY.
+
+## Quality tooling
+
+- `pnpm lint` (oxlint) is a mandatory gate for Mergrove files. The linter is oxlint, not ESLint, because `typescript-eslint` does not yet support the repository's TypeScript 7; do not switch without re-checking peer ranges (see `docs/DEPENDENCY_POLICY.md`). Never silence a rule to make a build pass: either fix the code or turn the rule off in `.oxlintrc.json` with a reason in the commit.
+- Engine and play-state invariants have property tests (`fast-check`) in `tests/unit/mergrove-properties.test.ts`. A property must fail when the behavior it names is broken: verify new properties by mutating the code under test and confirming the failure, and make properties assert unconditionally (no `if (...) expect(...)`).
+- UI behavior is tested at three levels: component tests (`*.test.tsx`, Testing Library + happy-dom, real platform provider), automated accessibility (`tests/browser/mergrove-axe.mjs`, axe-core plus an in-page contrast checker, because axe cannot resolve this game's gradient backgrounds), and the rendered design/reflow suites.
+- Coverage thresholds in `vite.config.ts` are a ratchet. Raise them when coverage rises.
+
