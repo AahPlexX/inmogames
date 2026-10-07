@@ -5,7 +5,7 @@
 
 ## Capability state
 
-| Capability | Status | Evidence / continuation |
+| Capability | Status | Verification |
 | --- | --- | --- |
 | Deterministic 5 × 5 engine and queue | started | Local TypeScript/Node RED→GREEN probe passes; repository CI pending. |
 | Orthogonal merge + cascade resolution | started | Local probes cover trio, two-stage cascade and scoring formula; CI pending. |
