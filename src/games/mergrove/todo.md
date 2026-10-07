@@ -131,6 +131,22 @@
   - [x] **Implementation Details:** 16 properties, 9 component tests, axe audit in 4 states x 2 schemes, coverage ratchet.
   - [ ] **Verification & State Sign-off:** Passing locally; needs a CI-verified revision.
 
+- [ ] **Journey of Biomes (logic)** `{id: 'MER-030'}` — `[feature development status: = 'Started']`
+  - [x] **Purpose:** The linear, win-gated progression.
+  - [x] **Inputs / Parameters:** Level definitions, a run, best stars per level.
+  - [x] **Dependencies Touched:** `journey.ts`, `play.ts`, simulator.
+  - [x] **Technical Notes & Edge Cases:** No skipping; win beats loss on the same move; deadlines are placements; Sapling not a gate.
+  - [x] **Implementation Details:** 15 levels, bot solvability gate.
+  - [ ] **Verification & State Sign-off:** Logic verified locally; needs UI, persistence and CI.
+
+- [ ] **Stats, Herbarium and Achievements (logic)** `{id: 'MER-031'}` — `[feature development status: = 'Started']`
+  - [x] **Purpose:** Long-term collection and mastery.
+  - [x] **Inputs / Parameters:** Merge events, discovered tiers, Journey stars.
+  - [x] **Dependencies Touched:** `progress.ts` only.
+  - [x] **Technical Notes & Edge Cases:** Append-only achievements; maxima vs counters; thresholds from simulation.
+  - [x] **Implementation Details:** 11 stats, 8 codex entries, 15 achievements.
+  - [ ] **Verification & State Sign-off:** Logic verified locally; needs UI, persistence and CI.
+
 ---
 
 ## Final Game Assembly & Verification Checklist

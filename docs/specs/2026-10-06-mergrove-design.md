@@ -116,6 +116,10 @@ New game-local work reopens the game under the continuity contract. The save sch
 
 The explicit v1 exclusions are unchanged: no timer, daily or date-gated challenge (rejected permanently), leaderboard, or ninth tier. Undo and audio are no longer excluded: undo shipped as PRD MER-028 and audio is planned as an opt-in procedural layer. The preview reveals information the deterministic engine already fixes; it does not create a reroll or any new randomness.
 
+## Journey of Biomes, Herbarium and achievements (PRD MER-030, MER-031)
+
+The player-facing progression is linear: 15 Journey levels in five chapters (Mossy Hollow, Fen Lanterns, Stonecrest, Emberwood, Moonglade), each opening only when the previous one is cleared. Goals are a tier, a score or an ancient-bloom count within a placement deadline; one to three stars reward finishing sooner. Nothing is timed or date-gated. A unit gate plays every level with a reference bot and requires a win with slack, so no level can ship unwinnable. Lifetime stats, an eight-entry Herbarium of original notes and 15 achievements are pure logic, with thresholds taken from simulation. The Sapling level originally planned for the finale was replaced because the bot won only 8 of 10 runs; Sapling therefore is not a gate, and final-chapter three-star thresholds are unvalidated stretch goals for human play.
+
 ## Quality tooling and accessibility gates (PRD MER-029)
 
 Dev-only tooling now guards Mergrove: oxlint (zero warnings), fast-check property tests, Testing Library component tests, a coverage ratchet, knip, and an axe-core audit with an in-page contrast checker, all documented in `docs/DEPENDENCY_POLICY.md` and `AGENTS.md`. The audit found a real accessibility defect in the earlier UI (the board's name was an `aria-label` on a generic `div`, which ARIA prohibits); the board and queue are now native `fieldset` groups with hidden legends and the result line is a native `output`. Escape cancels Compost through a document listener that exists only while Compost is armed. The sandbox could not run the Firestore or Auth emulators, so the account-persistence browser suite remains for CI.
@@ -153,6 +157,8 @@ Dev-only tooling now guards Mergrove: oxlint (zero warnings), fast-check propert
 - [x] v1.1: layout module and layout-aware engine exist, classic-5 is proven byte-identical, and the layout comparison is recorded (PRD MER-026).
 - [x] v1.1: ruleset v2 with the large-group bonus exists, is invariant-tested and mutation-checked, and its measured effect is recorded (PRD MER-027).
 - [x] v1.1: hold, undo and wish logic exist as a pure layer with unit coverage (PRD MER-028).
+- [x] v1.1: Journey logic (15 levels, linear unlocks, goals, stars), stats, Herbarium and achievements exist as pure modules with unit coverage and a bot solvability gate (PRD MER-030, MER-031).
+- [ ] v1.1: Journey map, Herbarium and achievement UI, hold/undo/wish controls, the final save shape, animation and sound are implemented and browser-verified.
 - [x] v1.1: quality tooling (lint, property, component, coverage, axe) is installed with evidence, wired into CI and passing locally; it found and fixed a real board-labelling defect (PRD MER-029).
 - [x] v1.1: next-draw preview and Escape-to-cancel compost are implemented with unit and rendered-browser assertions that were mutation-checked to fail when the behavior is removed (PRD MER-024).
 - [ ] v1.1: the full `pnpm validate`-equivalent CI chain, including Auth/Firestore emulator browser tests and the Firebase rules tests that could not run in the authoring sandbox, is green on the exact integrated revision.

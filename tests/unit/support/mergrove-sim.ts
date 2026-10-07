@@ -3,8 +3,9 @@ import {
   MAX_TIER, compostCell, createRun, placePiece,
   type MergroveRun,
 } from '../../../src/games/mergrove/engine';
-import { CLASSIC_5, type BoardLayout } from '../../../src/games/mergrove/layout';
-import { RULESET_V1, rulesOf, type Ruleset } from '../../../src/games/mergrove/ruleset';
+import { evaluateLevel, startLevel, type LevelDefinition } from '../../../src/games/mergrove/journey';
+import { CLASSIC_5, resolveLayout, type BoardLayout } from '../../../src/games/mergrove/layout';
+import { RULESET_V1, resolveRuleset, rulesOf, type Ruleset } from '../../../src/games/mergrove/ruleset';
 import type { EngineRules } from '../../../src/games/mergrove/engine';
 
 type BotAction =
@@ -147,3 +148,22 @@ export function seedRange(count: number, start = 1): number[] {
   return Array.from({ length: count }, (_, i) => Math.imul(start + i, 2654435761) >>> 0 || 1);
 }
 
+
+/** Plays one Journey level with a bot and reports how it ended (used by the Journey solvability gate). */
+export function playLevel(bot: Bot, level: LevelDefinition, seedOverride?: number, maxActions = 2_000) {
+  const layout = resolveLayout(level.layoutId);
+  const ruleset = resolveRuleset(level.rulesetId);
+  if (!layout || !ruleset) throw new Error(`Level ${level.id} references an unknown layout or ruleset.`);
+  const rules = rulesOf(ruleset);
+  const start = startLevel(seedOverride === undefined ? level : { ...level, seed: seedOverride });
+  let run = start.run;
+  let actions = 0;
+  let status = evaluateLevel(level, run);
+  while (status.status === 'playing' && actions < maxActions) {
+    const action = bot(run, layout, rules);
+    run = action.kind === 'place' ? placePiece(run, action.queueIndex, action.cellIndex, layout, rules).run : compostCell(run, action.cellIndex, layout);
+    status = evaluateLevel(level, run);
+    actions += 1;
+  }
+  return { ...status, turns: run.turns, score: run.score, highestTier: run.highestTier };
+}
