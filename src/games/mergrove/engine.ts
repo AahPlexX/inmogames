@@ -46,12 +46,12 @@ export interface PlacementResult {
   placedCell: number;
 }
 
-function normalizeSeed(seed: number): number {
+export function normalizeSeed(seed: number): number {
   if (!Number.isFinite(seed)) return 0x6d2b79f5;
   return Math.trunc(seed) >>> 0 || 0x6d2b79f5;
 }
 
-function nextRandom(state: number): [number, number] {
+export function nextRandom(state: number): [number, number] {
   let x = normalizeSeed(state);
   x ^= x << 13;
   x ^= x >>> 17;
@@ -60,7 +60,7 @@ function nextRandom(state: number): [number, number] {
   return [next, next / 0x1_0000_0000];
 }
 
-function drawPiece(state: number, highestTier: number): [number, number] {
+export function drawPiece(state: number, highestTier: number): [number, number] {
   const [next, random] = nextRandom(state);
   const tier = highestTier >= 3 && random < SECOND_TIER_CHANCE ? 2 : 1;
   return [next, tier];

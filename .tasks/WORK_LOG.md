@@ -52,3 +52,5 @@
 - 2026-10-07 - Mergrove MER-027 (roadmap MER-012): frozen ruleset v2 adds a large-group bonus piece; v1 and its goldens untouched. Simulation: Sapling reach up on every layout (classic-5 38% to 50%, standard-6 54% to 96%) but Lantern Tree and above still 0% for the test bot, so late-tier reachability is recorded as open, not solved.
 
 - 2026-10-07 - Scope change from the owner: Mergrove has never had players and this is its first release, so there is nothing to migrate. The shared-platform schema-migration work (D-020, commit 8e12b8f) was reverted: its only consumer was a Mergrove v1 to v2 migration that is no longer needed, and it altered the save path and Firestore rules for every game, including one rule test that could not be run in the authoring sandbox. Mergrove keeps save schema version 1 and takes its final shape directly; ruleset v2 (large-group bonus) becomes the default for new games.
+
+- 2026-10-07 - Mergrove MER-028 (roadmap MER-010/011/013): pure `play.ts` layer with Storehouse hold, one-step undo (restores the RNG, costs 2 sunlight, endless-only) and Grove Wishes on their own RNG stream. 25 unit tests. UI and save shape still to do.

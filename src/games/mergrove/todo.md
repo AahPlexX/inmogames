@@ -115,6 +115,14 @@
   - [x] **Implementation Details:** Lowest-index adjacent group cell receives the extra piece.
   - [ ] **Verification & State Sign-off:** Passing locally; needs a CI-verified revision. Player selection waits on the v2 save (MER-020 game half).
 
+- [ ] **Play-State Layer: Storehouse, Undo and Grove Wishes** `{id: 'MER-028'}` — `[feature development status: = 'Started']`
+  - [x] **Purpose:** Add recovery and goals without timers, purchases or rerolls.
+  - [x] **Inputs / Parameters:** A `PlayState` (run, hold, undo snapshot, wishes) plus a queue slot or cell.
+  - [x] **Dependencies Touched:** `engine.ts` (exports `nextRandom`, `drawPiece`, `normalizeSeed`), `ruleset.ts`, `layout.ts`, new `play.ts`.
+  - [x] **Technical Notes & Edge Cases:** Undo restores `rngState`; wishes use a separate stream and count placements; a wish reward can rescue a just-filled board.
+  - [x] **Implementation Details:** Snapshot-based undo; deterministic wish drawing; id-resolved layout and ruleset.
+  - [ ] **Verification & State Sign-off:** Unit tests pass locally; needs UI wiring, browser evidence and a CI-verified revision.
+
 ---
 
 ## Final Game Assembly & Verification Checklist

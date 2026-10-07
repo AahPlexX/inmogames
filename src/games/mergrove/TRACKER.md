@@ -22,6 +22,7 @@
 | Ruleset registry, replay and golden fingerprints (MER-025) | started | `ruleset.ts` and `mergrove-ruleset.test.ts` pass locally; goldens mutation-checked (scoring and RNG changes fail). Library only, not wired to UI or saves. No CI-verified revision yet. |
 | Data-driven layouts + layout-aware engine (MER-026) | started | `layout.ts`, `mergrove-layout.test.ts`, `mergrove-engine-layouts.test.ts` pass locally; classic-5 equivalence proven by unchanged v1 and golden tests; two mutations confirmed to fail. Library/simulator only, no UI or save change. No CI-verified revision yet. |
 | Ruleset v2 large-group bonus (MER-027) | started | `mergrove-bonus.test.ts` passes locally; threshold mutation fails it; v1 goldens untouched. Not yet selectable by players. No CI-verified revision yet. |
+| Play-state layer: Storehouse, undo, wishes (MER-028) | started | `mergrove-play.test.ts` (25 tests) passes locally. Logic only; not yet in the UI or the save. No CI-verified revision yet. |
 | Catalog/registry/index integration | verified | Catalog, lazy workspace and documentation checks passed on revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`. |
 | Production deployment | verified | Pages deploy job succeeded in run `37553471015`; a fresh uncached live render returned HTTP 200 and the expected 25-cell Mergrove initial state. |
 
