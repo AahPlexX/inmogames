@@ -14,7 +14,7 @@ Planned Functional Features Specification:
     development_status: "Implementing"
 
   technical_foundation:
-    architecture_and_engine: "Original single-player 16-stop skyway strategy game for the static React/Vite InMo Games architecture. Pure deterministic TypeScript rules engine; React presentation; repository-authored vector sprite system planned; shared versioned save platform required for CLC-009. Genre-level roll/move/event/earn/upgrade/progress inspiration only; no Monopoly/Monopoly GO names, art, board, economy, maps, events, UI, text, trade dress, or proprietary content."
+    architecture_and_engine: "Original single-player 16-stop skyway strategy game for the static React/Vite InMo Games architecture. Pure deterministic TypeScript rules engine; React presentation; shared versioned save platform; repository-authored vector sprite system remains planned. Genre-level roll/move/event/earn/upgrade/progress inspiration only; no Monopoly/Monopoly GO names, art, board, economy, maps, events, UI, text, trade dress, or proprietary content."
     dependencies_used:
       - "react@19.3.0"
       - "react-dom@19.3.0"
@@ -67,8 +67,8 @@ Planned Functional Features Specification:
 
     - name: "Durable Career Save"
       id: "CLC-009"
-      details: "Versioned save stores credits, fuel, position, district, landmark stages, shield/streak and career counters. Guests use shared local persistence; authenticated users use the shared optional Firebase account-save platform. A behavior-level browser regression requires an upgraded landmark to survive reload. Live Firebase verification remains separate under TASK-003."
-      feature_development_status: "TDD RED regression integrated; persistence implementation pending"
+      details: "Schema-v1 save preserves the deterministic active career: credits, fuel, position, district, landmark stages, shield/streak, career counters, RNG, pending Cargo Cache and last roll. Guests use the shared local repository; authenticated users use the shared account-save platform. Workflow 37554746482 proves the pre-implementation RED reload defect. Defensive decoding, guest reload, cross-browser emulator restoration and game-scoped reset coverage are integrated; live configured Firebase remains TASK-003."
+      feature_development_status: "Implementation and automated GREEN coverage integrated; exact-revision CI evidence pending"
 
     - name: "Catalog, Documentation, and Production Integration"
       id: "CLC-010"

@@ -19,11 +19,14 @@ Four landmarks—Aerie Post, Cloud Garden, Signal Spire and Skyforge Hangar—ea
 The board is a 5×5 CSS grid perimeter, yielding exactly 16 stops while reserving the center for roll/boost controls. Important controls use a 44 CSS-pixel baseline, native buttons preserve keyboard/touch parity, active position and boost are non-color states, status feedback uses a live region, no drag/timing is required, and nonessential motion must honor reduced motion. Rendered evidence at 320 CSS px and 200% text is mandatory before verification.
 
 ## Architecture
-`engine.ts` is pure deterministic TypeScript and owns movement/events/economy/progression. React does not reimplement rules. The current source tranche introduces no dependency. CLC-009 must use the shared versioned save platform (`useGameSave`/shared repository) rather than direct Firebase calls. A behavior-level browser regression now requires guest landmark progress to survive reload; it is intentionally expected to fail until persistence is implemented. Original SVG sprites remain a required later tranche.
+`engine.ts` is pure deterministic TypeScript and owns movement/events/economy/progression. React does not reimplement rules. CLC-009 uses the shared versioned `GameSaveDefinition`/`useGameSave` platform; game code never imports Firebase directly. Schema v1 stores the active deterministic run under `inmogames:cloudline-couriers:v1` for guests and the shared account repository for authenticated players. Invalid position, fuel, landmark, streak, cargo, roll, RNG or message state is rejected rather than partially trusted. A game-scoped reset clears only Cloudline career state. Original SVG sprites remain a required next tranche.
+
+## Persistence TDD evidence
+Workflow `37554746482` is the required RED evidence: every earlier gate passed, then `tests/browser/cloudline-couriers-design.mjs` failed because Aerie Post was Stage 0 after a reload when Stage 1 was required. The subsequent implementation routes all flight, cargo, landmark and fresh-route mutations through the shared save abstraction, adds defensive schema unit coverage, keeps guest reload coverage, and adds Auth/Firestore emulator cross-browser restoration plus game-scoped reset coverage. GREEN exact-revision evidence remains pending until the integration workflow completes.
 
 ## Completion contract
 **Completion state:** implementing  
-**Completion evidence:** core source/UI/unit work and central PRD/todo governance are integrated. CLC-009 has entered TDD RED with a guest-reload browser regression; persistence implementation and exact-revision browser/Pages evidence remain pending.
+**Completion evidence:** central PRD/todo governance is green in workflow `37554297029`; CLC-009 RED is proven by workflow `37554746482`; shared persistence implementation and GREEN tests are integrated but exact-revision GREEN evidence is pending.
 - [ ] Complete roll → move → event → earn → upgrade → district loop is playable and verified.
 - [ ] Deterministic engine covers movement, boost, circuit, event, Cargo Cache, streak/shield, fuel recovery and progression edge cases.
 - [ ] Versioned durable guest save and shared account-save/reset path have unit/browser/emulator evidence.

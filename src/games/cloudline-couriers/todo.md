@@ -2,7 +2,7 @@
 
 **Status:** Implementing  
 **Last synchronized:** 2026-10-06  
-**Architecture & Engine:** Original static React/Vite 16-stop skyway strategy game with pure deterministic TypeScript rules, planned repository-authored SVG sprites, and CLC-009 entering TDD for shared versioned save integration.  
+**Architecture & Engine:** Original static React/Vite 16-stop skyway strategy game with pure deterministic TypeScript rules, shared schema-v1 career persistence, and planned repository-authored SVG sprites.  
 **Dependencies Used:**
 - [x] `react@19.3.0`
 - [x] `react-dom@19.3.0`
@@ -49,9 +49,9 @@
 ### CLC-004 — Landmark and District Progression
 **Purpose:** Convert board earnings into visible long-term world progression.  
 **Inputs:** Credits, selected landmark, current stage, district.  
-**Dependencies Touched:** Engine, landmark UI, future save schema.  
+**Dependencies Touched:** Engine, landmark UI, versioned save schema.  
 **Technical Notes & Edge Cases:** Four landmarks × four stages; upgrades require affordability; district completion advances and intentionally resets landmark stages.  
-**Implementation Details:** Cost calculation, upgrades, completion reward/district advance, and landmark controls are integrated.  
+**Implementation Details:** Cost calculation, upgrades, completion reward/district advance, landmark controls, and durable state persistence are integrated.  
 **Verification & State Sign-off:**
 - [x] Engine/UI progression implementation integrated.
 - [ ] Affordability/district-completion and rendered upgrade evidence green.
@@ -59,9 +59,9 @@
 ### CLC-005 — Cargo Cache Encounter
 **Purpose:** Add a short original choice encounter on Cargo Cache landings.  
 **Inputs:** Seeded cache contents and selected sealed pod.  
-**Dependencies Touched:** Engine encounter state and workspace choice surface.  
-**Technical Notes & Edge Cases:** No opponent attack/heist imitation; deterministic seeded contents; flight is paused until resolution.  
-**Implementation Details:** Three seeded options and a native-button three-pod resolution surface are integrated.  
+**Dependencies Touched:** Engine encounter state, workspace choice surface, versioned save schema.  
+**Technical Notes & Edge Cases:** No opponent attack/heist imitation; deterministic seeded contents; flight is paused until resolution; pending encounter is persisted.  
+**Implementation Details:** Three seeded options and a native-button three-pod resolution surface are integrated and included in schema v1.  
 **Verification & State Sign-off:**
 - [x] Engine/UI encounter implementation integrated.
 - [ ] Choice determinism, focus behavior and reduced-motion browser evidence green.
@@ -69,9 +69,9 @@
 ### CLC-006 — Delivery Streak and Shield Strategy
 **Purpose:** Reward route momentum and provide bounded storm mitigation.  
 **Inputs:** Delivery streak 0-3, shield state, destination event.  
-**Dependencies Touched:** Engine and HUD/state presentation.  
+**Dependencies Touched:** Engine, HUD/state presentation, versioned save schema.  
 **Technical Notes & Edge Cases:** Fourth qualifying delivery pays route bonus; storm consumes shield before setback; state is textual as well as visual.  
-**Implementation Details:** Streak, route bonus, beacon shield, storm shield-consumption and setback logic are integrated.  
+**Implementation Details:** Streak, route bonus, beacon shield, storm shield-consumption and setback logic are integrated and durably persisted.  
 **Verification & State Sign-off:**
 - [x] Engine behavior integrated.
 - [ ] Focused streak/shield/storm edge coverage and browser evidence green.
@@ -91,29 +91,30 @@
 **Inputs:** Viewport, text scaling, pointer/keyboard input, reduced-motion preference.  
 **Dependencies Touched:** React native controls and scoped CSS.  
 **Technical Notes & Edge Cases:** >=44px important controls; 320px; 200% text; visible focus; no drag-only/timing requirement; restrained live regions.  
-**Implementation Details:** Base 5x5 perimeter board, responsive two-column-to-single-column shell, native boost/fly/cache/upgrade buttons and status region are integrated.  
+**Implementation Details:** Base 5x5 perimeter board, responsive two-column-to-single-column shell, native boost/fly/cache/upgrade/reset buttons and status regions are integrated.  
 **Verification & State Sign-off:**
 - [x] Base responsive/native-control implementation integrated.
 - [ ] Phone/tablet/desktop/zoom/reduced-motion/keyboard rendered evidence green.
 
 ### CLC-009 — Durable Career Save
 **Purpose:** Preserve career and board progression across reload/account contexts.  
-**Inputs:** Credits, fuel, position, district, landmark stages, shield/streak and career counters.  
-**Dependencies Touched:** Shared save contract; Firebase only through shared platform.  
-**Technical Notes & Edge Cases:** Defensive decoder; game-scoped reset; failure cannot block play; live Firebase remains TASK-003.  
-**Implementation Details:** After the RED guest-reload regression is observed, add a versioned persistence definition and shared `useGameSave` integration without direct Firebase calls.  
+**Inputs:** Deterministic run state including credits, fuel, position, district, landmark stages, shield/streak, counters, RNG, pending cargo and last roll.  
+**Dependencies Touched:** Shared `GameSaveDefinition`/`useGameSave` platform; Firebase only through shared platform.  
+**Technical Notes & Edge Cases:** Defensive v1 decoder rejects malformed ranges/shapes; reset is game-scoped; save failure cannot block play; live Firebase remains TASK-003.  
+**Implementation Details:** Workflow `37554746482` proved RED at guest reload. Schema-v1 persistence, shared save wiring, SaveStatus, explicit game reset, decoder unit tests, guest reload test and account-emulator cross-browser/reset regression are integrated for GREEN.  
 **Verification & State Sign-off:**
-- [x] Behavior-level RED regression added: upgrading Aerie Post to stage one must survive page reload.
-- [ ] Observe that regression fail for the intended missing-persistence reason before implementation.
-- [ ] Guest reload persistence implemented and green.
-- [ ] Emulator account checkpoint/reset evidence green; real configured project remains TASK-003.
+- [x] Behavior-level RED regression added and observed failing for the intended missing-persistence reason in workflow `37554746482`.
+- [x] Versioned save decoder and shared `useGameSave` implementation integrated.
+- [x] Guest reload GREEN regression and account-emulator restoration/reset regressions are implemented.
+- [ ] Exact-revision GREEN CI confirms unit, guest reload and account-emulator evidence.
+- [ ] Real deployed Firebase project verification — externally blocked by TASK-003.
 
 ### CLC-010 — Catalog, Documentation, and Production Integration
 **Purpose:** Ship as a first-class InMo game without disrupting parallel work.  
 **Inputs:** Catalog metadata, workspace registry, tests, docs, task state and Pages workflow.  
 **Dependencies Touched:** Shared catalog/registry/test/doc surfaces; no new dependency required by current design.  
 **Technical Notes & Edge Cases:** Refresh main before integration; no open feature PR; documentation must remain sufficient for another provider to resume.  
-**Implementation Details:** Catalog metadata, lazy workspace, GAME_INDEX row, authoritative spec, tracker, canonical PRD/todo and first unit tranche are integrated.  
+**Implementation Details:** Catalog metadata, lazy workspace, GAME_INDEX row, authoritative spec, tracker, canonical PRD/todo and automated test tranches are integrated.  
 **Verification & State Sign-off:**
 - [x] Canonical product/continuation documents and source routing are integrated.
 - [ ] Exact-revision full validation, Pages deployment and deployed smoke evidence green.

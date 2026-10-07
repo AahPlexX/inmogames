@@ -41,6 +41,7 @@ try {
 
   await page.reload();
   await page.getByRole('heading', { name: 'Cloudline Couriers', exact: true }).waitFor();
+  await page.waitForFunction(() => [...document.querySelectorAll('.cl-landmark')].some(element => element.textContent?.includes('Aerie Post') && element.textContent?.includes('Stage 1/4')));
   const restoredAerie = page.locator('.cl-landmark').filter({ hasText: 'Aerie Post' });
   assert.match(await restoredAerie.innerText(), /Stage 1\/4/, 'Guest Cloudline career progress must survive a page reload.');
 
