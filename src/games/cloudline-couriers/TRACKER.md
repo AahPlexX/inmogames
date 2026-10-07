@@ -5,24 +5,24 @@
 
 | Capability | Status | Verification |
 | --- | --- | --- |
-| Deterministic 16-stop skyway engine | started | Source + unit coverage integrated; exact-revision CI pending |
-| Tile event/economy/boost loop | started | Source + deterministic unit coverage integrated; browser evidence pending |
+| Deterministic 16-stop skyway engine | started | Source + unit coverage integrated; focused browser edge evidence still pending |
+| Tile event/economy/boost loop | started | Source + deterministic unit coverage integrated; browser event matrix pending |
 | Cargo Cache choice encounter | started | Engine/UI integrated; deterministic and focus browser evidence pending |
-| Landmark/district progression | started | Engine/UI + unit coverage integrated; browser evidence pending |
-| Shield and four-delivery streak | started | Engine integrated; focused edge coverage expansion pending |
-| Original vector sprite/animation system | planned | Current functional UI uses typographic marker; authored SVG art is next implementation tranche |
-| Responsive accessible board surface | started | 5×5 perimeter layout/native controls integrated; 320px/200% rendered evidence pending |
-| Durable guest/account career save | started | RED confirmed in workflow `37554746482`: Aerie Post reverted from Stage 1 to Stage 0 after reload. Shared v1 decoder/useGameSave integration, guest reload regression, and account-emulator cross-browser/reset regression are now integrated; GREEN CI pending. |
-| Catalog/lazy route integration | started | Registry/index changes integrated; exact-revision CI pending |
-| Production deployment | planned | Full validation + Pages smoke required |
+| Landmark/district progression | started | Engine/UI + unit coverage integrated; broader progression browser evidence pending |
+| Shield and four-delivery streak | started | Engine integrated; focused edge coverage pending |
+| Original vector sprite/animation system | started | TDD RED browser regression now requires >=21 authored vectors, one airship courier, all 16 tile identities, all four landmark identities and reduced-motion suppression; production sprite implementation intentionally absent until RED is observed |
+| Responsive accessible board surface | started | 5×5 perimeter layout/native controls integrated; 320px/200% rendered evidence still pending |
+| Durable guest/account career save | verified | Revision `232102f4`, workflow run `37555538295`: decoder/unit, guest reload, account-emulator cross-browser restoration/reset, design-browser, builds and Pages deployment all green. Live configured Firebase remains external TASK-003. |
+| Catalog/lazy route integration | started | Registry/index changes integrated; final completion-state reconciliation pending |
+| Production deployment | started | Run `37555538295` deployed the persistence revision; final game deployment/smoke remains pending after remaining features |
 
 ## Current handoff
 
 **Implementation state:** implementing  
-**Last verified revision:** none; Cloudline has not yet completed its full completion contract.  
-**Open game-local work:** obtain exact-revision GREEN evidence for CLC-009 guest/account persistence, then implement CLC-007 original SVG sprite/motion system, expand engine/browser edge coverage, complete responsive/accessibility evidence, and finish production validation/deployed smoke.  
-**External blockers:** TASK-003 blocks real configured-project Firebase verification only; it does not block local gameplay, guest persistence, emulator verification, or game-local completion.  
-**Next action:** inspect the exact persistence integration workflow. Fix any evidence-backed failure first; if GREEN, record CLC-009 guest/account evidence and continue to CLC-007 sprites without overstating overall game completion.
+**Last verified revision:** `232102f4` verifies CLC-009 persistence only; overall Cloudline remains implementing.  
+**Open game-local work:** observe the CLC-007 sprite-family regression fail for the intended missing-vector reason, implement repository-authored SVG sprites/motion, then expand remaining engine/browser and responsive/accessibility evidence before final completion/deployed smoke.  
+**External blockers:** TASK-003 blocks real configured-project Firebase verification only; guest persistence and Auth/Firestore emulator account behavior are verified in run `37555538295`.  
+**Next action:** run the new CLC-007 browser regression and confirm RED is caused by the current typographic/no-sprite presentation. Then implement the authored SVG sprite bank and reduced-motion-safe arrival motion without new runtime dependencies.
 
 ## Continuation map
 
@@ -34,7 +34,7 @@
 - Scoped responsive styling: `src/games/cloudline-couriers/cloudline-couriers.css`
 - Engine unit evidence: `tests/unit/cloudline-couriers-engine.test.ts`
 - Save decoder unit evidence: `tests/unit/cloudline-couriers-persistence.test.ts`
-- Guest reload browser evidence: `tests/browser/cloudline-couriers-design.mjs`
+- Design/reload/sprite regression: `tests/browser/cloudline-couriers-design.mjs`
 - Account-emulator evidence: `tests/browser/cloudline-couriers-account-persistence.mjs`
 
 Do not infer completion from chat history. The authoritative spec, this tracker, PRD and todo are the current repository resume contract.

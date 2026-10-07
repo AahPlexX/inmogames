@@ -34,6 +34,13 @@ try {
 
   await page.goto(base + '#/games/cloudline-couriers');
   await page.getByRole('heading', { name: 'Cloudline Couriers', exact: true }).waitFor();
+
+  const spriteCount = await page.locator('[data-cl-sprite]').count();
+  assert.ok(spriteCount >= 21, `Cloudline must render its repository-authored vector sprite family across board, courier and landmarks; found ${spriteCount}.`);
+  assert.equal(await page.locator('[data-cl-sprite="airship"]').count(), 1, 'The active courier must use the original airship vector sprite instead of a typographic placeholder.');
+  assert.equal(await page.locator('.cl-tile [data-cl-sprite]').count(), 16, 'Every skyway stop must have a vector event identity.');
+  assert.equal(await page.locator('.cl-landmark [data-cl-sprite]').count(), 4, 'Every landmark must have an original vector identity.');
+
   const aerie = page.locator('.cl-landmark').filter({ hasText: 'Aerie Post' });
   assert.match(await aerie.innerText(), /Stage 0\/4/, 'A fresh Cloudline career should start Aerie Post at stage zero.');
   await aerie.getByRole('button', { name: /Upgrade/ }).click();
@@ -44,10 +51,19 @@ try {
   await page.waitForFunction(() => [...document.querySelectorAll('.cl-landmark')].some(element => element.textContent?.includes('Aerie Post') && element.textContent?.includes('Stage 1/4')));
   const restoredAerie = page.locator('.cl-landmark').filter({ hasText: 'Aerie Post' });
   assert.match(await restoredAerie.innerText(), /Stage 1\/4/, 'Guest Cloudline career progress must survive a page reload.');
+  await context.close();
+
+  const reducedContext = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  const reduced = await reducedContext.newPage();
+  reduced.on('pageerror', error => errors.push(error.message));
+  await reduced.goto(base + '#/games/cloudline-couriers');
+  await reduced.getByRole('heading', { name: 'Cloudline Couriers', exact: true }).waitFor();
+  const courierAnimation = await reduced.locator('.cl-courier').evaluate(element => getComputedStyle(element).animationName);
+  assert.equal(courierAnimation, 'none', 'Courier arrival/bobbing motion must be disabled under prefers-reduced-motion.');
+  await reducedContext.close();
 
   assert.deepEqual(errors, []);
-  await context.close();
-  console.log('Cloudline persistence regression passed: landmark career progress survives guest reload.');
+  console.log('Cloudline design checks passed: authored vector family, reduced motion and guest reload persistence.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');

@@ -2,7 +2,7 @@
 
 **Status:** Implementing  
 **Last synchronized:** 2026-10-06  
-**Architecture & Engine:** Original static React/Vite 16-stop skyway strategy game with pure deterministic TypeScript rules, shared schema-v1 career persistence, and planned repository-authored SVG sprites.  
+**Architecture & Engine:** Original static React/Vite 16-stop skyway strategy game with pure deterministic TypeScript rules, verified schema-v1 career persistence, and CLC-007 repository-authored SVG sprites entering TDD.  
 **Dependencies Used:**
 - [x] `react@19.3.0`
 - [x] `react-dom@19.3.0`
@@ -24,7 +24,7 @@
 **Implementation Details:** Deterministic movement engine and 5x5 perimeter React board are integrated on `main`.  
 **Verification & State Sign-off:**
 - [x] Source implementation and unit coverage integrated.
-- [ ] Exact-revision CI and rendered board-loop evidence green.
+- [ ] Focused browser board-loop evidence green.
 
 ### CLC-002 — Original Tile Event System
 **Purpose:** Make every landing strategically meaningful without copying proprietary event systems.  
@@ -54,7 +54,7 @@
 **Implementation Details:** Cost calculation, upgrades, completion reward/district advance, landmark controls, and durable state persistence are integrated.  
 **Verification & State Sign-off:**
 - [x] Engine/UI progression implementation integrated.
-- [ ] Affordability/district-completion and rendered upgrade evidence green.
+- [ ] Broader affordability/district-completion and rendered upgrade evidence green.
 
 ### CLC-005 — Cargo Cache Encounter
 **Purpose:** Add a short original choice encounter on Cargo Cache landings.  
@@ -64,7 +64,7 @@
 **Implementation Details:** Three seeded options and a native-button three-pod resolution surface are integrated and included in schema v1.  
 **Verification & State Sign-off:**
 - [x] Engine/UI encounter implementation integrated.
-- [ ] Choice determinism, focus behavior and reduced-motion browser evidence green.
+- [ ] Choice determinism/focus browser evidence green.
 
 ### CLC-006 — Delivery Streak and Shield Strategy
 **Purpose:** Reward route momentum and provide bounded storm mitigation.  
@@ -80,10 +80,12 @@
 **Purpose:** Supply high-DPI original art without third-party licensing/runtime asset risk.  
 **Inputs:** Tile, landmark, airship state and animation phase.  
 **Dependencies Touched:** Repository-authored SVG/React and scoped CSS only.  
-**Technical Notes & Edge Cases:** No remote fonts/images/CDNs; motion is cosmetic; reduced motion suppresses nonessential transforms.  
-**Implementation Details:** Build the airship, cloud, cargo, landmark and event sprite bank plus movement/landing/reward/upgrade animation.  
+**Technical Notes & Edge Cases:** No remote fonts/images/CDNs; motion is cosmetic; reduced motion must suppress courier animations.  
+**Implementation Details:** TDD browser regression requires >=21 sprite instances, an airship courier, all 16 tile event identities, all four landmark identities, and computed `animation-name: none` under reduced motion. Implementation follows only after RED is observed.  
 **Verification & State Sign-off:**
-- [ ] Authored sprite system implemented.
+- [x] Behavior-level authored-vector/reduced-motion RED regression added.
+- [ ] Observe RED for the intended missing-sprite reason.
+- [ ] Authored SVG sprite bank and courier arrival/bobbing motion implemented.
 - [ ] Source asset audit and rendered reduced-motion evidence green.
 
 ### CLC-008 — Responsive Accessible Game Surface
@@ -101,12 +103,12 @@
 **Inputs:** Deterministic run state including credits, fuel, position, district, landmark stages, shield/streak, counters, RNG, pending cargo and last roll.  
 **Dependencies Touched:** Shared `GameSaveDefinition`/`useGameSave` platform; Firebase only through shared platform.  
 **Technical Notes & Edge Cases:** Defensive v1 decoder rejects malformed ranges/shapes; reset is game-scoped; save failure cannot block play; live Firebase remains TASK-003.  
-**Implementation Details:** Workflow `37554746482` proved RED at guest reload. Schema-v1 persistence, shared save wiring, SaveStatus, explicit game reset, decoder unit tests, guest reload test and account-emulator cross-browser/reset regression are integrated for GREEN.  
+**Implementation Details:** Workflow `37554746482` proved RED. Schema-v1 persistence, shared save wiring, SaveStatus, explicit game reset, decoder unit tests, guest reload test and account-emulator cross-browser/reset coverage were then integrated.  
 **Verification & State Sign-off:**
-- [x] Behavior-level RED regression added and observed failing for the intended missing-persistence reason in workflow `37554746482`.
+- [x] RED observed for the intended guest-reload failure in workflow `37554746482`.
 - [x] Versioned save decoder and shared `useGameSave` implementation integrated.
-- [x] Guest reload GREEN regression and account-emulator restoration/reset regressions are implemented.
-- [ ] Exact-revision GREEN CI confirms unit, guest reload and account-emulator evidence.
+- [x] Guest reload, account-emulator cross-browser restoration and game-scoped reset verified in revision `232102f4` / workflow `37555538295`.
+- [x] Exact-revision unit, rules, browser, design-browser, both builds and Pages deployment all green in run `37555538295`.
 - [ ] Real deployed Firebase project verification — externally blocked by TASK-003.
 
 ### CLC-010 — Catalog, Documentation, and Production Integration
@@ -117,17 +119,17 @@
 **Implementation Details:** Catalog metadata, lazy workspace, GAME_INDEX row, authoritative spec, tracker, canonical PRD/todo and automated test tranches are integrated.  
 **Verification & State Sign-off:**
 - [x] Canonical product/continuation documents and source routing are integrated.
-- [ ] Exact-revision full validation, Pages deployment and deployed smoke evidence green.
+- [ ] Final exact-revision full validation, Pages deployment and deployed smoke evidence green after remaining game work.
 
 ## Final Game Assembly & Verification Checklist
 
 - [ ] Verify zero known uncaught game-local console errors/warnings and current applicable MDN/W3C/WCAG runtime requirements.
 - [ ] Confirm viewport responsiveness across mobile, tablet, laptop, desktop and large displays, including 320 CSS px and 200% text/reflow evidence.
-- [ ] Validate state persistence plus deterministic reload/restart/loop behavior.
+- [x] Versioned deterministic career persistence, guest reload and account-emulator restoration/reset are verified in run `37555538295`; real Firebase is external TASK-003.
 - [ ] Confirm every direct dependency/devDependency remains a latest-stable exact pin; dependency-changing integrations require authoritative-source + npmjs.com corroboration and no `^` or `~`.
 - [x] Canonical PRD, todo, TRACKER, authoritative spec, GAME_INDEX and current implementation state are structurally synchronized.
-- [ ] Pass full `pnpm validate` on the exact integrated revision.
-- [ ] Pass GitHub Pages deployment and deployed route smoke/accessibility checks.
+- [ ] Pass final full `pnpm validate` on the exact completed-game revision.
+- [ ] Pass final GitHub Pages deployment and deployed route smoke/accessibility checks.
 - [ ] Confirm no feature pull request is left open and `origin/main` contains the canonical work.
 - [ ] Set overall state to Complete/Verified only after every applicable gate above has evidence.
 

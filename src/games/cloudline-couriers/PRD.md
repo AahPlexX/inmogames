@@ -14,7 +14,7 @@ Planned Functional Features Specification:
     development_status: "Implementing"
 
   technical_foundation:
-    architecture_and_engine: "Original single-player 16-stop skyway strategy game for the static React/Vite InMo Games architecture. Pure deterministic TypeScript rules engine; React presentation; shared versioned save platform; repository-authored vector sprite system remains planned. Genre-level roll/move/event/earn/upgrade/progress inspiration only; no Monopoly/Monopoly GO names, art, board, economy, maps, events, UI, text, trade dress, or proprietary content."
+    architecture_and_engine: "Original single-player 16-stop skyway strategy game for the static React/Vite InMo Games architecture. Pure deterministic TypeScript rules engine; React presentation; shared versioned save platform; repository-authored vector sprite system is in TDD. Genre-level roll/move/event/earn/upgrade/progress inspiration only; no Monopoly/Monopoly GO names, art, board, economy, maps, events, UI, text, trade dress, or proprietary content."
     dependencies_used:
       - "react@19.3.0"
       - "react-dom@19.3.0"
@@ -28,12 +28,12 @@ Planned Functional Features Specification:
     - name: "Skyway Board Loop"
       id: "CLC-001"
       details: "A 16-stop circular skyway with deterministic d6 movement. Player selects an affordable 1x/2x/3x flight boost, moves the courier, resolves the destination stop, and receives a district-scaled circuit bonus when crossing Dispatch Dock."
-      feature_development_status: "Implemented in source with unit coverage; exact-revision CI/browser verification pending"
+      feature_development_status: "Implemented in source with unit coverage; focused browser verification pending"
 
     - name: "Original Tile Event System"
       id: "CLC-002"
       details: "Resolve original Market, Workshop, Beacon, Storm, Windgate, Dispatch Dock, and Cargo Cache stops. Events alter credits, fuel, shield state, movement, delivery streak, or cargo encounter state through deterministic engine transitions."
-      feature_development_status: "Implemented in source with deterministic unit coverage; browser verification pending"
+      feature_development_status: "Implemented in source with deterministic unit coverage; browser event-matrix verification pending"
 
     - name: "Courier Economy and Flight Boost"
       id: "CLC-003"
@@ -43,22 +43,22 @@ Planned Functional Features Specification:
     - name: "Landmark and District Progression"
       id: "CLC-004"
       details: "Four original landmarks each have four upgrade stages. Credits purchase upgrades; completing all four advances the district, resets landmark stages, awards a completion bonus, and restores fuel."
-      feature_development_status: "Implemented in engine/UI; exact progression/browser verification pending"
+      feature_development_status: "Implemented in engine/UI and durably persisted; broader progression/browser verification pending"
 
     - name: "Cargo Cache Encounter"
       id: "CLC-005"
       details: "Landing on Cargo Cache pauses flight and opens a three-pod choice encounter with deterministic seeded rewards. All choices remain keyboard/touch accessible and do not imitate opponent attack/heist systems."
-      feature_development_status: "Implemented in engine/UI; deterministic focus/reduced-motion browser evidence pending"
+      feature_development_status: "Implemented in engine/UI/save schema; deterministic focus/reduced-motion browser evidence pending"
 
     - name: "Delivery Streak and Shield Strategy"
       id: "CLC-006"
       details: "Successful delivery stops advance a four-step streak that pays an original route bonus; Storm stops consume an active shield or impose a bounded setback and reset the streak; Beacons grant shields."
-      feature_development_status: "Implemented in engine; focused edge/browser verification pending"
+      feature_development_status: "Implemented in engine/save schema; focused edge/browser verification pending"
 
     - name: "Original Vector Sprite and Animation System"
       id: "CLC-007"
-      details: "Repository-authored SVG airship, clouds, cargo, landmarks, beacon, market, workshop, storm, windgate and token art. CSS/SVG motion covers movement, landing, reward, upgrade and celebration while prefers-reduced-motion removes nonessential motion. No remote sprite/CDN/font dependency."
-      feature_development_status: "Planned; implementation and rendered verification pending"
+      details: "Repository-authored SVG airship, clouds, cargo, landmarks, beacon, market, workshop, storm, windgate and dispatch art. CSS/SVG motion covers courier arrival/bobbing and visual feedback while prefers-reduced-motion removes nonessential animation. No remote sprite/CDN/font dependency. A browser regression requires >=21 rendered sprite instances, the airship courier, every tile and all four landmarks plus reduced-motion suppression."
+      feature_development_status: "TDD RED regression integrated; sprite implementation pending"
 
     - name: "Responsive Accessible Game Surface"
       id: "CLC-008"
@@ -67,13 +67,13 @@ Planned Functional Features Specification:
 
     - name: "Durable Career Save"
       id: "CLC-009"
-      details: "Schema-v1 save preserves the deterministic active career: credits, fuel, position, district, landmark stages, shield/streak, career counters, RNG, pending Cargo Cache and last roll. Guests use the shared local repository; authenticated users use the shared account-save platform. Workflow 37554746482 proves the pre-implementation RED reload defect. Defensive decoding, guest reload, cross-browser emulator restoration and game-scoped reset coverage are integrated; live configured Firebase remains TASK-003."
-      feature_development_status: "Implementation and automated GREEN coverage integrated; exact-revision CI evidence pending"
+      details: "Schema-v1 save preserves the deterministic active career: credits, fuel, position, district, landmark stages, shield/streak, career counters, RNG, pending Cargo Cache and last roll. Guests use the shared local repository; authenticated users use the shared account-save platform. Workflow 37554746482 proves RED. Revision 232102f4 / workflow 37555538295 verifies defensive decoding, guest reload, cross-browser emulator restoration and game-scoped reset. Live configured Firebase remains TASK-003."
+      feature_development_status: "Verified in revision 232102f4 / workflow 37555538295; live Firebase externally blocked by TASK-003"
 
     - name: "Catalog, Documentation, and Production Integration"
       id: "CLC-010"
       details: "Integrate metadata, lazy workspace, catalog, tests, authoritative design spec, TRACKER.md, PRD.md, todo.md, GAME_INDEX and task state. Pass dependency freshness, TypeScript, unit, browser, responsive/accessibility, builds, Pages deployment and deployed smoke checks before Complete."
-      feature_development_status: "Source/catalog/document integration present; exact-revision validation/deployment evidence pending"
+      feature_development_status: "Source/catalog/document integration present; final exact-revision validation/deployment evidence pending"
 
   quality_and_completion_contract:
     originality_boundary: "Genre-level inspiration only. Do not copy Monopoly GO or Monopoly trademarks, character/property names, board geometry, art, sound, event names, currency presentation, UI/trade dress, text, map structure, or proprietary event/minigame implementation."
