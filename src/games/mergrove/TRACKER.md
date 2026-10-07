@@ -20,6 +20,7 @@
 | Engine/decoder edge-case unit coverage | started | `mergrove-engine-edges.test.ts` and `mergrove-persistence-edges.test.ts` pass locally; selected engine mutations were confirmed to fail them. No CI-verified revision yet. |
 | Next-draw preview + Escape-to-cancel compost (MER-024) | started | Unit tests and the extended `mergrove-design.mjs` pass locally against system Chrome; the Escape handler was mutation-checked. No CI-verified revision yet. |
 | Ruleset registry, replay and golden fingerprints (MER-025) | started | `ruleset.ts` and `mergrove-ruleset.test.ts` pass locally; goldens mutation-checked (scoring and RNG changes fail). Library only, not wired to UI or saves. No CI-verified revision yet. |
+| Data-driven layouts + layout-aware engine (MER-026) | started | `layout.ts`, `mergrove-layout.test.ts`, `mergrove-engine-layouts.test.ts` pass locally; classic-5 equivalence proven by unchanged v1 and golden tests; two mutations confirmed to fail. Library/simulator only, no UI or save change. No CI-verified revision yet. |
 | Catalog/registry/index integration | verified | Catalog, lazy workspace and documentation checks passed on revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`. |
 | Production deployment | verified | Pages deploy job succeeded in run `37553471015`; a fresh uncached live render returned HTTP 200 and the expected 25-cell Mergrove initial state. |
 
@@ -31,12 +32,16 @@ All Mergrove art is original repository-authored SVG in `src/games/mergrove/spri
 
 Measured 2026-10-07 with the dev-only harness; policy-specific, not a claim about human play. Greedy (200 seeds): median 52 turns, median score 350, never past Sprout. Two-ply (30 seeds): median 283 turns, median score 5670, Bud 100%, Bloom 97%, Sapling 37%, Lantern Tree 0%, no ancient blooms, about 36 composts per run. The drift-gate ranges in `tests/unit/mergrove-balance.test.ts` are set around these figures.
 
+## v1.1 layout comparison
+
+Same seeds, two-ply bot, n=24 (2026-10-07): classic-5 median 286 turns, Sapling 38%; crossroads-6 median 399, Sapling 67%; standard-6 median 433, Sapling 54%. No layout reached Lantern Tree or an ancient bloom. Bigger boards lengthen runs but are not shown to be sufficient on their own. See PRD MER-026-F05.
+
 ## Current handoff
 
 **Implementation state:** implementing  
 **Last verified revision:** `965c91a5b9090da321ae3eb0d11f9383678b02c6` in GitHub Actions run `37553471015` (v1.0 only). v1.1 has no CI-verified revision yet.  
 **Open game-local work:** v1.1 awaits the full CI validation chain and a Pages deployment with a fresh render check. Locally verified (Node 24.21.0): typecheck, `pnpm test:unit`, `pnpm game:check` and `tests/browser/mergrove-design.mjs`. Not run in the authoring sandbox: Firestore rules tests, Auth/Firestore emulator browser tests, `design:check`, dependency gates and production builds.  
 **External blockers:** TASK-003 still blocks real configured-project Firebase account-save verification only; it does not block v1.1.  
-**Next action:** CI (`pages.yml`) only runs on pushes to `main` or manual dispatch, so merge branch `mergrove-v1.1-balance-and-presentation` to `main` (the repo rule is direct commits to `main`), let CI run, and fix any failure it reports. When every gate is green, record the revision and run id, tick the two open spec gates, set every started row to verified, set Implementation state to verified, and change the GAME_INDEX row back to `verified game`. Do not start schema-v2 features (hold, undo, modes, stats, codex) until roadmap MER-020 has its shared-platform change. Next roadmap candidates in order: MER-008 layouts, using the MER-023 baseline to choose the default board; the rest of MER-009 (rulesetId on runs) needs MER-020 first.
+**Next action:** CI (`pages.yml`) only runs on pushes to `main` or manual dispatch, so merge branch `mergrove-v1.1-balance-and-presentation` to `main` (the repo rule is direct commits to `main`), let CI run, and fix any failure it reports. When every gate is green, record the revision and run id, tick the two open spec gates, set every started row to verified, set Implementation state to verified, and change the GAME_INDEX row back to `verified game`. Do not start schema-v2 features (hold, undo, modes, stats, codex) until roadmap MER-020 has its shared-platform change. Next game-local candidates that need no save change: MER-012 large-group bonus as a NEW ruleset id (then re-simulate; it is the main lever for the late tiers), and a stronger bot. Everything that persists new data (layoutId, rulesetId, hold, undo, modes, stats, codex) needs roadmap MER-020 first.
 
 Product scope and final feature state are mirrored in `src/games/mergrove/PRD.md` and `src/games/mergrove/todo.md`; chat history is not required to resume this game.

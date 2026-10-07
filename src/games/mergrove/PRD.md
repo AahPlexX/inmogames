@@ -39,7 +39,7 @@ Planned Functional Features Specification:
       - "vitest@5.0.3 (unit verification)"
       - "playwright@1.63.0 (rendered browser verification)"
     module_map:
-      - "engine.ts: pure rules (constants, seed/RNG, piece draw, run creation, placement, flood-fill grouping, merge/cascade, scoring, sunlight, ancient bloom, compost, terminal check). Imports nothing."
+      - "engine.ts: pure rules (constants, seed/RNG, piece draw, run creation, placement, flood-fill grouping, merge/cascade, scoring, sunlight, ancient bloom, compost, terminal check). Imports only the pure layout.ts; every board function takes an optional BoardLayout defaulting to classic-5."
       - "persistence.ts: MergroveSave type, structural v1 decoder, GameSaveDefinition (slug/schema/storage key/initial). Imports only engine constants and isRunOver."
       - "sprites.tsx: MERGROVE_TIER_NAMES, tierName(), MergroveSpriteBank (SVG defs + 8 symbols), MergroveSprite (<use> renderer)."
       - "MergroveWorkspace.tsx: default-export workspace. Wires useGameSave + SaveStatus, owns UI-only state (selection, compost mode, last anchor, status message), calls engine transitions and commits saves."
@@ -133,8 +133,8 @@ Planned Functional Features Specification:
           evidence: "direct: events matched with toMatchObject in the merge, cascade and ancient-bloom tests."
         - function_id: "MER-001-F12"
           title: "Engine purity boundary"
-          requirement: "engine.ts imports nothing: no React, DOM, storage, Firebase, audio, timers or sprites. Wall-clock seeding (Date.now()) happens only in the workspace and is passed in as an explicit seed."
-          source: "engine.ts (no import statements); MergroveWorkspace.tsx createRun(Date.now())"
+          requirement: "engine.ts imports only the pure, dependency-free layout.ts (added by MER-026): no React, DOM, storage, Firebase, audio, timers or sprites. Wall-clock seeding (Date.now()) happens only in the workspace and is passed in as an explicit seed."
+          source: "engine.ts (a single import of layout.ts); MergroveWorkspace.tsx createRun(Date.now())"
           evidence: "source-audited; tests import the engine directly under Vitest with no DOM."
 
     - name: "Orthogonal Merge and Cascade Resolution"
@@ -581,10 +581,42 @@ Planned Functional Features Specification:
           source: "tests/unit/mergrove-ruleset.test.ts"
           evidence: "direct: mutation-checked on 2026-10-07; changing the score multiplier 10 to 11, and the xorshift shift 13 to 12, each fail the test."
 
+    - name: "Data-Driven Board Layouts (engine part)"
+      id: "MER-026"
+      details: "Promoted from roadmap MER-008 (F01-F03 plus the engine side of F04). Board geometry is data: a validated, frozen BoardLayout with a playable mask and precomputed adjacency. The engine takes an optional layout that defaults to classic-5, so released v1 behavior is provably unchanged. Library and simulator only: the UI still renders the 5x5 board and saves do not record a layout, because layoutId on a run needs the schema v2 migration (roadmap MER-020). The unbuilt MER-008-F05 UI work stays in planned_roadmap."
+      feature_development_status: "Started — unit tests and simulation green locally; awaiting CI-verified revision"
+      functional_requirements:
+        - function_id: "MER-026-F01"
+          title: "defineLayout validation (roadmap MER-008-F01)"
+          requirement: "defineLayout({ id, width, height, mask? }) requires a kebab-case id; whole-number width and height from 4 to 8; a mask of exactly height rows, each width characters of '#' (playable) or '.' (blocked); at least 12 playable cells; and one orthogonally connected playable region. Omitting the mask gives a fully playable rectangle. Each failure throws a distinct message. Special-cell kinds from the roadmap text are deferred: no special cell exists in any shipped ruleset."
+          source: "layout.ts defineLayout"
+          evidence: "direct: mergrove-layout.test.ts, ten rejection cases plus two accepted forms."
+        - function_id: "MER-026-F02"
+          title: "layoutNeighbors and adjacency (roadmap MER-008-F02)"
+          requirement: "layoutNeighbors(layout, index) returns playable orthogonal neighbors only, never diagonal and never wrapping across a row edge (cells 5 and 6 on a 6-wide board are not neighbors). It returns a fresh copy; the engine reads layout.adjacency directly. The inner adjacency arrays are intentionally not Object.frozen because frozen arrays measured about 35% slower in the flood-fill hot path (3.4s vs 4.6s for the same 24-seed two-ply simulation); the layout object itself is frozen."
+          source: "layout.ts layoutNeighbors, defineLayout"
+          evidence: "direct: neighbor counts for corner/edge/interior, no-wrap, blocked-cell omission, copy safety, and adjacency equals layoutNeighbors for every cell of every layout."
+        - function_id: "MER-026-F03"
+          title: "Released layouts"
+          requirement: "classic-5 (5x5, 25 cells, identical to v1), standard-6 (6x6, 36 cells) and crossroads-6 (6x6 with the four corner cells blocked, 32 playable cells). Ids are permanent; resolveLayout(id) returns the frozen layout or null (Map lookup, so '__proto__' is harmless)."
+          source: "layout.ts CLASSIC_5, STANDARD_6, CROSSROADS_6, resolveLayout"
+          evidence: "direct: cell counts, blocked corners, resolution."
+        - function_id: "MER-026-F04"
+          title: "Layout-aware engine (roadmap MER-008-F03 and engine side of F04)"
+          requirement: "createRun, connectedGroup, isRunOver, placePiece and compostCell accept an optional trailing layout argument (default classic-5). createRun sizes the board to the layout; a board of the wrong length throws 'Board must contain N cells.'; placing on a blocked cell throws 'That cell is not part of this board.'; only playable cells count toward a full board, so isRunOver ignores blocked cells. With classic-5 passed explicitly the result is byte-identical to the default path."
+          source: "engine.ts"
+          evidence: "direct: mergrove-engine-layouts.test.ts including a 25-seed equivalence test; all pre-existing engine, persistence and MER-025 golden tests pass unchanged, which is the backward-compatibility proof. Mutation-checked: dropping the playable check in isRunOver and removing the row-edge guard each fail tests."
+        - function_id: "MER-026-F05"
+          title: "Layout comparison (design input, not a rule change)"
+          requirement: "Simulated 2026-10-07 with the MER-023 harness, same seeds, n=24 two-ply: classic-5 median 286 turns, Sapling reach 38%; crossroads-6 median 399 turns, Sapling 67%; standard-6 median 433 turns, Sapling 54%. Bud is always reached and Bloom is 96-100% everywhere. No layout reached Lantern Tree or an ancient bloom. The greedy bot is unreliable on standard-6 (dies at turn 81) and n=24 cannot rank crossroads-6 against standard-6. Conclusion: a larger board lengthens runs and helps Sapling but does not by itself make the late tiers reachable, so the working hypothesis that standard-6 alone becomes the default is not established; MER-012 (large-group bonus) and a stronger bot are the next experiments."
+          source: "tests/unit/support/mergrove-sim.ts simulate(..., layout)"
+          evidence: "direct measurement, policy-specific. Drift gate: mergrove-balance.test.ts asserts both 6-boards stay playable (Bud always, Bloom >= 80%) and outlast classic-5 on 8 seeds."
+
   verification_traceability:
     unit_engine_edges: "tests/unit/mergrove-engine-edges.test.ts: run-over rejection for placePiece/compostCell; empty-cell compost message; compost isolation (only cell, sunlight, gameOver change); input immutability; only the used queue slot is refilled and turns +1; sunlight for groups of 4 and 5; mergeScore argument rejection and the 8-tier reference values; a three-stage cascade ending in an ancient bloom; no standing group of 3 over scripted play; Seed-only draws before Bud; ~22% Sprout rate (+/-3 points over 4000 seeds); previewNextDraw equals the real next draw and does not mutate."
     unit_persistence_edges: "tests/unit/mergrove-persistence-edges.test.ts: fresh and empty saves; rejects seed 0 / above uint32 / fractional, rngState 0 / above uint32, non-integer, tier 0, tier 9 and above-highestTier board cells, a Sprout in the queue before Bud, short queues, negative or fractional turns, negative ancientBlooms/sunlight/score and non-boolean gameOver; drops unknown fields; accepts a Sprout queue after Bud."
     unit_ruleset: "tests/unit/mergrove-ruleset.test.ts (MER-025): registry, frozen ruleset, replay equals live engine, compost replay, error reporting, fingerprint behavior and the golden fingerprints/state."
+    unit_layout: "tests/unit/mergrove-layout.test.ts and mergrove-engine-layouts.test.ts (MER-026): validation, neighbors, released layouts, copy safety, adjacency parity, layout-aware engine, classic-5 equivalence."
     unit_balance: "tests/unit/mergrove-balance.test.ts (MER-023): reproducibility, termination and the drift gate ranges."
     unit_engine: "tests/unit/mergrove-engine.test.ts: deterministic creation; orthogonal grouping; trio merge + sunlight; two-stage cascade scoring (150) with highestTier 3; tier-8 ancient bloom; full-board terminal vs recoverable + compost; invalid queue/cell/occupied/compost actions; mergeScore(2,3,2)=120."
     unit_persistence: "tests/unit/mergrove-persistence.test.ts: v1 definition; valid round-trip; rejects null, negative bestScore, bestTier 9, bestTier < highestTier, a 24-cell board, a Bud in the queue and inconsistent gameOver."
@@ -666,7 +698,7 @@ Planned Functional Features Specification:
       - "L3 Journey of Biomes: handcrafted chaptered levels; each biome adds one species line, one layout family and one mechanic (Threes-style restraint)."
       - "L4 Herbarium and Milestones: a collection codex with first-discovery reveals, lifetime stats and achievements whose thresholds come from simulation."
     biome_concepts_for_content_packs: "Mossy Hollow (v1 woodland, classic-5), Fen Lanterns (wetland species, standard-6, Briar hazard), Stonecrest (alpine species, ring/cross layouts, Stone blockers), Emberwood (autumn species, Wildseed), Moonglade (nocturnal species, finale chapter with a hidden final codex entry)."
-    board_size_decision: "Undecided by design. Triple Town's standard is 6x6. v1's 5x5 makes ancient blooms (three Grovehearts = 6561 Seed-equivalents with trio merges) likely very rare. Decide with MER-018 simulation across classic-5, standard-6 and shaped layouts. Working hypothesis: standard-6 becomes the default; classic-5 survives as 'Pocket Grove' hard mode and as the migration target for every v1 run."
+    board_size_decision: "Undecided by design. Triple Town's standard is 6x6. v1's 5x5 makes ancient blooms (three Grovehearts = 6561 Seed-equivalents with trio merges) likely very rare. Decide with MER-023 simulation across classic-5, standard-6 and shaped layouts. First results (MER-026-F05) show larger boards lengthen runs but do not make Lantern Tree or ancient blooms reachable for the current bots, so the earlier hypothesis that standard-6 becomes the default is unproven; classic-5 survives as 'Pocket Grove' hard mode and as the migration target for every v1 run."
     retention_guardrails: "No energy, turn caps, purchases, ads, analytics, push notifications or loss-aversion streak penalties. Streaks include grace days. Every mode stays playable offline as a guest."
 
   post_release_content_safety:
@@ -683,16 +715,13 @@ Planned Functional Features Specification:
       - "Every content release updates the spec and TRACKER together, passes the full validate chain and gets a production smoke test."
 
   planned_roadmap:
-    - roadmap_feature: "Data-Driven Board Layouts"
+    - roadmap_feature: "Data-Driven Board Layouts (remainder)"
       roadmap_id: "MER-008"
-      scope: "Replace hard-coded 5x5 geometry with BoardLayout { id, width, height, playableMask, specialCells }. Ship classic-5 (v1-identical), standard-6 and shaped biome layouts. The final default is chosen by MER-018 simulation."
-      roadmap_status: "Planned — not implemented"
+      scope: "F01-F03 and the engine side of F04 shipped as MER-026. Still planned: persisting layoutId on runs (needs MER-020) and the UI."
+      roadmap_status: "Partially promoted — F04 persistence and F05 UI planned, not implemented"
       functional_requirements:
-        - "MER-008-F01 defineLayout/validateLayout: rejects dimensions outside 4..8, masks with fewer than 12 playable cells, and unknown special-cell kinds."
-        - "MER-008-F02 layoutNeighbors(layout, index): playable orthogonal neighbors only; never diagonal, never wrapping."
-        - "MER-008-F03 isRunOver(layout, board, sunlight): only playable cells count toward a full board."
-        - "MER-008-F04 run.layoutId persisted; v1 runs migrate to 'classic-5' with bit-identical behavior."
-        - "MER-008-F05 Board UI derives grid columns and accessible labels ('Mergrove {w} by {h} board') from the layout, keeping >=44px targets at 320px; the reflow budget is checked for the largest layout."
+        - "MER-008-F04 run.layoutId persisted; v1 runs migrate to 'classic-5' with bit-identical behavior. Blocked on MER-020."
+        - "MER-008-F05 Board UI derives grid columns and accessible labels ('Mergrove {w} by {h} board') from the layout, rendering blocked cells as non-interactive gaps, keeping >=44px targets at 320px; the reflow budget is checked for the largest layout. Needs a layout selector, so it also needs a persisted choice."
     - roadmap_feature: "Ruleset Versioning and Deterministic Replay (remainder)"
       roadmap_id: "MER-009"
       scope: "F01-F04 shipped as MER-025 (library only). Still planned: persisting rulesetId and an action log on runs (needs MER-020), and separate RNG streams."
@@ -814,7 +843,7 @@ Planned Functional Features Specification:
         - "MER-022-F04 Layout-aware sizing tokens (for example board max 34rem, cell size derived from layout width) preserving >=44px targets, 320px/200% reflow and the reduced-motion path. Needed only once MER-008 adds a second layout."
         - "MER-022-F05 Optional audio layer only as separate future scope, off by default, repository-authored, with a visible mute control."
 
-  recommended_sequence: "1) MER-018 simulation harness (done as MER-023, v1 baseline recorded) → 2) MER-009 ruleset/replay (library part done as MER-025) + MER-020 migration (with platform change) → 3) MER-008 layouts (decide default) → 4) MER-010 Storehouse + MER-022 preview → 5) MER-014 Daily Grove → 6) MER-017 Herbarium + MER-019 achievements → 7) MER-011/012/013 → 8) MER-015/016/021 Journey and content packs."
+  recommended_sequence: "1) MER-018 simulation harness (done as MER-023, v1 baseline recorded) → 2) MER-009 ruleset/replay (library part done as MER-025) + MER-020 migration (with platform change) → 3) MER-008 layouts (engine done as MER-026; default board still undecided, see MER-026-F05) → 4) MER-010 Storehouse + MER-022 preview → 5) MER-014 Daily Grove → 6) MER-017 Herbarium + MER-019 achievements → 7) MER-011/012/013 → 8) MER-015/016/021 Journey and content packs."
 
   draft_reconciliation:
     note: "Disposition of a 2026-10-07 externally drafted PRD variant, recorded so none of its ideas are lost and none of its inaccurate claims enter the authoritative record."

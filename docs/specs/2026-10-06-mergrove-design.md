@@ -62,7 +62,7 @@ Mergrove intentionally does not require drag-and-drop. WCAG 2.2 requires a simpl
 
 ## Determinism and engine boundary
 
-`engine.ts` is pure TypeScript with no React, DOM, Firebase, storage, audio or sprite dependency. A run stores its normalized seed and current RNG state. Tests may provide fixed seeds and receive byte-for-byte-equivalent run creation and deterministic replacement draws.
+`engine.ts` is pure TypeScript with no React, DOM, Firebase, storage, audio or sprite dependency; its only import is the equally pure `layout.ts`. A run stores its normalized seed and current RNG state. Tests may provide fixed seeds and receive byte-for-byte-equivalent run creation and deterministic replacement draws.
 
 The engine owns board dimensions, valid placement, orthogonal flood-fill grouping, merge/cascade resolution, scoring, sunlight, ancient blooms, compost and game-over determination. React renders engine state but does not reimplement merge rules.
 
@@ -109,6 +109,7 @@ New game-local work reopens the game under the continuity contract. The save sch
 - **Balance harness (PRD MER-023).** A dev-only bot and simulator live under `tests/unit/support/` and are never imported by the shipped bundle. A unit-test drift gate fails when the released configuration leaves its measured target ranges. The recorded baseline shows two-ply play reaching Bloom about 97% and Sapling about 37% of the time, and never Lantern Tree or an ancient bloom, which is evidence for the roadmap decision on board size. No released rule is changed by this finding.
 - **Next-draw preview (PRD MER-024).** `previewNextDraw(run)` in `engine.ts` peeks the next replacement tier without advancing the RNG. The UI states it in text ("Next to arrive: Seed"). Before Bud it also says when a Sprout would arrive if the placement itself reaches Bud, because the replacement is drawn after merge resolution.
 - **Ruleset registry and replay (PRD MER-025).** `src/games/mergrove/ruleset.ts` freezes the released ruleset `v1`, replays a seed plus action list without throwing, and fingerprints runs. Golden-replay tests fail if released scoring, RNG or draw behavior changes; such a change must ship as a new ruleset id. It is library-only for now: runs do not yet record a `rulesetId`, because that needs the schema v2 migration.
+- **Board layouts (PRD MER-026).** `src/games/mergrove/layout.ts` makes geometry data: validated, frozen layouts `classic-5`, `standard-6` and a cut-corner `crossroads-6`, and the engine takes an optional layout defaulting to `classic-5`. Existing behavior is unchanged and proven so by the unmodified v1 and golden-replay tests. The player-visible board is still 5 × 5 and saves record no layout; both wait on the schema v2 migration. Simulation shows larger boards lengthen runs but do not alone make the late tiers reachable, so no default-board change is made.
 - **Escape cancels Compost (PRD MER-024).** Escape disarms an armed Compost with the same announcement as the Cancel button and spends nothing. It is never the only path and is documented in "How merging works".
 
 The explicit v1 exclusions are unchanged: no timer, undo, daily challenge, audio, leaderboard, or ninth tier. The preview reveals information the deterministic engine already fixes; it does not create a reroll or any new randomness.
@@ -138,6 +139,7 @@ The explicit v1 exclusions are unchanged: no timer, undo, daily challenge, audio
 - [x] GitHub Pages deployment was green for v1.0; the deployed route independently rendered the expected game state.
 - [x] v1.1: balance harness, edge-case unit tests and drift gate exist and pass locally (PRD MER-023).
 - [x] v1.1: ruleset registry, replay and mutation-checked golden fingerprints exist and pass locally (PRD MER-025).
+- [x] v1.1: layout module and layout-aware engine exist, classic-5 is proven byte-identical, and the layout comparison is recorded (PRD MER-026).
 - [x] v1.1: next-draw preview and Escape-to-cancel compost are implemented with unit and rendered-browser assertions that were mutation-checked to fail when the behavior is removed (PRD MER-024).
 - [ ] v1.1: the full `pnpm validate`-equivalent CI chain, including Auth/Firestore emulator browser tests and the Firebase rules tests that could not run in the authoring sandbox, is green on the exact integrated revision.
 - [ ] v1.1: GitHub Pages deployment is green and a fresh deployed render of `#/games/mergrove` shows the "Next to arrive" line.

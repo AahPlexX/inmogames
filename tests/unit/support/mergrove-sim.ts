@@ -3,21 +3,24 @@ import {
   COMPOST_COST, MAX_TIER, BOARD_CELLS, compostCell, createRun, placePiece,
   type MergroveRun,
 } from '../../../src/games/mergrove/engine';
+import { CLASSIC_5, type BoardLayout } from '../../../src/games/mergrove/layout';
 
 export type BotAction =
   | { kind: 'place'; queueIndex: number; cellIndex: number }
   | { kind: 'compost'; cellIndex: number };
 
-export type Bot = (run: MergroveRun) => BotAction;
+export type Bot = (run: MergroveRun, layout: BoardLayout) => BotAction;
 
-function emptyCells(run: MergroveRun): number[] {
+function emptyCells(run: MergroveRun, layout: BoardLayout): number[] {
   const cells: number[] = [];
-  run.board.forEach((cell, index) => { if (cell === null) cells.push(index); });
+  run.board.forEach((cell, index) => { if (cell === null && layout.playable[index]) cells.push(index); });
   return cells;
 }
 
-function emptyCount(run: MergroveRun): number {
-  return run.board.reduce<number>((count, cell) => count + (cell === null ? 1 : 0), 0);
+function emptyCount(run: MergroveRun, layout: BoardLayout): number {
+  let count = 0;
+  for (let index = 0; index < run.board.length; index += 1) if (run.board[index] === null && layout.playable[index]) count += 1;
+  return count;
 }
 
 /** Compost target when the board is full: the lowest tier, lowest index (cheapest spirit to give up). */
@@ -30,17 +33,17 @@ function compostTarget(run: MergroveRun): number {
 }
 
 /** Heuristic value of a position: open space dominates, score breaks ties. */
-function value(run: MergroveRun): number {
-  return emptyCount(run) * 1_000 + run.sunlight * 10 + run.highestTier * 5;
+function value(run: MergroveRun, layout: BoardLayout): number {
+  return emptyCount(run, layout) * 1_000 + run.sunlight * 10 + run.highestTier * 5;
 }
 
 interface Candidate { action: BotAction; run: MergroveRun; points: number }
 
-function candidates(run: MergroveRun): Candidate[] {
+function candidates(run: MergroveRun, layout: BoardLayout): Candidate[] {
   const out: Candidate[] = [];
-  for (const cellIndex of emptyCells(run)) {
+  for (const cellIndex of emptyCells(run, layout)) {
     for (let queueIndex = 0; queueIndex < 3; queueIndex += 1) {
-      const result = placePiece(run, queueIndex, cellIndex);
+      const result = placePiece(run, queueIndex, cellIndex, layout);
       out.push({ action: { kind: 'place', queueIndex, cellIndex }, run: result.run, points: result.run.score - run.score });
     }
   }
@@ -58,19 +61,19 @@ function best(options: Candidate[], score: (candidate: Candidate) => number): Ca
 }
 
 /** One-ply policy. Deterministic: ties resolve to the earliest cell, then earliest queue slot. */
-export const greedyBot: Bot = (run) => {
-  if (emptyCount(run) === 0) return { kind: 'compost', cellIndex: compostTarget(run) };
-  return best(candidates(run), c => value(c.run) + c.points * 0.01).action;
+export const greedyBot: Bot = (run, layout) => {
+  if (emptyCount(run, layout) === 0) return { kind: 'compost', cellIndex: compostTarget(run) };
+  return best(candidates(run, layout), c => value(c.run, layout) + c.points * 0.01).action;
 };
 
 /** Two-ply policy: also scores the best reply, which is knowable because the queue is deterministic. */
-export const lookaheadBot: Bot = (run) => {
-  if (emptyCount(run) === 0) return { kind: 'compost', cellIndex: compostTarget(run) };
-  return best(candidates(run), (c) => {
+export const lookaheadBot: Bot = (run, layout) => {
+  if (emptyCount(run, layout) === 0) return { kind: 'compost', cellIndex: compostTarget(run) };
+  return best(candidates(run, layout), (c) => {
     if (c.run.gameOver) return -Infinity;
-    if (emptyCount(c.run) === 0) return value(c.run) + c.points * 0.01;
-    const reply = best(candidates(c.run), r => value(r.run) + r.points * 0.01);
-    return value(reply.run) + (c.points + reply.points) * 0.01;
+    if (emptyCount(c.run, layout) === 0) return value(c.run, layout) + c.points * 0.01;
+    const reply = best(candidates(c.run, layout), r => value(r.run, layout) + r.points * 0.01);
+    return value(reply.run, layout) + (c.points + reply.points) * 0.01;
   }).action;
 };
 
@@ -84,14 +87,14 @@ export interface RunSummary {
   capped: boolean;
 }
 
-export function playRun(bot: Bot, seed: number, maxActions = 4_000): RunSummary {
-  let run = createRun(seed);
+export function playRun(bot: Bot, seed: number, maxActions = 4_000, layout: BoardLayout = CLASSIC_5): RunSummary {
+  let run = createRun(seed, layout);
   let composts = 0;
   let actions = 0;
   while (!run.gameOver && actions < maxActions) {
-    const action = bot(run);
-    if (action.kind === 'place') run = placePiece(run, action.queueIndex, action.cellIndex).run;
-    else { run = compostCell(run, action.cellIndex); composts += 1; }
+    const action = bot(run, layout);
+    if (action.kind === 'place') run = placePiece(run, action.queueIndex, action.cellIndex, layout).run;
+    else { run = compostCell(run, action.cellIndex, layout); composts += 1; }
     actions += 1;
   }
   return {
@@ -132,8 +135,8 @@ export function summarize(results: RunSummary[]): SimulationSummary {
   };
 }
 
-export function simulate(bot: Bot, seeds: number[], maxActions?: number): SimulationSummary {
-  return summarize(seeds.map(seed => playRun(bot, seed, maxActions)));
+export function simulate(bot: Bot, seeds: number[], maxActions?: number, layout: BoardLayout = CLASSIC_5): SimulationSummary {
+  return summarize(seeds.map(seed => playRun(bot, seed, maxActions, layout)));
 }
 
 /** Evenly spread, reproducible seed list. */

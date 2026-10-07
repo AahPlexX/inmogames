@@ -1,3 +1,5 @@
+import { CLASSIC_5, layoutCellCount, type BoardLayout } from './layout';
+
 export const BOARD_SIZE = 5;
 export const BOARD_CELLS = BOARD_SIZE * BOARD_SIZE;
 export const MAX_TIER = 8;
@@ -73,26 +75,21 @@ function assertIndex(index: number, label: string, max: number): void {
   if (!Number.isInteger(index) || index < 0 || index >= max) throw new Error(`${label} is out of range.`);
 }
 
-function orthogonalNeighbors(index: number): number[] {
-  const row = Math.floor(index / BOARD_SIZE);
-  const column = index % BOARD_SIZE;
-  const neighbors: number[] = [];
-  if (row > 0) neighbors.push(index - BOARD_SIZE);
-  if (row < BOARD_SIZE - 1) neighbors.push(index + BOARD_SIZE);
-  if (column > 0) neighbors.push(index - 1);
-  if (column < BOARD_SIZE - 1) neighbors.push(index + 1);
-  return neighbors;
+function assertBoard(board: GroveCell[], layout: BoardLayout): void {
+  const cells = layoutCellCount(layout);
+  if (board.length !== cells) throw new Error(`Board must contain ${cells} cells.`);
 }
 
-export function connectedGroup(board: GroveCell[], start: number, tier: number): number[] {
-  if (board.length !== BOARD_CELLS) throw new Error(`Board must contain ${BOARD_CELLS} cells.`);
-  assertIndex(start, 'Cell', BOARD_CELLS);
+export function connectedGroup(board: GroveCell[], start: number, tier: number, layout: BoardLayout = CLASSIC_5): number[] {
+  assertBoard(board, layout);
+  assertIndex(start, 'Cell', layoutCellCount(layout));
   if (!Number.isInteger(tier) || tier < 1 || tier > MAX_TIER || board[start] !== tier) return [];
+  const adjacency = layout.adjacency;
   const visited = new Set<number>([start]);
   const queue = [start];
   for (let cursor = 0; cursor < queue.length; cursor += 1) {
     const current = queue[cursor];
-    for (const neighbor of orthogonalNeighbors(current)) {
+    for (const neighbor of adjacency[current]) {
       if (!visited.has(neighbor) && board[neighbor] === tier) {
         visited.add(neighbor);
         queue.push(neighbor);
@@ -109,12 +106,16 @@ export function mergeScore(tier: number, groupSize: number, chain: number): numb
   return groupSize * 10 * (2 ** (tier - 1)) * chain;
 }
 
-export function isRunOver(board: GroveCell[], sunlight: number): boolean {
-  if (board.length !== BOARD_CELLS) throw new Error(`Board must contain ${BOARD_CELLS} cells.`);
-  return board.every(cell => cell !== null) && sunlight < COMPOST_COST;
+export function isRunOver(board: GroveCell[], sunlight: number, layout: BoardLayout = CLASSIC_5): boolean {
+  assertBoard(board, layout);
+  if (sunlight >= COMPOST_COST) return false;
+  for (let index = 0; index < board.length; index += 1) {
+    if (board[index] === null && layout.playable[index]) return false;
+  }
+  return true;
 }
 
-export function createRun(seed: number): MergroveRun {
+export function createRun(seed: number, layout: BoardLayout = CLASSIC_5): MergroveRun {
   const normalized = normalizeSeed(seed);
   let state = normalized;
   const drawn: number[] = [];
@@ -126,7 +127,7 @@ export function createRun(seed: number): MergroveRun {
   return {
     seed: normalized,
     rngState: state,
-    board: Array<GroveCell>(BOARD_CELLS).fill(null),
+    board: Array<GroveCell>(layoutCellCount(layout)).fill(null),
     queue: [drawn[0], drawn[1], drawn[2]],
     score: 0,
     sunlight: 0,
@@ -137,11 +138,12 @@ export function createRun(seed: number): MergroveRun {
   };
 }
 
-export function placePiece(run: MergroveRun, queueIndex: number, cellIndex: number): PlacementResult {
+export function placePiece(run: MergroveRun, queueIndex: number, cellIndex: number, layout: BoardLayout = CLASSIC_5): PlacementResult {
   if (run.gameOver) throw new Error('This Mergrove run is over.');
   assertIndex(queueIndex, 'Queue slot', 3);
-  assertIndex(cellIndex, 'Cell', BOARD_CELLS);
-  if (run.board.length !== BOARD_CELLS) throw new Error(`Board must contain ${BOARD_CELLS} cells.`);
+  assertIndex(cellIndex, 'Cell', layoutCellCount(layout));
+  assertBoard(run.board, layout);
+  if (!layout.playable[cellIndex]) throw new Error('That cell is not part of this board.');
   if (run.board[cellIndex] !== null) throw new Error('Choose an empty cell.');
 
   const board = [...run.board];
@@ -159,7 +161,7 @@ export function placePiece(run: MergroveRun, queueIndex: number, cellIndex: numb
   const events: MergeEvent[] = [];
 
   while (board[cellIndex] === currentTier) {
-    const group = connectedGroup(board, cellIndex, currentTier);
+    const group = connectedGroup(board, cellIndex, currentTier, layout);
     if (group.length < 3) break;
     const points = mergeScore(currentTier, group.length, chain);
     score += points;
@@ -185,7 +187,7 @@ export function placePiece(run: MergroveRun, queueIndex: number, cellIndex: numb
   let replacementTier: number;
   [rngState, replacementTier] = drawPiece(run.rngState, highestTier);
   queue[queueIndex] = replacementTier;
-  const gameOver = isRunOver(board, sunlight);
+  const gameOver = isRunOver(board, sunlight, layout);
 
   return {
     run: {
@@ -205,14 +207,14 @@ export function placePiece(run: MergroveRun, queueIndex: number, cellIndex: numb
   };
 }
 
-export function compostCell(run: MergroveRun, cellIndex: number): MergroveRun {
+export function compostCell(run: MergroveRun, cellIndex: number, layout: BoardLayout = CLASSIC_5): MergroveRun {
   if (run.gameOver) throw new Error('This Mergrove run is over.');
-  assertIndex(cellIndex, 'Cell', BOARD_CELLS);
-  if (run.board.length !== BOARD_CELLS) throw new Error(`Board must contain ${BOARD_CELLS} cells.`);
+  assertIndex(cellIndex, 'Cell', layoutCellCount(layout));
+  assertBoard(run.board, layout);
   if (run.sunlight < COMPOST_COST) throw new Error(`Composting needs ${COMPOST_COST} sunlight.`);
   if (run.board[cellIndex] === null) throw new Error('Choose an occupied cell to compost.');
   const board = [...run.board];
   board[cellIndex] = null;
   const sunlight = run.sunlight - COMPOST_COST;
-  return { ...run, board, sunlight, gameOver: isRunOver(board, sunlight) };
+  return { ...run, board, sunlight, gameOver: isRunOver(board, sunlight, layout) };
 }

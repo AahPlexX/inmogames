@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
+
+// Two-ply simulations take ~3s locally; CI machines can be several times slower, so give them room.
+const SLOW = 60_000;
 import { createRun } from '../../src/games/mergrove/engine';
+import { CLASSIC_5, CROSSROADS_6, STANDARD_6 } from '../../src/games/mergrove/layout';
 import { greedyBot, lookaheadBot, playRun, seedRange, simulate } from './support/mergrove-sim';
 
 /**
@@ -11,7 +15,7 @@ describe('Mergrove balance simulation (MER-018)', () => {
   it('is reproducible for a fixed seed list', () => {
     const seeds = seedRange(5);
     expect(simulate(lookaheadBot, seeds)).toEqual(simulate(lookaheadBot, seeds));
-  });
+  }, SLOW);
 
   it('always terminates: no run hits the action cap', () => {
     const summary = simulate(greedyBot, seedRange(150));
@@ -35,12 +39,27 @@ describe('Mergrove balance simulation (MER-018)', () => {
     expect(summary.reach[3]).toBeGreaterThanOrEqual(0.8); // Bloom is the common ceiling
     expect(summary.reach[4]).toBeGreaterThan(0.1); // Sapling is a real, skill-gated goal
     expect(summary.compostsPerRun).toBeGreaterThan(5);
-  });
+  }, SLOW);
 
   it('shows measurable skill: lookahead out-scores greedy on the same seeds', () => {
     const seeds = seedRange(24);
     expect(simulate(lookaheadBot, seeds).medianScore).toBeGreaterThan(simulate(greedyBot, seeds).medianScore * 3);
-  });
+  }, SLOW);
+
+  it.each([['standard-6', STANDARD_6], ['crossroads-6', CROSSROADS_6]])(
+    'keeps %s playable and longer-lived than classic-5 for the two-ply bot',
+    (_id, layout) => {
+      const seeds = seedRange(8);
+      const classic = simulate(lookaheadBot, seeds, undefined, CLASSIC_5);
+      const bigger = simulate(lookaheadBot, seeds, undefined, layout);
+      expect(bigger.capped).toBe(0);
+      expect(bigger.reach[2]).toBe(1); // Bud is always reachable
+      expect(bigger.reach[3]).toBeGreaterThanOrEqual(0.8); // so is Bloom
+      expect(bigger.turns.median).toBeGreaterThan(classic.turns.median);
+      expect(bigger.turns.median).toBeLessThanOrEqual(900);
+    },
+    SLOW,
+  );
 
   it('plays a full run through the pure engine only', () => {
     const summary = playRun(greedyBot, 4242);

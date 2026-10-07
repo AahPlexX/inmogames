@@ -99,6 +99,14 @@
   - [x] **Implementation Details:** Frozen `RULESET_V1`, Map registry, FNV-1a fingerprint, golden suite.
   - [ ] **Verification & State Sign-off:** Passing locally with mutation-checked goldens; needs a CI-verified revision. Wiring to saves is blocked on roadmap MER-020.
 
+- [ ] **Data-Driven Board Layouts (engine part)** `{id: 'MER-026'}` — `[feature development status: = 'Started']`
+  - [x] **Purpose:** Make board shape data so larger and shaped boards can be simulated and later offered.
+  - [x] **Inputs / Parameters:** A layout definition (id, size, optional mask) and an optional layout argument on engine functions.
+  - [x] **Dependencies Touched:** `engine.ts` (optional trailing parameters only) and the new `layout.ts`; simulator.
+  - [x] **Technical Notes & Edge Cases:** Blocked cells never count toward a full board; no row wrapping; layouts must be connected; frozen arrays were 35% slower so adjacency arrays are plain while the layout object is frozen.
+  - [x] **Implementation Details:** Precomputed adjacency, default `classic-5`, equivalence test against the unchanged default path.
+  - [ ] **Verification & State Sign-off:** Passing locally; needs a CI-verified revision. UI and persistence of layout wait on roadmap MER-020.
+
 ---
 
 ## Final Game Assembly & Verification Checklist
