@@ -14,8 +14,12 @@ service cloud.firestore {
           && request.resource.data.state is map
           && request.resource.data.updatedAt == request.time;
       }
+      function notDowngrade() {
+        return request.resource.data.schemaVersion >= resource.data.schemaVersion;
+      }
       allow read, delete: if ownsSave();
-      allow create, update: if ownsSave() && validEnvelope();
+      allow create: if ownsSave() && validEnvelope();
+      allow update: if ownsSave() && validEnvelope() && notDowngrade();
     }
     match /{document=**} {
       allow read, write: if false;
