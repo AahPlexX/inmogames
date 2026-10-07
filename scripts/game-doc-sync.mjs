@@ -6,6 +6,7 @@ const gamesDir = 'src/games';
 const specsDir = 'docs/specs';
 const indexPath = 'docs/GAME_INDEX.md';
 const problems = [];
+const perGameDocumentation = new Set(['TRACKER.md', 'PRD.md', 'todo.md']);
 
 function git(args) {
   return execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
@@ -45,6 +46,12 @@ function testTouchesGame(path, ref, parentRef, slug) {
   return body.includes(`games/${slug}`) || body.includes(`#/games/${slug}`);
 }
 
+function isGameImplementationPath(path, slug) {
+  const prefix = `${gamesDir}/${slug}/`;
+  if (!path.startsWith(prefix)) return false;
+  return !perGameDocumentation.has(path.slice(prefix.length));
+}
+
 function checkChangeSet(label, changedPaths, ref, parentRef, slugs) {
   const changed = new Set(changedPaths);
   const indexChanged = changed.has(indexPath);
@@ -58,7 +65,7 @@ function checkChangeSet(label, changedPaths, ref, parentRef, slugs) {
 
     const trackerChanged = changed.has(trackerPath);
     const specChanged = changed.has(specPath);
-    const implementationChanged = changedPaths.some((path) => path.startsWith(`${gamesDir}/${slug}/`) && path !== trackerPath);
+    const implementationChanged = changedPaths.some((path) => isGameImplementationPath(path, slug));
     const testChanged = changedPaths.some((path) => testTouchesGame(path, ref, parentRef, slug));
 
     if ((implementationChanged || testChanged) && !(trackerChanged && specChanged)) {
