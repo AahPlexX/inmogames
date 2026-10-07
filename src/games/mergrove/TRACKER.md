@@ -1,6 +1,6 @@
 # Mergrove tracker
 
-**Authoritative spec:** `docs/specs/2026-10-06-mergrove-design.md`  
+**Spec:** `docs/specs/2026-10-06-mergrove-design.md`  
 **Last synchronized:** 2026-10-06
 
 ## Capability state
@@ -26,6 +26,6 @@ All Mergrove art is original repository-authored SVG in `src/games/mergrove/spri
 
 **Implementation state:** implementing  
 **Last verified revision:** none yet; this is new game-local work.  
-**Open game-local work:** integrate source/tests/docs, pass repository CI/rendered browser coverage, smoke-test deployed route, then reconcile completion evidence.  
+**Open game-local work:** pass repository CI/rendered browser coverage, smoke-test deployed route, then reconcile completion evidence. Product planning/execution state is maintained in `src/games/mergrove/PRD.md` and `src/games/mergrove/todo.md`.  
 **External blockers:** TASK-003 blocks real configured-project Firebase account-save verification only; it does not block game-local implementation or emulator evidence.  
-**Next action:** integrate the prepared Mergrove implementation onto the current live `main`, preserving any parallel-agent changes, then observe full validation and fix any evidence-backed defects before marking the game verified.
+**Next action:** validate the integrated Mergrove revision on live `main`, preserving any parallel-agent changes, then record evidence and fix any evidence-backed defects before marking the game verified.
