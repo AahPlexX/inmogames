@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
-    "game:check": "node scripts/game-check.mjs && node scripts/game-doc-sync.mjs",
+    "game:check": "node scripts/game-doc-sync.test.mjs && node scripts/game-check.mjs && node scripts/game-doc-sync.mjs",
     "test:unit": "vitest run",
     "build": "vite build",
     "build:firebase": "vite build --base=/",

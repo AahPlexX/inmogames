@@ -5,7 +5,7 @@
 **Route:** `#/games/cloudline-couriers`
 
 ## Product documents
-`docs/games/cloudline-couriers/PRD.md` is the feature inventory, `docs/games/cloudline-couriers/todo.md` is execution state, and `src/games/cloudline-couriers/TRACKER.md` is the live resume point. Reconcile all four whenever behavior or verification state changes.
+`src/games/cloudline-couriers/PRD.md` is the feature inventory, `src/games/cloudline-couriers/todo.md` is execution/sign-off state, and `src/games/cloudline-couriers/TRACKER.md` is the live resume point. `GOVERNANCE.md` defines the mandatory structure used by every game. Reconcile these documents whenever behavior, scope or verification state changes.
 
 ## Purpose and originality boundary
 Cloudline Couriers is an original single-player skyway strategy game. The high-level loop is roll, move, resolve, earn, upgrade, advance. Names, fiction, 16-stop geometry, event taxonomy, economy, Cargo Cache encounter, landmarks, visual treatment and progression are original and must not reproduce proprietary Monopoly/Monopoly GO presentation or content.
@@ -23,7 +23,7 @@ The board is a 5×5 CSS grid perimeter, yielding exactly 16 stops while reservin
 
 ## Completion contract
 **Completion state:** implementing  
-**Completion evidence:** first source/UI/unit tranche integrated; exact-revision CI/browser/Pages evidence pending.
+**Completion evidence:** source/UI/unit core tranche is integrated; central PRD/todo governance is being enforced; exact-revision CI/browser/Pages evidence remains pending.
 - [ ] Complete roll → move → event → earn → upgrade → district loop is playable and verified.
 - [ ] Deterministic engine covers movement, boost, circuit, event, Cargo Cache, streak/shield, fuel recovery and progression edge cases.
 - [ ] Versioned durable guest save and shared account-save/reset path have unit/browser/emulator evidence.

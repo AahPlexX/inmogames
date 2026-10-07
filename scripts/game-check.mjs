@@ -21,7 +21,7 @@ function section(content, heading) {
 
 function field(content, label) {
   const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = content.match(new RegExp(`\\*\\*${escaped}:\\*\\*[ \t]*([^\\n]*)`, 'i'));
+  const match = content.match(new RegExp(`\\*\\*${escaped}:\\*\\*[ \\t]*([^\\n]*)`, 'i'));
   return match ? match[1].trim() : null;
 }
 
@@ -29,7 +29,6 @@ function trackerCapabilities(content) {
   const lines = content.split('\n');
   const header = lines.findIndex((line) => /^\|\s*Capability\s*\|\s*Status\s*\|\s*Verification\s*\|\s*$/i.test(line.trim()));
   if (header < 0) return null;
-
   const rows = [];
   for (let index = header + 2; index < lines.length && lines[index].trim().startsWith('|'); index += 1) {
     const cells = lines[index].trim().split('|').slice(1, -1).map((cell) => cell.trim());
@@ -49,23 +48,90 @@ function specFilesFor(slug) {
   return readdirSync(specsDir).filter((name) => pattern.test(name));
 }
 
+function requirePattern(content, pattern, problem) {
+  if (!pattern.test(content)) problems.push(problem);
+}
+
+function checkPrd(slug, path) {
+  if (!existsSync(path)) {
+    problems.push(`${slug}: missing PRD.md`);
+    return;
+  }
+  const prd = readFileSync(path, 'utf8');
+  const requirements = [
+    [/Planned Functional Features Specification:/, 'Planned Functional Features Specification'],
+    [/^\s*game_identity:\s*$/m, 'game_identity'],
+    [/^\s*name:\s*["'].+["']\s*$/m, 'game_identity.name'],
+    [/^\s*slug:\s*["'].+["']\s*$/m, 'game_identity.slug'],
+    [/^\s*development_status:\s*["'].+["']\s*$/m, 'game_identity.development_status'],
+    [/^\s*technical_foundation:\s*$/m, 'technical_foundation'],
+    [/^\s*architecture_and_engine:\s*.+$/m, 'technical_foundation.architecture_and_engine'],
+    [/^\s*dependencies_used:\s*(?:\[.*\])?\s*$/m, 'technical_foundation.dependencies_used'],
+    [/^\s*core_feature_specifications:\s*$/m, 'core_feature_specifications'],
+    [/^\s*-\s+name:\s*.+$/m, 'feature.name'],
+    [/^\s*id:\s*.+$/m, 'feature.id'],
+    [/^\s*details:\s*.+$/m, 'feature.details'],
+    [/^\s*feature_development_status:\s*.+$/m, 'feature.feature_development_status'],
+  ];
+  for (const [pattern, label] of requirements) requirePattern(prd, pattern, `${slug}: PRD.md missing required ${label} field/structure`);
+  const slugMatch = prd.match(/^\s*slug:\s*["']([^"']+)["']\s*$/m);
+  if (slugMatch && slugMatch[1] !== slug) problems.push(`${slug}: PRD.md game_identity.slug must exactly match directory slug`);
+}
+
+function checkTodo(slug, path) {
+  if (!existsSync(path)) {
+    problems.push(`${slug}: missing todo.md`);
+    return;
+  }
+  const todo = readFileSync(path, 'utf8');
+  const requirements = [
+    [/^#\s+.+/m, 'title'],
+    [/\*\*Status:\*\*\s*\S/i, 'Status'],
+    [/\*\*Architecture\s*(?:\/|&)\s*Engine:\*\*\s*\S/i, 'Architecture / engine'],
+    [/\*\*Dependencies(?: Used)?:\*\*/i, 'Dependencies checklist'],
+    [/##\s+Core Feature Execution Pipeline/i, 'Core Feature Execution Pipeline'],
+    [/\*\*Purpose:\*\*/i, 'Purpose'],
+    [/\*\*Inputs(?: \/ Parameters)?:\*\*/i, 'Inputs'],
+    [/\*\*Dependencies Touched:\*\*/i, 'Dependencies Touched'],
+    [/\*\*Technical Notes & Edge Cases:\*\*/i, 'Technical Notes & Edge Cases'],
+    [/\*\*Implementation Details:\*\*/i, 'Implementation Details'],
+    [/\*\*Verification & State Sign-off:\*\*/i, 'Verification & State Sign-off'],
+    [/##\s+Final Game Assembly & Verification Checklist/i, 'Final Game Assembly & Verification Checklist'],
+    [/-\s+\[[ xX]\]\s+/, 'checkbox state'],
+  ];
+  for (const [pattern, label] of requirements) requirePattern(todo, pattern, `${slug}: todo.md missing required ${label} structure`);
+  const final = section(todo, 'Final Game Assembly & Verification Checklist') ?? '';
+  const finalConcepts = [
+    [/console/i, 'console/runtime quality gate'],
+    [/responsive|viewport|reflow/i, 'responsive/device gate'],
+    [/persist|reload|restart/i, 'persistence/restart gate'],
+    [/dependenc|exact pin/i, 'dependency pin/freshness gate'],
+    [/TRACKER|PRD|GAME_INDEX|authoritative spec/i, 'documentation synchronization gate'],
+    [/validation|pnpm validate/i, 'exact-revision validation gate'],
+    [/Pages|deploy/i, 'deployment gate'],
+    [/Complete|Verified/i, 'final Complete/Verified gate'],
+  ];
+  for (const [pattern, label] of finalConcepts) requirePattern(final, pattern, `${slug}: todo.md final checklist missing ${label}`);
+}
+
 for (const slug of slugs) {
   const dir = join(gamesDir, slug);
   const trackerPath = join(dir, 'TRACKER.md');
+  const prdPath = join(dir, 'PRD.md');
+  const todoPath = join(dir, 'todo.md');
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) problems.push(`${slug}: slug must be kebab-case`);
   if (!existsSync(join(dir, `${slug}.meta.ts`))) problems.push(`${slug}: missing ${slug}.meta.ts`);
   if (!existsSync(trackerPath)) problems.push(`${slug}: missing TRACKER.md`);
+  checkPrd(slug, prdPath);
+  checkTodo(slug, todoPath);
   if (!readdirSync(dir).some((f) => f.endsWith('Workspace.tsx'))) problems.push(`${slug}: missing *Workspace.tsx`);
 
   const indexLine = index.split('\n').find((line) => line.includes(`\`${slug}\``));
   if (!indexLine) problems.push(`${slug}: missing from docs/GAME_INDEX.md`);
 
   const specs = specFilesFor(slug);
-  if (specs.length === 0) {
-    problems.push(`${slug}: missing authoritative spec sheet docs/specs/YYYY-MM-DD-${slug}-design.md`);
-  } else if (specs.length > 1) {
-    problems.push(`${slug}: multiple authoritative spec sheets found; keep exactly one dated ${slug} design spec`);
-  }
+  if (specs.length === 0) problems.push(`${slug}: missing authoritative spec sheet docs/specs/YYYY-MM-DD-${slug}-design.md`);
+  else if (specs.length > 1) problems.push(`${slug}: multiple authoritative spec sheets found; keep exactly one dated ${slug} design spec`);
 
   if (!existsSync(trackerPath)) continue;
   const tracker = readFileSync(trackerPath, 'utf8');
@@ -78,11 +144,9 @@ for (const slug of slugs) {
   }
 
   const capabilities = trackerCapabilities(tracker);
-  if (!capabilities) {
-    problems.push(`${slug}: TRACKER.md missing Capability/Status/Verification table`);
-  } else if (capabilities.length === 0) {
-    problems.push(`${slug}: TRACKER.md capability table must contain at least one capability`);
-  } else {
+  if (!capabilities) problems.push(`${slug}: TRACKER.md missing Capability/Status/Verification table`);
+  else if (capabilities.length === 0) problems.push(`${slug}: TRACKER.md capability table must contain at least one capability`);
+  else {
     for (const row of capabilities) {
       if (!row.capability) problems.push(`${slug}: tracker capability row has no capability name`);
       if (!allowedTrackerStatuses.has(row.status)) problems.push(`${slug}: tracker capability "${row.capability || '(unnamed)'}" has unsupported status "${row.status}"`);
@@ -115,11 +179,8 @@ for (const slug of slugs) {
 
   const implementationState = field(tracker, 'Implementation state');
   const trackerStateMatch = implementationState?.match(/^(implementing|verified)\b/i);
-  if (!trackerStateMatch) {
-    problems.push(`${slug}: TRACKER.md Implementation state must begin with implementing or verified`);
-  } else if (trackerStateMatch[1].toLowerCase() !== state) {
-    problems.push(`${slug}: TRACKER.md Implementation state disagrees with spec Completion state`);
-  }
+  if (!trackerStateMatch) problems.push(`${slug}: TRACKER.md Implementation state must begin with implementing or verified`);
+  else if (trackerStateMatch[1].toLowerCase() !== state) problems.push(`${slug}: TRACKER.md Implementation state disagrees with spec Completion state`);
 
   const indexVerified = Boolean(indexLine?.toLowerCase().includes('verified game'));
   if (state === 'verified') {
@@ -136,9 +197,7 @@ for (const slug of slugs) {
       const blockers = field(tracker, 'External blockers') ?? '';
       if (/^none\b/i.test(blockers)) problems.push(`${slug}: blocked externally capability requires a named External blockers handoff`);
     }
-  } else if (indexVerified) {
-    problems.push(`${slug}: GAME_INDEX says verified game while Completion state is implementing`);
-  }
+  } else if (indexVerified) problems.push(`${slug}: GAME_INDEX says verified game while Completion state is implementing`);
 }
 
 if (problems.length > 0) {
