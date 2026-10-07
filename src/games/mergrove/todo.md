@@ -1,9 +1,9 @@
 # TODO: Mergrove (mergrove)
 
-**Status:** Complete  
-**Last synchronized:** 2026-10-06  
-**Architecture & Engine:** Static React/Vite game with a pure deterministic TypeScript 5 × 5 merge engine, repository-authored SVG sprites, and the shared versioned save platform.  
-**Verified evidence:** revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`, GitHub Actions run `37553471015`, plus fresh HTTP-200 deployed-route render.  
+**Status:** Complete v1; approved v2 progression design awaiting written-spec review; implementation not started  
+**Last synchronized:** 2026-10-07  
+**Architecture & Engine:** Shipped v1 is a static React/Vite game with a pure deterministic TypeScript 5 × 5 merge engine, repository-authored SVG sprites, and the shared versioned save platform. Approved v2 preserves that core while adding Campaign/progression modules around it; no production v2 code has started.  
+**Verified v1 evidence:** revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`, GitHub Actions run `37553471015`, plus fresh HTTP-200 deployed-route render.  
 **Dependencies Used:**
 - [x] `react@19.3.0`
 - [x] `react-dom@19.3.0`
@@ -13,11 +13,11 @@
 - [x] `vitest@5.0.3` — unit verification
 - [x] `playwright@1.63.0` — rendered browser verification
 
-> Dependency rule: direct dependency and devDependency declarations remain exact pinned stable versions only; `^` and `~` are prohibited. Revision `965c91a5b9090da321ae3eb0d11f9383678b02c6` passed both dependency gates in run `37553471015`.
+> Dependency rule: direct dependency and devDependency declarations remain exact pinned stable versions only; `^` and `~` are prohibited. Revision `965c91a5b9090da321ae3eb0d11f9383678b02c6` passed both dependency gates in run `37553471015`. The approved v2 design requires no new runtime dependency unless the implementation plan proves one necessary against current official documentation.
 
 ---
 
-## Core Feature Execution Pipeline
+## Core Feature Execution Pipeline — shipped v1
 
 - [x] **Deterministic Placement Board** `{id: 'MER-001'}` — `[feature development status: = 'Complete']`
   - [x] **Purpose:** Own deterministic board, queue, RNG, placement, turn, and terminal rules outside React.
@@ -77,7 +77,29 @@
 
 ---
 
-## Final Game Assembly & Verification Checklist
+## Approved v2 progression expansion — planning gate only
+
+The authoritative spec's `Approved v2 progression expansion` is product-owner approved. This checklist records the design/plan gates only; production implementation must not begin until the written spec is explicitly reviewed and the implementation plan is then written and approved.
+
+- [x] Product direction approved: Campaign-first progression while preserving Endless Grove.
+- [x] Launch scope fixed at 40 levels across five named groves, seven objective patterns and 120 possible stars.
+- [x] Power-up semantics specified: existing sunlight Compost plus earned Sunbeam, Gust and Rewind Leaf; no purchases/random loot.
+- [x] Engagement guardrails specified: no lives/energy, forced waiting, ads, paid currency, push pressure, analytics or punitive streak loss.
+- [x] 20 permanent launch achievement ids specified.
+- [x] Eight-entry launch Spirit Almanac specified.
+- [x] Deterministic Challenge Grove specified; unlock after level 8; one scored daily attempt plus practice replays; no inventory boosters.
+- [x] V2 persistence/migration requirements specified with preservation of v1 Endless progress and explicit cloud downgrade protection.
+- [x] Evidence-driven balance gate specified: every campaign level must be solver/simulation-clearable for one star without inventory boosters.
+- [x] Accessibility/responsive, procedural-audio and full v2 verification requirements specified.
+- [ ] Product owner reviews the written authoritative v2 specification after this documentation integration.
+- [ ] After written-spec approval, create the detailed implementation plan; do not write production code before that plan is reviewed.
+- [ ] First production integration atomically changes Mergrove completion/index/tracker/PRD/todo state from verified-v1/planning to `implementing`.
+
+The existing PRD's MER-008…MER-022 roadmap remains the broader inventory. The approved v2 launch intentionally selects Campaign, Challenge, achievements/Almanac, v2 migration and focused presentation/power-up work while deferring alternate board sizes, hazards, new species, Storehouse and weekly events. Where the roadmap is less specific than the approved authoritative spec, the spec controls this release.
+
+---
+
+## Final Game Assembly & Verification Checklist — shipped v1 evidence
 
 - [x] Verify no uncaught Mergrove page errors in browser regressions; source has no game runtime console logging. Independent production-console inspection was unavailable because the external Playwright MCP endpoint returned 404, and this limitation is recorded rather than hidden.
 - [x] Confirm viewport responsiveness at 320 CSS px and 200% text, with broader fluid layouts protected by the same CSS grid/flex constraints.
@@ -86,8 +108,8 @@
 - [x] Pass `pnpm validate`-equivalent CI on exact revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`.
 - [x] Pass GitHub Pages deployment and independently render `#/games/mergrove` from production at HTTP 200 with expected initial game state.
 - [x] Synchronize `PRD.md`, `todo.md`, `TRACKER.md`, authoritative design, `docs/GAME_INDEX.md`, and applicable `.tasks/` records with final evidence.
-- [x] Flip overall status: `[Game development status: = 'Complete']` because every authoritative game-local completion gate is satisfied.
+- [x] Flip overall v1 status: `[Game development status: = 'Complete']` because every authoritative game-local v1 completion gate is satisfied.
 
 ## External continuation
 
-TASK-003 still owns real Firebase Authentication/Firestore/rules/password-reset/live cross-browser verification. That shared platform task must remain distinct from this completed Mergrove game-local checklist. If later live verification exposes a Mergrove-specific defect, reopen MER-006 and the authoritative Completion contract before changing implementation.
+TASK-003 still owns real Firebase Authentication/Firestore/rules/password-reset/live cross-browser verification. That shared platform task must remain distinct from Mergrove game-local evidence. The v2 migration can be implemented and emulator-tested without misrepresenting live Firebase completion; if later live verification exposes a Mergrove-specific defect, reopen the applicable Mergrove gate before changing implementation.

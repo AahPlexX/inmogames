@@ -1,7 +1,7 @@
 # Mergrove tracker
 
 **Spec:** `docs/specs/2026-10-06-mergrove-design.md`  
-**Last synchronized:** 2026-10-06
+**Last synchronized:** 2026-10-07
 
 ## Capability state
 
@@ -19,16 +19,24 @@
 | Catalog/registry/index integration | verified | Catalog, lazy workspace and documentation checks passed on revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`. |
 | Production deployment | verified | Pages deploy job succeeded in run `37553471015`; a fresh uncached live render returned HTTP 200 and the expected 25-cell Mergrove initial state. |
 
+## Approved v2 expansion planning
+
+Product owner approved the next-release direction on 2026-10-07. The authoritative spec now contains the written **Approved v2 progression expansion** covering a 40-level/five-grove Campaign, 1–3 star mastery, Sunbeam/Gust/Rewind Leaf plus existing Compost, deterministic rewards, 20 achievements, the launch Spirit Almanac, deterministic Challenge Grove, v2 migration, optional procedural audio and the required verification matrix.
+
+This is planning state only. No v2 source, tests, save schema or production behavior has been changed yet, so the shipped v1 Completion contract remains verified. The broader PRD roadmap remains valid future inventory; the approved spec controls the next release where it is more specific or intentionally excludes a roadmap item.
+
+The first implementation integration must atomically reopen Mergrove to `implementing` in the authoritative Completion contract, this tracker, PRD/todo, GAME_INDEX and task records before any new production behavior is merged.
+
 ## Asset and network record
 
-All Mergrove art is original repository-authored SVG in `src/games/mergrove/sprites.tsx`; no third-party licence or attribution is required. Mergrove adds no runtime network request. Optional account saves use only the repository's shared Firebase platform.
+All shipped Mergrove art is original repository-authored SVG in `src/games/mergrove/sprites.tsx`; no third-party licence or attribution is required. Mergrove adds no game-specific runtime network request. Optional account saves use only the repository's shared Firebase platform. The approved v2 design keeps assets repository-authored/same-origin and requires no new runtime dependency; optional procedural WebAudio must be local and opt-in.
 
 ## Current handoff
 
-**Implementation state:** verified  
+**Implementation state:** verified v1; v2 progression expansion design approved, implementation not started.  
 **Last verified revision:** `965c91a5b9090da321ae3eb0d11f9383678b02c6` in GitHub Actions run `37553471015`.  
-**Open game-local work:** none; Mergrove satisfies its authoritative completion contract.  
-**External blockers:** TASK-003 blocks real configured-project Firebase account-save verification only; repository/emulator account-save behavior is verified and this external platform task does not reopen Mergrove.  
-**Next action:** none for game-local v1. Do not reopen Mergrove unless a reproducible defect is discovered or new scope is explicitly added. If TASK-003 is later completed, record the shared live-Firebase evidence without changing Mergrove gameplay unless that verification exposes a Mergrove-specific defect.
+**Open game-local work:** none in shipped v1; v2 is planning-only until the written-spec review and implementation-plan gates are complete, so no production source/test mutation is permitted yet.  
+**External blockers:** TASK-003 blocks real configured-project Firebase account-save verification only; repository/emulator account-save behavior is verified. V2 schema migration may be designed/tested with emulator evidence without pretending TASK-003 live verification is complete.  
+**Next action:** product owner reviews the written `Approved v2 progression expansion` section in the authoritative spec. After explicit written-spec approval, invoke the implementation-planning workflow; only after that plan is approved may production implementation begin. At the first implementation integration, reopen all Mergrove completion/status documents together.
 
-Product scope and final feature state are mirrored in `src/games/mergrove/PRD.md` and `src/games/mergrove/todo.md`; chat history is not required to resume this game.
+Product scope and feature inventory remain in `src/games/mergrove/PRD.md`; execution/sign-off state is in `src/games/mergrove/todo.md`. Chat history is not required to resume this game.
