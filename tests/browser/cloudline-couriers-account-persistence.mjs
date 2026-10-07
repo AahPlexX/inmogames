@@ -37,6 +37,10 @@ async function signIn(page, email, password, register = false) {
   await visibleText(page, `Signed in as ${email}`);
 }
 function aerie(page) { return page.locator('.cl-landmark').filter({ hasText: 'Aerie Post' }); }
+async function resetCareer(page) {
+  await page.getByText('Route options', { exact: true }).click();
+  await page.getByRole('button', { name: 'Reset saved career', exact: true }).click();
+}
 
 try {
   await waitForServer();
@@ -62,7 +66,7 @@ try {
   await accountReady(second);
   assert.match(await aerie(second).innerText(), /Stage 1\/4/, 'Account Cloudline career must follow the player across browser contexts.');
 
-  await second.getByRole('button', { name: 'Reset saved career', exact: true }).click();
+  await resetCareer(second);
   await visibleText(second, 'Account game progress reset');
   assert.match(await aerie(second).innerText(), /Stage 0\/4/);
   await first.reload();
