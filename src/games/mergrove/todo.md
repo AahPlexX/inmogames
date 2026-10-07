@@ -107,6 +107,14 @@
   - [x] **Implementation Details:** Precomputed adjacency, default `classic-5`, equivalence test against the unchanged default path.
   - [ ] **Verification & State Sign-off:** Passing locally; needs a CI-verified revision. UI and persistence of layout wait on roadmap MER-020.
 
+- [ ] **Large-Group Bonus Ruleset v2** `{id: 'MER-027'}` — `[feature development status: = 'Started']`
+  - [x] **Purpose:** Reward building bigger groups with board space, as a new ruleset so v1 stays frozen.
+  - [x] **Inputs / Parameters:** `EngineRules.largeGroupBonus`, group size, anchor adjacency.
+  - [x] **Dependencies Touched:** `engine.ts` (optional rules argument), `ruleset.ts`, simulator.
+  - [x] **Technical Notes & Edge Cases:** No bonus for ancient blooms; bonus joins the cascade; scoring and sunlight unchanged; v1 output byte-identical.
+  - [x] **Implementation Details:** Lowest-index adjacent group cell receives the extra piece.
+  - [ ] **Verification & State Sign-off:** Passing locally; needs a CI-verified revision. Player selection waits on the v2 save (MER-020 game half).
+
 ---
 
 ## Final Game Assembly & Verification Checklist

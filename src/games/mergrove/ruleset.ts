@@ -1,7 +1,8 @@
 import {
   BOARD_CELLS, COMPOST_COST, MAX_TIER, SECOND_TIER_CHANCE, compostCell, createRun, placePiece,
-  type MergroveRun,
+  type EngineRules, type MergroveRun,
 } from './engine';
+import { CLASSIC_5, type BoardLayout } from './layout';
 
 /**
  * Released rulesets are frozen. The engine functions behind "v1" must keep producing byte-identical
@@ -14,6 +15,8 @@ export interface Ruleset {
   readonly maxTier: number;
   readonly compostCost: number;
   readonly secondTierChance: number;
+  /** Merging 5+ leaves one extra result piece beside the anchor (introduced by v2). */
+  readonly largeGroupBonus: boolean;
 }
 
 export const RULESET_V1: Ruleset = Object.freeze({
@@ -22,9 +25,18 @@ export const RULESET_V1: Ruleset = Object.freeze({
   maxTier: MAX_TIER,
   compostCost: COMPOST_COST,
   secondTierChance: SECOND_TIER_CHANCE,
+  largeGroupBonus: false,
 });
 
-const RELEASED: ReadonlyMap<string, Ruleset> = new Map([[RULESET_V1.id, RULESET_V1]]);
+/** v2 = v1 plus the large-group bonus. Same RNG, scoring, sunlight and tiers, so only 5+ merges differ. */
+export const RULESET_V2: Ruleset = Object.freeze({ ...RULESET_V1, id: 'v2', largeGroupBonus: true });
+
+/** The engine-facing switches for a ruleset. */
+export function rulesOf(ruleset: Ruleset): EngineRules {
+  return Object.freeze({ largeGroupBonus: ruleset.largeGroupBonus });
+}
+
+const RELEASED: ReadonlyMap<string, Ruleset> = new Map([RULESET_V1, RULESET_V2].map(ruleset => [ruleset.id, ruleset]));
 
 /** Returns the frozen ruleset for an id, or null. A Map lookup keeps ids like "__proto__" harmless. */
 export function resolveRuleset(id: string): Ruleset | null {
@@ -38,13 +50,15 @@ export type ReplayAction =
 export type ReplayResult = { ok: true; run: MergroveRun } | { ok: false; error: string };
 
 /** Rebuilds a run from its seed and action log. Never throws: bad input becomes { ok: false }. */
-export function replayRun(seed: number, rulesetId: string, actions: readonly ReplayAction[]): ReplayResult {
-  if (!resolveRuleset(rulesetId)) return { ok: false, error: `Unknown ruleset "${rulesetId}".` };
-  let run = createRun(seed);
+export function replayRun(seed: number, rulesetId: string, actions: readonly ReplayAction[], layout: BoardLayout = CLASSIC_5): ReplayResult {
+  const ruleset = resolveRuleset(rulesetId);
+  if (!ruleset) return { ok: false, error: `Unknown ruleset "${rulesetId}".` };
+  const rules = rulesOf(ruleset);
+  let run = createRun(seed, layout);
   for (let index = 0; index < actions.length; index += 1) {
     const action = actions[index];
     try {
-      run = action.kind === 'place' ? placePiece(run, action.queueIndex, action.cellIndex).run : compostCell(run, action.cellIndex);
+      run = action.kind === 'place' ? placePiece(run, action.queueIndex, action.cellIndex, layout, rules).run : compostCell(run, action.cellIndex, layout);
     } catch (error) {
       return { ok: false, error: `Action ${index + 1} is illegal: ${error instanceof Error ? error.message : 'unknown error'}` };
     }

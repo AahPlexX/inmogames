@@ -21,6 +21,7 @@
 | Next-draw preview + Escape-to-cancel compost (MER-024) | started | Unit tests and the extended `mergrove-design.mjs` pass locally against system Chrome; the Escape handler was mutation-checked. No CI-verified revision yet. |
 | Ruleset registry, replay and golden fingerprints (MER-025) | started | `ruleset.ts` and `mergrove-ruleset.test.ts` pass locally; goldens mutation-checked (scoring and RNG changes fail). Library only, not wired to UI or saves. No CI-verified revision yet. |
 | Data-driven layouts + layout-aware engine (MER-026) | started | `layout.ts`, `mergrove-layout.test.ts`, `mergrove-engine-layouts.test.ts` pass locally; classic-5 equivalence proven by unchanged v1 and golden tests; two mutations confirmed to fail. Library/simulator only, no UI or save change. No CI-verified revision yet. |
+| Ruleset v2 large-group bonus (MER-027) | started | `mergrove-bonus.test.ts` passes locally; threshold mutation fails it; v1 goldens untouched. Not yet selectable by players. No CI-verified revision yet. |
 | Catalog/registry/index integration | verified | Catalog, lazy workspace and documentation checks passed on revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`. |
 | Production deployment | verified | Pages deploy job succeeded in run `37553471015`; a fresh uncached live render returned HTTP 200 and the expected 25-cell Mergrove initial state. |
 
@@ -35,6 +36,10 @@ Measured 2026-10-07 with the dev-only harness; policy-specific, not a claim abou
 ## v1.1 layout comparison
 
 Same seeds, two-ply bot, n=24 (2026-10-07): classic-5 median 286 turns, Sapling 38%; crossroads-6 median 399, Sapling 67%; standard-6 median 433, Sapling 54%. No layout reached Lantern Tree or an ancient bloom. Bigger boards lengthen runs but are not shown to be sufficient on their own. See PRD MER-026-F05.
+
+## v1.1 ruleset v2 effect
+
+Two-ply bot, 24 seeds, v1 to v2 Sapling reach: classic-5 38% to 50%, crossroads-6 67% to 83%, standard-6 54% to 96%. Lantern Tree and above are still 0% everywhere for this bot, so the late game is an open balance question (bot weakness vs rules not separated).
 
 ## Current handoff
 

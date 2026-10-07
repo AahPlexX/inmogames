@@ -8,6 +8,14 @@ export const SECOND_TIER_CHANCE = 0.22;
 
 export type GroveCell = number | null;
 
+/** Rule switches a ruleset can flip. Released rulesets are frozen in ruleset.ts; v1 is the default here. */
+export interface EngineRules {
+  /** Merging 5+ pieces below tier 8 also leaves one extra result piece beside the anchor. */
+  readonly largeGroupBonus: boolean;
+}
+export const V1_RULES: EngineRules = Object.freeze({ largeGroupBonus: false });
+export const LARGE_GROUP_MIN = 5;
+
 export interface MergroveRun {
   seed: number;
   rngState: number;
@@ -28,6 +36,8 @@ export interface MergeEvent {
   chain: number;
   points: number;
   ancientBloom: boolean;
+  /** Cell that received the large-group bonus piece, or null when none was awarded. */
+  bonusCell: number | null;
 }
 
 export interface PlacementResult {
@@ -138,7 +148,7 @@ export function createRun(seed: number, layout: BoardLayout = CLASSIC_5): Mergro
   };
 }
 
-export function placePiece(run: MergroveRun, queueIndex: number, cellIndex: number, layout: BoardLayout = CLASSIC_5): PlacementResult {
+export function placePiece(run: MergroveRun, queueIndex: number, cellIndex: number, layout: BoardLayout = CLASSIC_5, rules: EngineRules = V1_RULES): PlacementResult {
   if (run.gameOver) throw new Error('This Mergrove run is over.');
   assertIndex(queueIndex, 'Queue slot', 3);
   assertIndex(cellIndex, 'Cell', layoutCellCount(layout));
@@ -171,14 +181,20 @@ export function placePiece(run: MergroveRun, queueIndex: number, cellIndex: numb
     for (const index of group) board[index] = null;
     if (ancientBloom) {
       ancientBlooms += 1;
-      events.push({ tier: currentTier, resultTier: null, size: group.length, chain, points, ancientBloom: true });
+      events.push({ tier: currentTier, resultTier: null, size: group.length, chain, points, ancientBloom: true, bonusCell: null });
       break;
     }
 
     const nextTier: number = currentTier + 1;
     board[cellIndex] = nextTier;
+    let bonusCell: number | null = null;
+    if (rules.largeGroupBonus && group.length >= LARGE_GROUP_MIN) {
+      const beside = layout.adjacency[cellIndex];
+      bonusCell = group.filter(index => index !== cellIndex && beside.includes(index)).sort((a, b) => a - b)[0] ?? null;
+      if (bonusCell !== null) board[bonusCell] = nextTier;
+    }
     highestTier = Math.max(highestTier, nextTier);
-    events.push({ tier: currentTier, resultTier: nextTier, size: group.length, chain, points, ancientBloom: false });
+    events.push({ tier: currentTier, resultTier: nextTier, size: group.length, chain, points, ancientBloom: false, bonusCell });
     currentTier = nextTier;
     chain += 1;
   }

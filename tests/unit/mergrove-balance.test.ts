@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 const SLOW = 60_000;
 import { createRun } from '../../src/games/mergrove/engine';
 import { CLASSIC_5, CROSSROADS_6, STANDARD_6 } from '../../src/games/mergrove/layout';
+import { RULESET_V1, RULESET_V2 } from '../../src/games/mergrove/ruleset';
 import { greedyBot, lookaheadBot, playRun, seedRange, simulate } from './support/mergrove-sim';
 
 /**
@@ -60,6 +61,16 @@ describe('Mergrove balance simulation (MER-018)', () => {
     },
     SLOW,
   );
+
+  it('ruleset v2 (large-group bonus) improves mid-game reach on classic-5 without breaking termination', () => {
+    const seeds = seedRange(24);
+    const v1 = simulate(lookaheadBot, seeds, undefined, CLASSIC_5, RULESET_V1);
+    const v2 = simulate(lookaheadBot, seeds, undefined, CLASSIC_5, RULESET_V2);
+    expect(v2.capped).toBe(0);
+    expect(v2.reach[3]).toBeGreaterThanOrEqual(0.95); // Bloom
+    expect(v2.reach[4]).toBeGreaterThan(v1.reach[4]); // Sapling gets easier, measured 0.38 -> 0.50
+    expect(v2.medianScore).toBeGreaterThan(v1.medianScore);
+  }, SLOW);
 
   it('plays a full run through the pure engine only', () => {
     const summary = playRun(greedyBot, 4242);

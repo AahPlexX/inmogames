@@ -4,12 +4,14 @@ import {
   type MergroveRun,
 } from '../../../src/games/mergrove/engine';
 import { CLASSIC_5, type BoardLayout } from '../../../src/games/mergrove/layout';
+import { RULESET_V1, rulesOf, type Ruleset } from '../../../src/games/mergrove/ruleset';
+import type { EngineRules } from '../../../src/games/mergrove/engine';
 
 export type BotAction =
   | { kind: 'place'; queueIndex: number; cellIndex: number }
   | { kind: 'compost'; cellIndex: number };
 
-export type Bot = (run: MergroveRun, layout: BoardLayout) => BotAction;
+export type Bot = (run: MergroveRun, layout: BoardLayout, rules: EngineRules) => BotAction;
 
 function emptyCells(run: MergroveRun, layout: BoardLayout): number[] {
   const cells: number[] = [];
@@ -39,11 +41,11 @@ function value(run: MergroveRun, layout: BoardLayout): number {
 
 interface Candidate { action: BotAction; run: MergroveRun; points: number }
 
-function candidates(run: MergroveRun, layout: BoardLayout): Candidate[] {
+function candidates(run: MergroveRun, layout: BoardLayout, rules: EngineRules): Candidate[] {
   const out: Candidate[] = [];
   for (const cellIndex of emptyCells(run, layout)) {
     for (let queueIndex = 0; queueIndex < 3; queueIndex += 1) {
-      const result = placePiece(run, queueIndex, cellIndex, layout);
+      const result = placePiece(run, queueIndex, cellIndex, layout, rules);
       out.push({ action: { kind: 'place', queueIndex, cellIndex }, run: result.run, points: result.run.score - run.score });
     }
   }
@@ -61,18 +63,18 @@ function best(options: Candidate[], score: (candidate: Candidate) => number): Ca
 }
 
 /** One-ply policy. Deterministic: ties resolve to the earliest cell, then earliest queue slot. */
-export const greedyBot: Bot = (run, layout) => {
+export const greedyBot: Bot = (run, layout, rules) => {
   if (emptyCount(run, layout) === 0) return { kind: 'compost', cellIndex: compostTarget(run) };
-  return best(candidates(run, layout), c => value(c.run, layout) + c.points * 0.01).action;
+  return best(candidates(run, layout, rules), c => value(c.run, layout) + c.points * 0.01).action;
 };
 
 /** Two-ply policy: also scores the best reply, which is knowable because the queue is deterministic. */
-export const lookaheadBot: Bot = (run, layout) => {
+export const lookaheadBot: Bot = (run, layout, rules) => {
   if (emptyCount(run, layout) === 0) return { kind: 'compost', cellIndex: compostTarget(run) };
-  return best(candidates(run, layout), (c) => {
+  return best(candidates(run, layout, rules), (c) => {
     if (c.run.gameOver) return -Infinity;
     if (emptyCount(c.run, layout) === 0) return value(c.run, layout) + c.points * 0.01;
-    const reply = best(candidates(c.run, layout), r => value(r.run, layout) + r.points * 0.01);
+    const reply = best(candidates(c.run, layout, rules), r => value(r.run, layout) + r.points * 0.01);
     return value(reply.run, layout) + (c.points + reply.points) * 0.01;
   }).action;
 };
@@ -87,13 +89,14 @@ export interface RunSummary {
   capped: boolean;
 }
 
-export function playRun(bot: Bot, seed: number, maxActions = 4_000, layout: BoardLayout = CLASSIC_5): RunSummary {
+export function playRun(bot: Bot, seed: number, maxActions = 4_000, layout: BoardLayout = CLASSIC_5, ruleset: Ruleset = RULESET_V1): RunSummary {
+  const rules = rulesOf(ruleset);
   let run = createRun(seed, layout);
   let composts = 0;
   let actions = 0;
   while (!run.gameOver && actions < maxActions) {
-    const action = bot(run, layout);
-    if (action.kind === 'place') run = placePiece(run, action.queueIndex, action.cellIndex, layout).run;
+    const action = bot(run, layout, rules);
+    if (action.kind === 'place') run = placePiece(run, action.queueIndex, action.cellIndex, layout, rules).run;
     else { run = compostCell(run, action.cellIndex, layout); composts += 1; }
     actions += 1;
   }
@@ -135,8 +138,8 @@ export function summarize(results: RunSummary[]): SimulationSummary {
   };
 }
 
-export function simulate(bot: Bot, seeds: number[], maxActions?: number, layout: BoardLayout = CLASSIC_5): SimulationSummary {
-  return summarize(seeds.map(seed => playRun(bot, seed, maxActions, layout)));
+export function simulate(bot: Bot, seeds: number[], maxActions?: number, layout: BoardLayout = CLASSIC_5, ruleset: Ruleset = RULESET_V1): SimulationSummary {
+  return summarize(seeds.map(seed => playRun(bot, seed, maxActions, layout, ruleset)));
 }
 
 /** Evenly spread, reproducible seed list. */

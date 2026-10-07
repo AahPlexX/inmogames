@@ -22,7 +22,7 @@ const GOLDEN_ACTIONS: ReplayAction[] = [
 describe('Mergrove rulesets and replay (src/games/mergrove)', () => {
   it('resolves the released v1 ruleset and rejects unknown ids safely', () => {
     expect(resolveRuleset('v1')).toBe(RULESET_V1);
-    expect(resolveRuleset('v2')).toBeNull();
+    expect(resolveRuleset('v3')).toBeNull();
     expect(resolveRuleset('')).toBeNull();
     expect(resolveRuleset('__proto__')).toBeNull();
     expect(resolveRuleset('constructor')).toBeNull();
