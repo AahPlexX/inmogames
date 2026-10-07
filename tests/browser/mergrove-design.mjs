@@ -90,8 +90,37 @@ try {
   await noOverflow(reducedPage, 'Mergrove with reduced motion');
   await reduced.close();
 
+  // MER-022: next-draw preview, Escape cancels an armed compost, and compost still works afterwards.
+  const recovery = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  const recoveryPage = await recovery.newPage();
+  recoveryPage.on('pageerror', error => errors.push(error.message));
+  await recoveryPage.goto(base + '#/games/mergrove');
+  await recoveryPage.getByRole('heading', { name: 'Grow the grove.', exact: true }).waitFor();
+  const nextDraw = recoveryPage.locator('[data-mg="next-draw"]');
+  assert.match((await nextDraw.innerText()).trim(), /^Next to arrive: Seed/, 'Next-draw preview must show the upcoming Seed.');
+  const compostButton = recoveryPage.locator('.mg-sun-card .mg-secondary');
+  assert.match((await compostButton.innerText()).trim(), /^Compost a piece \(4\)$/);
+  assert.equal(await compostButton.isDisabled(), true, 'Compost must be disabled below 4 sunlight.');
+  // Three Seed trios, the last cascading three Sprouts into a Bud, are four merge stages = exactly 4 sunlight.
+  for (const cell of [0, 1, 2, 5, 6, 7, 10, 11, 12]) await recoveryPage.locator('.mg-cell').nth(cell).click();
+  await recoveryPage.waitForFunction(() => document.querySelector('[data-stat="sunlight"]')?.textContent?.trim() === '4');
+  assert.equal(await recoveryPage.locator('.mg-cell').nth(12).getAttribute('data-tier'), '3');
+  await compostButton.click();
+  assert.equal((await compostButton.innerText()).trim(), 'Cancel compost');
+  assert.equal(await compostButton.getAttribute('aria-pressed'), 'true');
+  await recoveryPage.keyboard.press('Escape');
+  assert.equal(await compostButton.getAttribute('aria-pressed'), 'false', 'Escape must disarm compost.');
+  assert.match((await recoveryPage.locator('.mg-status').innerText()).trim(), /^Compost cancelled\./);
+  assert.equal((await recoveryPage.locator('[data-stat="sunlight"]').innerText()).trim(), '4', 'Cancelling must not spend sunlight.');
+  await compostButton.click();
+  await recoveryPage.locator('.mg-cell').nth(12).click();
+  assert.equal(await recoveryPage.locator('.mg-cell').nth(12).getAttribute('data-tier'), '0');
+  assert.equal((await recoveryPage.locator('[data-stat="sunlight"]').innerText()).trim(), '0');
+  await noOverflow(recoveryPage, 'Mergrove recovery flow');
+  await recovery.close();
+
   assert.deepEqual(errors, []);
-  console.log('Mergrove design checks passed: 25-cell board, queue selection, trio merge, guest reload, keyboard play, 44px targets, 320px/200% reflow and reduced motion.');
+  console.log('Mergrove design checks passed: 25-cell board, queue selection, trio merge, guest reload, keyboard play, 44px targets, 320px/200% reflow, reduced motion, next-draw preview and Escape-to-cancel compost.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');

@@ -1,6 +1,6 @@
 # Mergrove Product Requirements Document
 
-**Last synchronized:** 2026-10-07 (feature inventory expanded from a source audit of `main`; roadmap added; v1 verification state unchanged from the 2026-10-06 sign-off)  
+**Last synchronized:** 2026-10-07 (v1.1 work started: MER-018 balance harness and the shipped part of MER-022 promoted into core features; the v1 sign-off of 2026-10-06 is unchanged but the game is reopened until v1.1 is CI-verified)  
 **Authoritative design:** `docs/specs/2026-10-06-mergrove-design.md`  
 **Execution checklist:** `src/games/mergrove/todo.md`  
 **Tracker:** `src/games/mergrove/TRACKER.md`
@@ -11,15 +11,15 @@
 >    - **direct**: a named unit or browser assertion exercises the behavior;
 >    - **indirect**: exercised as a side effect of another assertion;
 >    - **source-audited**: verified by reading the code; no dedicated assertion yet (see `evidence_gaps_source_audited_only`).
-> 2. **Long-term roadmap** (`planned_roadmap`, MER-008 … MER-022) is planned scope only. Nothing in it is implemented or verified. It uses its own keys (`roadmap_feature`, `roadmap_id`, `scope`, `roadmap_status`) on purpose, so the verified v1 contract stays separate.
+> 2. **Long-term roadmap** (`planned_roadmap`, MER-008 … MER-017 and MER-019 … MER-022 remainder) is planned scope only. Nothing in it is implemented or verified. MER-018 and part of MER-022 have been promoted (see MER-023/MER-024 below); only their unbuilt functions remain in the roadmap. It uses its own keys (`roadmap_feature`, `roadmap_id`, `scope`, `roadmap_status`) on purpose, so the verified v1 contract stays separate.
 > 3. **Promotion rule:** to start building a roadmap item, move it into `core_feature_specifications` with the canonical `name/id/details/feature_development_status` keys. Reopen the authoritative Completion contract, change `development_status` and the GAME_INDEX row out of the verified state, and update the spec and TRACKER in the same integration.
 
 Planned Functional Features Specification:
   game_identity:
     name: "Mergrove"
     slug: "mergrove"
-    development_status: "Complete"
-    release_line: "v1.0 shipped and verified game-locally; v1.x/v2 roadmap planned (see planned_roadmap)"
+    development_status: "Implementing — v1.1 (MER-023 balance harness, MER-024 presentation upgrades) is reopened work; v1.0 remains shipped and was verified in run 37553471015"
+    release_line: "v1.0 shipped and verified game-locally; v1.1 in progress; v1.x/v2 roadmap planned (see planned_roadmap)"
     category: "puzzle"
     players: "single"
     catalog_summary: "Place woodland spirits, fuse connected trios and build cascading evolutions before the grove fills."
@@ -503,16 +503,70 @@ Planned Functional Features Specification:
           source: "tests/browser/mergrove-design.mjs, mergrove-account-persistence.mjs"
           evidence: "direct: assert.deepEqual(errors, []) in both suites."
 
+    - name: "Balance Simulation Harness"
+      id: "MER-023"
+      details: "Promoted from roadmap MER-018, which is now closed in the roadmap and superseded by this id (MER-023); other roadmap items that cite MER-018 mean this harness. A dev-only headless bot plays many seeds through the pure engine and a unit-test gate fails when the released v1 configuration drifts outside measured target ranges. Not shipped in the production bundle."
+      feature_development_status: "Started — implemented and green locally (Node 24, Vitest 5.0.3); awaiting CI-verified revision"
+      functional_requirements:
+        - function_id: "MER-023-F01"
+          title: "Bot policies"
+          requirement: "tests/unit/support/mergrove-sim.ts exports greedyBot (one ply: maximise open cells, then sunlight and highest tier, then points) and lookaheadBot (two ply, using the deterministic queue so the reply is known exactly). Both compost the lowest-tier, lowest-index piece when the board is full. Ties resolve to the earliest cell then queue slot, so a policy is a pure function of the run."
+          source: "tests/unit/support/mergrove-sim.ts greedyBot, lookaheadBot"
+          evidence: "direct: mergrove-balance.test.ts 'is reproducible for a fixed seed list'."
+        - function_id: "MER-023-F02"
+          title: "Simulation summary"
+          requirement: "simulate(bot, seeds, maxActions?) returns { runs, capped, turns{p10,median,p90}, medianScore, reach[tier-1], bloomsPerRun, runsWithBloom, compostsPerRun }. Runs that hit the action cap (default 4000) are counted in capped rather than silently dropped. Deviation from the roadmap signature simulate(layoutId, rulesetId, seeds[]): layout and ruleset parameters are deferred to MER-008/MER-009 because only one layout and one ruleset exist."
+          source: "tests/unit/support/mergrove-sim.ts simulate, summarize, playRun, seedRange"
+          evidence: "direct: mergrove-balance.test.ts."
+        - function_id: "MER-023-F03"
+          title: "CI drift gate"
+          requirement: "mergrove-balance.test.ts fails when: any run hits the action cap; greedy median turns leave 25..120, greedy stops always reaching Sprout, or greedy ever scores an ancient bloom; the two-ply bot's median turns leave 120..600, Bud is not always reached, Bloom reach drops below 80%, Sapling reach drops to 10% or less, or compost use falls to 5 per run or less; or the two-ply bot stops out-scoring greedy by more than 3x on the same seeds. Ranges were set from the baseline below with wide margins and must be revisited deliberately, never loosened to make a failing build pass."
+          source: "tests/unit/mergrove-balance.test.ts"
+          evidence: "direct: runs in pnpm test:unit."
+        - function_id: "MER-023-F04"
+          title: "Measured v1 baseline (classic 5x5, SECOND_TIER_CHANCE 0.22, COMPOST_COST 4)"
+          requirement: "Greedy, 200 seeds: median 52 turns, median score 350, Bud never reached, 3 composts per run. Two-ply, 30 seeds: median 283 turns (p10 216, p90 399), median score 5670, Bud reached in 100% of runs, Bloom 97%, Sapling 37%, Lantern Tree 0%, ancient blooms 0, 36 composts per run. Finding: Lantern Tree and above, and therefore ancient blooms, are not reachable by these policies on classic-5. This supports the board_size_decision hypothesis that 5x5 is too tight and feeds MER-008 and MER-019 thresholds; it does not prove an optimal player cannot reach them, and no change to released rules is made here."
+          source: "pnpm vitest run with a one-off probe over seedRange(200) / seedRange(30), 2026-10-07"
+          evidence: "direct measurement; numbers are policy-specific and are not a claim about human play."
+
+    - name: "Presentation Upgrades (shipped part)"
+      id: "MER-024"
+      details: "Promoted from roadmap MER-022 (the unbuilt remainder keeps id MER-022 in planned_roadmap): a pure next-draw preview, Escape to cancel an armed compost, and documentation of both in 'How merging works'. The remaining MER-022 functions (grid navigation decision, layout-aware sizing tokens, optional audio) stay in planned_roadmap."
+      feature_development_status: "Started — unit and rendered-browser evidence green locally; awaiting CI-verified revision"
+      functional_requirements:
+        - function_id: "MER-024-F01"
+          title: "Pure next-draw peek (roadmap MER-022-F01)"
+          requirement: "previewNextDraw(run) returns { tier, sproutIfBud } using one nextRandom call on a copy of rngState; the run is never mutated and the RNG is never advanced. At highestTier >= 3 tier is exactly what the next placement's replacement draw will be. Before Bud the visible tier is Seed and sproutIfBud tells whether the draw would be a Sprout if that placement itself reaches Bud (the replacement draw uses the post-resolution highestTier, MER-001-F08)."
+          source: "engine.ts previewNextDraw"
+          evidence: "direct: mergrove-engine-edges.test.ts 'previews exactly the replacement the next placement will draw' and 'flags a hidden Sprout before Bud' (300 seeds each)."
+        - function_id: "MER-024-F02"
+          title: "Next-draw line"
+          requirement: "The queue block shows 'Next to arrive: {Tier}' (with ' (a Sprout if this placement reaches Bud)' when sproutIfBud) as plain text, exposed as data-mg='next-draw', and 'Run complete' when the run is over. It is text, not color, and does not alter the random sequence."
+          source: "MergroveWorkspace.tsx"
+          evidence: "direct: mergrove-design.mjs asserts the line starts 'Next to arrive: Seed' on a fresh run."
+        - function_id: "MER-024-F03"
+          title: "Escape cancels compost (roadmap MER-022-F03, shipped part)"
+          requirement: "While Compost is armed, Escape anywhere inside the Mergrove section disarms it and announces 'Compost cancelled. Choose a spirit and an empty cell.' without spending sunlight. The button and this shortcut share one setCompost function so the announcements cannot diverge. Escape is never the only path: the Cancel compost button remains."
+          source: "MergroveWorkspace.tsx setCompost, onKeyDown"
+          evidence: "direct: mergrove-design.mjs arms compost at 4 sunlight, presses Escape, asserts aria-pressed=false, the status text and unchanged sunlight, then composts a piece normally (sunlight 4 -> 0)."
+        - function_id: "MER-024-F04"
+          title: "Shortcut documentation"
+          requirement: "'How merging works' step 5 documents Escape and the preview, as required by roadmap MER-022-F03."
+          source: "MergroveWorkspace.tsx .mg-rules"
+          evidence: "source-audited."
+
   verification_traceability:
+    unit_engine_edges: "tests/unit/mergrove-engine-edges.test.ts: run-over rejection for placePiece/compostCell; empty-cell compost message; compost isolation (only cell, sunlight, gameOver change); input immutability; only the used queue slot is refilled and turns +1; sunlight for groups of 4 and 5; mergeScore argument rejection and the 8-tier reference values; a three-stage cascade ending in an ancient bloom; no standing group of 3 over scripted play; Seed-only draws before Bud; ~22% Sprout rate (+/-3 points over 4000 seeds); previewNextDraw equals the real next draw and does not mutate."
+    unit_persistence_edges: "tests/unit/mergrove-persistence-edges.test.ts: fresh and empty saves; rejects seed 0 / above uint32 / fractional, rngState 0 / above uint32, non-integer, tier 0, tier 9 and above-highestTier board cells, a Sprout in the queue before Bud, short queues, negative or fractional turns, negative ancientBlooms/sunlight/score and non-boolean gameOver; drops unknown fields; accepts a Sprout queue after Bud."
+    unit_balance: "tests/unit/mergrove-balance.test.ts (MER-023): reproducibility, termination and the drift gate ranges."
     unit_engine: "tests/unit/mergrove-engine.test.ts: deterministic creation; orthogonal grouping; trio merge + sunlight; two-stage cascade scoring (150) with highestTier 3; tier-8 ancient bloom; full-board terminal vs recoverable + compost; invalid queue/cell/occupied/compost actions; mergeScore(2,3,2)=120."
     unit_persistence: "tests/unit/mergrove-persistence.test.ts: v1 definition; valid round-trip; rejects null, negative bestScore, bestTier 9, bestTier < highestTier, a 24-cell board, a Bud in the queue and inconsistent gameOver."
-    browser_design: "tests/browser/mergrove-design.mjs: 320x900 viewport with 25 cells, 3 queue buttons, default selection, 44 px targets, no overflow, click trio merge (score 30, data-tier 0/0/2, sunlight 1), guest reload, keyboard Enter/Space play, 200% text with no overflow; 390x844 reduced-motion with animationName 'none' and no overflow; zero page errors."
+    browser_design: "tests/browser/mergrove-design.mjs (also: fresh-context scenario reaching 4 sunlight, next-draw line, Escape cancels compost, then a real compost): 320x900 viewport with 25 cells, 3 queue buttons, default selection, 44 px targets, no overflow, click trio merge (score 30, data-tier 0/0/2, sunlight 1), guest reload, keyboard Enter/Space play, 200% text with no overflow; 390x844 reduced-motion with animationName 'none' and no overflow; zero page errors."
     browser_account: "tests/browser/mergrove-account-persistence.mjs: Auth/Firestore emulators; register, checkpoint a trio merge, restore in a second context, game-scoped reset propagated after reload; zero page errors."
     evidence_gaps_source_audited_only:
-      - "Engine: game-over runs rejecting placePiece/compostCell; compost on an empty cell; compost leaving score/queue/turns/rngState unchanged; only the used queue slot replenished; input-run immutability; Sprout draw gating and the ~22% rate across seeds; sunlight for groups of 4+; mergeScore argument rejection; an ancient bloom reached at the end of a cascade."
-      - "Persistence: out-of-range seed/rngState; non-integer or out-of-range board cells; a Sprout in the queue while highestTier < 3; a board tier above highestTier; negative turns/ancientBlooms."
-      - "UI: compost arm/cancel/target flow; the game-over completion panel and 'Grow another grove'; status-message wording."
-      - "Adding these assertions changes test files, which game-doc-sync maps to Mergrove, so the spec and TRACKER must be updated in the same integration."
+      - "Closed on 2026-10-07 by mergrove-engine-edges.test.ts and mergrove-persistence-edges.test.ts: game-over rejections, compost on an empty cell, compost field isolation, only-used-slot refill, input immutability, Sprout gating and rate, sunlight for groups of 4+, mergeScore argument rejection, ancient bloom at the end of a cascade, and the decoder cases for seed/rngState ranges, board-cell validity, Sprout-before-Bud, negative counters and unknown fields."
+      - "Still source-audited only: the game-over completion panel and 'Grow another grove' flow; status-message wording for placement/merge/bloom; the sprite renderer and tier-name fallback."
+      - "Adding assertions changes test files, which game-doc-sync maps to Mergrove, so the spec and TRACKER must be updated in the same integration."
 
   documented_behavior_notes:
     - "Best Score updates only when a run reaches game over. Starting a new run or resetting partway through does not record that run's score as Best. Best Tier updates on every commit. Decision pending: whether to also record Best Score on abandon (candidate for MER-019)."
@@ -697,14 +751,6 @@ Planned Functional Features Specification:
         - "MER-017-F02 codexEntry(id) → { title, subtitle, botanicalNote, growthPath, unlocked } from the content pack; codexCompletion() = discovered / total registered entries (not a fixed 8)."
         - "MER-017-F03 Native <dialog> per the APG modal pattern: focus moves in, focus is contained and restored, Escape closes, reduced-motion reveal."
         - "MER-017-F04 Initial woodland entries reuse the v1 symbols mg-tier-1..8 (aliased as mg-woodland-1..8)."
-    - roadmap_feature: "Balance Simulation Harness"
-      roadmap_id: "MER-018"
-      scope: "A headless bot plays thousands of seeds per layout and ruleset in CI and reports median turns, tier-reach rates and bloom rate against target ranges. Board size, SECOND_TIER_CHANCE, UNDO_COST, wish rewards and achievement thresholds are set from this data."
-      roadmap_status: "Planned — not implemented (recommended first)"
-      functional_requirements:
-        - "MER-018-F01 greedyBot and lookaheadBot policies over the pure engine; dev-only, not shipped."
-        - "MER-018-F02 simulate(layoutId, rulesetId, seeds[]) → JSON summary: turn distribution, P(reach tier n), blooms per run, compost usage."
-        - "MER-018-F03 CI gate fails when a released configuration drifts outside its target range."
     - roadmap_feature: "Lifetime Stats and Achievements"
       roadmap_id: "MER-019"
       scope: "Local and account lifetime stats and milestone achievements. Thresholds come from MER-018 data, not guesses."
@@ -735,18 +781,16 @@ Planned Functional Features Specification:
         - "MER-021-F03 Visual checks: every symbol renders, has a distinct silhouette at 44px, and meets 3:1 non-text contrast against the cell background."
         - "MER-021-F04 Release checklist: spec + TRACKER updated together, golden replays unchanged, the bot clears new levels, production smoke passes."
         - "MER-021-F05 A missing or invalid pack degrades gracefully: its levels show as unavailable and core modes remain playable."
-    - roadmap_feature: "Presentation Upgrades"
+    - roadmap_feature: "Presentation Upgrades (remainder)"
       roadmap_id: "MER-022"
-      scope: "Next-draw preview, optional arrow-key grid navigation, a mode selection screen, Escape to cancel compost, and design tokens for multi-layout boards."
-      roadmap_status: "Planned — not implemented"
+      scope: "Remaining presentation work after MER-024: an arrow-key grid decision, layout-aware sizing tokens for multi-layout boards, and a future optional audio layer. F01 (next-draw preview) and the Escape part of F03 shipped as MER-024."
+      roadmap_status: "Partially promoted — F01 and F03 (Escape, shortcut documentation) shipped in MER-024; F02, F04, F05 planned, not implemented"
       functional_requirements:
-        - "MER-022-F01 previewNextDraw(run): reveals the next replacement tier without advancing RNG (pure peek)."
-        - "MER-022-F02 If role=grid is adopted, implement the full APG grid pattern (one tab stop, arrow keys with edge clamping, Home/End per row, Enter/Space activate); otherwise keep native button order. Never ship a partial grid role."
-        - "MER-022-F03 Escape disarms compost and announces it; all shortcuts are documented in 'How merging works' and are never the only path."
-        - "MER-022-F04 Layout-aware sizing tokens (for example board max 34rem, cell size derived from layout width) preserving >=44px targets, 320px/200% reflow and the reduced-motion path."
+        - "MER-022-F02 If role=grid is adopted, implement the full APG grid pattern (one tab stop, arrow keys with edge clamping, Home/End per row, Enter/Space activate); otherwise keep native button order. Never ship a partial grid role. Current decision: native button order is retained."
+        - "MER-022-F04 Layout-aware sizing tokens (for example board max 34rem, cell size derived from layout width) preserving >=44px targets, 320px/200% reflow and the reduced-motion path. Needed only once MER-008 adds a second layout."
         - "MER-022-F05 Optional audio layer only as separate future scope, off by default, repository-authored, with a visible mute control."
 
-  recommended_sequence: "1) MER-018 simulation harness → 2) MER-009 ruleset/replay + MER-020 migration (with platform change) → 3) MER-008 layouts (decide default) → 4) MER-010 Storehouse + MER-022 preview → 5) MER-014 Daily Grove → 6) MER-017 Herbarium + MER-019 achievements → 7) MER-011/012/013 → 8) MER-015/016/021 Journey and content packs."
+  recommended_sequence: "1) MER-018 simulation harness (done as MER-023, v1 baseline recorded) → 2) MER-009 ruleset/replay + MER-020 migration (with platform change) → 3) MER-008 layouts (decide default) → 4) MER-010 Storehouse + MER-022 preview → 5) MER-014 Daily Grove → 6) MER-017 Herbarium + MER-019 achievements → 7) MER-011/012/013 → 8) MER-015/016/021 Journey and content packs."
 
   draft_reconciliation:
     note: "Disposition of a 2026-10-07 externally drafted PRD variant, recorded so none of its ideas are lost and none of its inaccurate claims enter the authoritative record."

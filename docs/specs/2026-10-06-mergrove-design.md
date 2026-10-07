@@ -1,7 +1,7 @@
 # Mergrove design
 
-**Status:** Game implementation verified; live Firebase account services remain external TASK-003 work  
-**Last synchronized:** 2026-10-06  
+**Status:** v1.0 verified; v1.1 (balance harness, next-draw preview, Escape-to-cancel compost) is reopened work awaiting CI-verified evidence; live Firebase account services remain external TASK-003 work  
+**Last synchronized:** 2026-10-07  
 **Route:** `#/games/mergrove`
 
 ## Product documents
@@ -102,6 +102,16 @@ Mergrove-specific browser evidence verifies the 25-cell board, three-piece queue
 
 A fresh uncached post-deployment render of `https://aahplexx.github.io/inmogames/#/games/mergrove` returned HTTP 200 and rendered the expected Mergrove initial state: three Seeds, 0/25 occupied cells and the 25-cell placement board. The external production Playwright connector was unavailable because its upstream MCP endpoint returned 404, so no claim is made that a second independent production console inspector was available; the green CI browser suites separately assert no uncaught Mergrove page errors.
 
+## v1.1 scope (reopened 2026-10-07)
+
+New game-local work reopens the game under the continuity contract. The save schema is **unchanged** (schema version 1, key `inmogames:mergrove:v1`, no new persisted fields), so no migration is needed and existing guest and account saves load exactly as before. Roadmap items that need new persisted state (hold slot, undo snapshot, modes, stats, codex) are deliberately not in this scope; they depend on the schema v2 migration (roadmap MER-020, blocked on a shared-platform change).
+
+- **Balance harness (PRD MER-023).** A dev-only bot and simulator live under `tests/unit/support/` and are never imported by the shipped bundle. A unit-test drift gate fails when the released configuration leaves its measured target ranges. The recorded baseline shows two-ply play reaching Bloom about 97% and Sapling about 37% of the time, and never Lantern Tree or an ancient bloom, which is evidence for the roadmap decision on board size. No released rule is changed by this finding.
+- **Next-draw preview (PRD MER-024).** `previewNextDraw(run)` in `engine.ts` peeks the next replacement tier without advancing the RNG. The UI states it in text ("Next to arrive: Seed"). Before Bud it also says when a Sprout would arrive if the placement itself reaches Bud, because the replacement is drawn after merge resolution.
+- **Escape cancels Compost (PRD MER-024).** Escape disarms an armed Compost with the same announcement as the Cancel button and spends nothing. It is never the only path and is documented in "How merging works".
+
+The explicit v1 exclusions are unchanged: no timer, undo, daily challenge, audio, leaderboard, or ninth tier. The preview reveals information the deterministic engine already fixes; it does not create a reroll or any new randomness.
+
 ## Verification requirements
 
 - Pure-engine tests cover deterministic creation, orthogonal grouping, basic merge, cascade scoring, ancient bloom, terminal/recoverable full boards, compost and invalid actions.
@@ -109,12 +119,13 @@ A fresh uncached post-deployment render of `https://aahplexx.github.io/inmogames
 - Rendered browser evidence covers the 25-cell board, initial queue, first deterministic trio merge, reload checkpoint, keyboard operation, 320px/200% reflow, 44px targets, non-color queue selection and reduced motion.
 - Shared Auth/Firestore emulator evidence exercises an authenticated Mergrove checkpoint across browser contexts and game-scoped reset.
 - Catalog/index/registry and per-game documents remain synchronized in the same integration.
+- Unit tests cover the engine edge cases, decoder edge cases and balance drift gate listed in PRD `verification_traceability`; the rendered browser suite also covers the next-draw line and Escape-to-cancel compost.
 - Full repository validation and GitHub Pages deployment pass before the game is marked verified.
 
 ## Completion contract
 
-**Completion state:** verified  
-**Completion evidence:** exact revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`; GitHub Actions run `37553471015` passed complete validation and Pages deployment, followed by a fresh HTTP-200 deployed-route render of `#/games/mergrove`.
+**Completion state:** implementing  
+**Completion evidence:** v1.0 was verified at revision `965c91a5b9090da321ae3eb0d11f9383678b02c6` in GitHub Actions run `37553471015` (fresh HTTP-200 deployed render). v1.1 is reopened on 2026-10-07: unit tests (all passing locally under Node 24.21.0 / Vitest 5.0.3) and the rendered Mergrove design-browser suite (passing locally against system Chrome) are green, but no CI run or deployment exists for v1.1 yet, so the game is not re-verified.
 
 - [x] Complete placement → merge → cascade → ancient-bloom → game-over/restart loop is integrated and playable.
 - [x] Deterministic engine and v1 save decoder are covered by repository unit tests for material edge cases.
@@ -122,8 +133,12 @@ A fresh uncached post-deployment render of `https://aahplexx.github.io/inmogames
 - [x] Pointer/touch/keyboard interaction, 320 CSS-px and 200% text reflow, focus/selection, touch targets and reduced motion have rendered-browser evidence.
 - [x] Guest reload checkpoint and shared account-save/reset path have repository/emulator evidence; live Firebase remains separately identified under TASK-003.
 - [x] Catalog, lazy registry, game index, task state, this spec and `src/games/mergrove/TRACKER.md` agree on shipped state.
-- [x] `pnpm validate`-equivalent CI gates are green on the exact integrated revision.
-- [x] GitHub Pages deployment is green; the deployed route independently renders the expected game state, while CI browser suites provide the zero-page-error regression evidence.
+- [x] `pnpm validate`-equivalent CI gates were green on the v1.0 revision.
+- [x] GitHub Pages deployment was green for v1.0; the deployed route independently rendered the expected game state.
+- [x] v1.1: balance harness, edge-case unit tests and drift gate exist and pass locally (PRD MER-023).
+- [x] v1.1: next-draw preview and Escape-to-cancel compost are implemented with unit and rendered-browser assertions that were mutation-checked to fail when the behavior is removed (PRD MER-024).
+- [ ] v1.1: the full `pnpm validate`-equivalent CI chain, including Auth/Firestore emulator browser tests and the Firebase rules tests that could not run in the authoring sandbox, is green on the exact integrated revision.
+- [ ] v1.1: GitHub Pages deployment is green and a fresh deployed render of `#/games/mergrove` shows the "Next to arrive" line.
 
 This section is authoritative for the word **complete**. New game-local scope or a discovered unresolved defect reopens the applicable gate before further implementation.
 

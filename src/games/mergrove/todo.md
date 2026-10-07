@@ -1,7 +1,7 @@
 # TODO: Mergrove (mergrove)
 
-**Status:** Complete  
-**Last synchronized:** 2026-10-06  
+**Status:** Implementing — v1.0 complete; v1.1 (MER-023, MER-024) awaiting CI-verified revision  
+**Last synchronized:** 2026-10-07  
 **Architecture & Engine:** Static React/Vite game with a pure deterministic TypeScript 5 × 5 merge engine, repository-authored SVG sprites, and the shared versioned save platform.  
 **Verified evidence:** revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`, GitHub Actions run `37553471015`, plus fresh HTTP-200 deployed-route render.  
 **Dependencies Used:**
@@ -75,6 +75,22 @@
   - [x] **Implementation Details:** `#/games/mergrove` catalog and lazy workspace wiring exists on `main`.
   - [x] **Verification & State Sign-off:** Exact revision `965c91a5b9090da321ae3eb0d11f9383678b02c6` passed complete validation and Pages deployment in run `37553471015`; fresh live render returned HTTP 200 with the expected board/queue state.
 
+- [ ] **Balance Simulation Harness** `{id: 'MER-023'}` — `[feature development status: = 'Started']`
+  - [x] **Purpose:** Replace guessed balance numbers with measured ones and block silent drift of released rules.
+  - [x] **Inputs / Parameters:** A bot policy, a seed list and an action cap.
+  - [x] **Dependencies Touched:** `engine.ts` (read-only) and test support code only; nothing ships in the bundle.
+  - [x] **Technical Notes & Edge Cases:** Capped runs are counted, never dropped; ranges sit well outside the measured baseline so they flag real drift, not noise.
+  - [x] **Implementation Details:** `tests/unit/support/mergrove-sim.ts` plus `tests/unit/mergrove-balance.test.ts`.
+  - [ ] **Verification & State Sign-off:** Passing locally; needs a CI-verified revision.
+
+- [ ] **Presentation Upgrades (shipped part)** `{id: 'MER-024'}` — `[feature development status: = 'Started']`
+  - [x] **Purpose:** Let players plan with the known next arrival and cancel Compost from the keyboard.
+  - [x] **Inputs / Parameters:** `rngState`, `highestTier`, Compost mode and the Escape key.
+  - [x] **Dependencies Touched:** `engine.ts previewNextDraw`, `MergroveWorkspace.tsx`, `mergrove.css`.
+  - [x] **Technical Notes & Edge Cases:** Peek never advances the RNG; before Bud the hidden-Sprout case is stated in text; Escape never spends sunlight and is never the only cancel path.
+  - [x] **Implementation Details:** Shared `setCompost` for button and key; one `nextRandom` call on a copy of the state.
+  - [ ] **Verification & State Sign-off:** Unit and rendered-browser checks pass locally; needs a CI-verified revision.
+
 ---
 
 ## Final Game Assembly & Verification Checklist
@@ -86,7 +102,10 @@
 - [x] Pass `pnpm validate`-equivalent CI on exact revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`.
 - [x] Pass GitHub Pages deployment and independently render `#/games/mergrove` from production at HTTP 200 with expected initial game state.
 - [x] Synchronize `PRD.md`, `todo.md`, `TRACKER.md`, authoritative design, `docs/GAME_INDEX.md`, and applicable `.tasks/` records with final evidence.
-- [x] Flip overall status: `[Game development status: = 'Complete']` because every authoritative game-local completion gate is satisfied.
+- [x] (v1.0) Flip overall status: `[Game development status: = 'Complete']` because every authoritative game-local completion gate was satisfied at that revision.
+- [ ] (v1.1) Pass the full `pnpm validate`-equivalent CI chain on the integrated revision, including the Firestore rules and Auth/Firestore emulator browser suites and the dependency gates that did not run in the authoring sandbox.
+- [ ] (v1.1) Pass GitHub Pages deployment and confirm the deployed `#/games/mergrove` shows the next-draw line and has no page errors.
+- [ ] (v1.1) Re-flip `[Game development status: = 'Complete']` and sync `PRD.md`, `todo.md`, `TRACKER.md`, the authoritative design and `docs/GAME_INDEX.md` with the CI revision.
 
 ## External continuation
 

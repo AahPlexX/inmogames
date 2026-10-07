@@ -54,6 +54,21 @@ function drawPiece(state: number, highestTier: number): [number, number] {
   return [next, tier];
 }
 
+export interface DrawPreview {
+  /** Tier the next replacement piece will have if the current highest tier does not change first. */
+  tier: number;
+  /** True when reaching Bud during the placement that uses a queue slot would turn the replacement into a Sprout. */
+  sproutIfBud: boolean;
+}
+
+/** Pure peek at the next queue draw. Never advances or mutates the run's RNG. */
+export function previewNextDraw(run: Pick<MergroveRun, 'rngState' | 'highestTier'>): DrawPreview {
+  const [, random] = nextRandom(run.rngState);
+  const sprout = random < SECOND_TIER_CHANCE;
+  if (run.highestTier >= 3) return { tier: sprout ? 2 : 1, sproutIfBud: false };
+  return { tier: 1, sproutIfBud: sprout };
+}
+
 function assertIndex(index: number, label: string, max: number): void {
   if (!Number.isInteger(index) || index < 0 || index >= max) throw new Error(`${label} is out of range.`);
 }

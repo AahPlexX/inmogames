@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { useGameSave } from '../../platform/PlatformProvider';
 import { SaveStatus } from '../../platform/SaveStatus';
-import { BOARD_CELLS, BOARD_SIZE, COMPOST_COST, compostCell, createRun, placePiece, type MergeEvent, type MergroveRun } from './engine';
+import { BOARD_CELLS, BOARD_SIZE, COMPOST_COST, compostCell, createRun, placePiece, previewNextDraw, type MergeEvent, type MergroveRun } from './engine';
 import { mergroveSaveDefinition, type MergroveSave } from './persistence';
 import { MergroveSprite, MergroveSpriteBank, tierName } from './sprites';
 import './mergrove.css';
@@ -73,6 +73,11 @@ function MergroveGame({ initial, persist, reset }: { initial: MergroveSave; pers
     setMessage(`${removed ? tierName(removed) : 'Piece'} composted. ${COMPOST_COST} sunlight spent; one cell is open again.`);
   }
 
+  function setCompost(armed: boolean) {
+    setCompostMode(armed);
+    setMessage(armed ? 'Compost ready. Choose one occupied cell to remove.' : 'Compost cancelled. Choose a spirit and an empty cell.');
+  }
+
   function startNewRun() {
     const next = createRun(Date.now());
     setSelectedQueue(0);
@@ -94,9 +99,20 @@ function MergroveGame({ initial, persist, reset }: { initial: MergroveSave; pers
   }
 
   const occupied = run.board.reduce<number>((count, cell) => count + (cell === null ? 0 : 1), 0);
+  const nextDraw = previewNextDraw(run);
+  const nextDrawText = run.gameOver
+    ? 'Run complete'
+    : `${tierName(nextDraw.tier)}${nextDraw.sproutIfBud ? ' (a Sprout if this placement reaches Bud)' : ''}`;
+
+  function onKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (event.key === 'Escape' && compostMode) {
+      event.preventDefault();
+      setCompost(false);
+    }
+  }
 
   return (
-    <section className="mg" aria-labelledby="mg-title">
+    <section className="mg" aria-labelledby="mg-title" onKeyDown={onKeyDown}>
       <MergroveSpriteBank />
       <header className="mg-header">
         <div>
@@ -119,6 +135,7 @@ function MergroveGame({ initial, persist, reset }: { initial: MergroveSave; pers
               <div><span>Spirit queue</span><strong>{compostMode ? 'Choose a board piece to remove' : 'Choose what to place'}</strong></div>
               <span>{occupied}/{BOARD_CELLS} cells used</span>
             </div>
+            <p className="mg-next" data-mg="next-draw">Next to arrive: <strong>{nextDrawText}</strong></p>
             <div className="mg-queue" role="group" aria-label="Spirit queue">
               {run.queue.map((tier, index) => (
                 <button
@@ -187,10 +204,7 @@ function MergroveGame({ initial, persist, reset }: { initial: MergroveSave; pers
               className="mg-secondary"
               aria-pressed={compostMode}
               disabled={run.gameOver || run.sunlight < COMPOST_COST}
-              onClick={() => {
-                setCompostMode(current => !current);
-                setMessage(compostMode ? 'Compost cancelled. Choose a spirit and an empty cell.' : 'Compost ready. Choose one occupied cell to remove.');
-              }}
+              onClick={() => setCompost(!compostMode)}
             >{compostMode ? 'Cancel compost' : `Compost a piece (${COMPOST_COST})`}</button>
           </div>
 
@@ -208,6 +222,7 @@ function MergroveGame({ initial, persist, reset }: { initial: MergroveSave; pers
               <p><b>2.</b> If that cell connects orthogonally to at least two matching spirits, the whole connected group fuses at the new piece.</p>
               <p><b>3.</b> If the new spirit immediately forms another group, it cascades. Later stages multiply the points earned.</p>
               <p><b>4.</b> Four sunlight lets you compost one blocker. No dragging is required; every action works with ordinary buttons, touch, keyboard Enter or Space.</p>
+              <p><b>5.</b> Press Escape while Compost is armed to cancel it. The “Next to arrive” line previews the spirit that will replace the one you place; it never changes the random sequence.</p>
             </div>
           </details>
 
