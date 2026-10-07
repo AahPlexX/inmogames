@@ -4,6 +4,10 @@
 **Last synchronized:** 2026-10-06  
 **Route:** `#/games/mergrove`
 
+## Product documents
+
+The continuation-safe product contract is split deliberately: this authoritative design spec defines behavior and completion gates; `src/games/mergrove/PRD.md` defines the feature inventory and `src/games/mergrove/todo.md` records execution/sign-off state. `src/games/mergrove/TRACKER.md` is the concise live handoff. These documents must be reconciled whenever implementation or verification state changes.
+
 ## Purpose
 
 Mergrove is an original single-player placement-and-cascade merge puzzle for the InMo Game Cabinet. It expands the catalog beyond arithmetic and cards without adding a runtime engine, server, external asset request or proprietary art dependency. The player grows increasingly elaborate woodland spirits on a compact 5 × 5 board, balancing immediate fusions against future space.
