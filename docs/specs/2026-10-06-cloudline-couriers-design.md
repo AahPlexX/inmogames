@@ -1,41 +1,62 @@
 # Cloudline Couriers design
 
-**Status:** Implementing  
-**Last synchronized:** 2026-10-06  
+**Status:** Implementing — expanded long-form scope  
+**Last synchronized:** 2026-10-07  
 **Route:** `#/games/cloudline-couriers`
 
 ## Product documents
-`src/games/cloudline-couriers/PRD.md` is the feature inventory, `src/games/cloudline-couriers/todo.md` is execution/sign-off state, and `src/games/cloudline-couriers/TRACKER.md` is the live resume point. `GOVERNANCE.md` defines the mandatory structure used by every game. Reconcile these documents whenever behavior, scope or verification state changes.
+`src/games/cloudline-couriers/PRD.md` is the exhaustive feature/player-journey inventory, `todo.md` is 1:1 execution/sign-off state, and `TRACKER.md` is the live resume point. `GOVERNANCE.md` defines the mandatory structure. Reconcile all whenever behavior, scope or verification changes.
 
 ## Purpose and originality boundary
-Cloudline Couriers is an original single-player skyway strategy game. The high-level loop is roll, move, resolve, earn, upgrade, advance. Names, fiction, 16-stop geometry, event taxonomy, economy, Cargo Cache encounter, landmarks, visual treatment and progression are original and must not reproduce proprietary Monopoly/Monopoly GO presentation or content.
+Cloudline Couriers is an original single-player skyway strategy/progression game. The early loop is boost/roll → move → resolve → earn → improve. That loop is only the foundation: release scope now includes onboarding, rank, permanent airship progression, a five-region/twenty-district campaign target, contracts, milestone rewards, collections, mastery, specialists, crafting, weather, branching routes, expeditions, region finales, post-campaign charter play, objective clarity, professional reward presentation, audio and explicit challenge/assist options. Names, fiction, geometry, events, economy, art, content and progression remain original and must not reproduce proprietary Monopoly/Monopoly GO presentation/content.
 
-## Rules
-A deterministic d6 moves the courier clockwise around 16 stops. A selected 1×/2×/3× flight boost consumes that many fuel units and multiplies eligible earnings. Crossing Dispatch Dock grants a district-scaled circuit reward. Markets and Dispatch Dock progress deliveries; every fourth qualifying delivery pays a route bonus. Workshops restore fuel, Beacons grant one shield, Storms consume a shield or apply a bounded credit setback and break the streak, Windgates advance two additional stops without recursive event resolution, and Cargo Cache pauses flight until one of three seeded pods is selected. Zero fuel triggers a three-fuel emergency reserve so a durable save cannot dead-end.
+## Teleological experience contract
+The player begins as a modest courier and should repeatedly see evidence that effort changed the world and their capabilities. The first session teaches through play and reaches a meaningful reward/upgrade quickly. Midgame broadens strategic agency through ship/crew/route systems. Campaign progression transforms districts/regions and culminates in authored finale challenges. Post-campaign play preserves earned progress while adding mastery modifiers and personal-best goals. The target first-campaign duration is 20–40 hours, but this is a tuning hypothesis until playtesting measures it.
 
-Four landmarks—Aerie Post, Cloud Garden, Signal Spire and Skyforge Hangar—each have four stages. Upgrade cost is `120 × district × (stage + 1)`. Completing all four advances the district, resets landmark stages, pays a completion reward and restores fuel.
+Engagement is not defined as impaired control. No paid loot boxes, real-money gambling, deceptive scarcity, forced login streak loss, punitive absence, hidden rubber-banding, disguised costs or monetized frustration. Long-term motivation comes from mastery, visible improvement, strategic choice, collection, discovery, authored content and proportional celebration.
+
+## Base rules already implemented
+A deterministic d6 moves the courier around 16 introductory stops. A selected 1×/2×/3× boost consumes fuel and multiplies eligible earnings. Dispatch crossing grants a circuit reward. Markets/Dispatch progress deliveries; every fourth qualifying delivery pays a route bonus. Workshops restore fuel, Beacons grant shield, Storms consume shield or apply bounded setback, Windgates advance without recursive event resolution, and Cargo Cache pauses flight for one of three seeded choices. Zero fuel triggers emergency reserve.
+
+Four introductory landmarks each have four stages. Upgrade cost is currently `120 × district × (stage + 1)`. Completing all four advances the district, resets stages, pays a reward and restores fuel. Expanded campaign/economy tuning may revise data/rules through explicit versioned design changes; save migrations are required whenever persisted shape changes.
+
+## Long-form architecture
+- **Turn:** boost → roll → travel → landing → consequence → next action.
+- **Session:** deliveries/contracts → fuel/shield decisions → cache/route choices → visible upgrade.
+- **District:** four landmarks + district modifier/objective → transformation/completion.
+- **Region:** several distinct districts + ship/crew/loadout growth → bespoke finale.
+- **Campaign:** target five regions/twenty districts → collection/mastery arcs → Sky Charter unlock.
+- **Endgame:** charter routes + chosen modifiers + mastery/personal bests + remaining collections/achievements; no destructive prestige reset.
+
+Expanded engine design must remain deterministic/testable. Content definitions belong outside React. React renders state/actions and never becomes the source of gameplay truth. New campaign systems require schema-versioned persistence/migration and explicit unit/browser evidence.
+
+## Professional presentation contract
+CLC-007 is no longer satisfied by merely rendering SVG elements. Release art must be cohesive, production-quality and stateful: courier airships, landmarks across upgrade stages, stop scenes, weather, cargo, crew, environmental layers, particles/VFX and UI iconography. Emoji-as-game-art, crude primitive SVG stand-ins, generic placeholder icons and visually unfinished assets are prohibited. Motion communicates anticipation, travel, arrival, impact, reward and transformation; significance determines celebration intensity. Reduced-motion users receive equivalent state/consequence clarity.
+
+Audio is a release system, not optional polish: original/license-safe music and SFX support actions and milestones, with independent controls and no audio-only critical information.
 
 ## Accessibility/responsiveness
-The board is a 5×5 CSS grid perimeter, yielding exactly 16 stops while reserving the center for roll/boost controls. Important controls use a 44 CSS-pixel baseline, native buttons preserve keyboard/touch parity, active position and boost are non-color states, status feedback uses a live region, no drag/timing is required, and nonessential motion must honor reduced motion. Rendered evidence at 320 CSS px and 200% text is mandatory before verification.
-
-## Architecture
-`engine.ts` is pure deterministic TypeScript and owns movement/events/economy/progression. React does not reimplement rules. CLC-009 uses the shared versioned `GameSaveDefinition`/`useGameSave` platform; game code never imports Firebase directly. Schema v1 stores the active deterministic run under `inmogames:cloudline-couriers:v1` for guests and the shared account repository for authenticated players. Invalid position, fuel, landmark, streak, cargo, roll, RNG or message state is rejected rather than partially trusted. A game-scoped reset clears only Cloudline career state.
-
-CLC-007 must use only repository-authored SVG/React/CSS. The visual family includes an airship courier, all seven stop/event families plus cloud atmosphere, four landmark identities and cargo pod treatment. Vector presentation is decorative inside already-named controls/regions. Courier arrival/bobbing motion is nonessential and must compute to no animation under `prefers-reduced-motion: reduce`; no remote art, font, CDN, image-generation or sprite-sheet request is allowed at runtime.
+Complete gameplay must remain equivalent across phone/tablet/laptop/desktop/large displays, 320 CSS px, 200% text, keyboard/touch/pointer and reduced-motion. Important controls use >=44 CSS-pixel baseline; state is not color-only; objectives/rewards/risks remain readable; no drag/timing-only requirement is permitted. Player-controlled challenge/assist settings are explicit and may not hide rubber-banding.
 
 ## Persistence evidence
-Workflow `37554746482` is the RED evidence: all earlier gates passed, then guest reload failed because Aerie Post returned to Stage 0 instead of Stage 1. Revision `232102f4` / workflow `37555538295` is GREEN: schema decoder unit coverage, guest reload, Auth/Firestore emulator cross-browser restoration/reset, design-browser checks, both builds and Pages deployment succeeded. Real configured Firebase remains explicitly external under TASK-003.
+Workflow `37554746482` is CLC-009 RED evidence. Revision `232102f4` / workflow `37555538295` is schema-v1 GREEN: decoder unit coverage, guest reload, Auth/Firestore emulator cross-browser restoration/reset, design-browser checks, builds and Pages deployment succeeded. Real configured Firebase remains external TASK-003. Expanded systems must migrate this schema without silently discarding earned state.
+
+## Research basis
+The expanded PRD records authoritative sources reviewed 2026-10-07: Apple HIG game/onboarding/control/feedback guidance, Apple Game Center, Google Play Games achievements, Android quality guidance, Microsoft Xbox Accessibility Guidelines/objective/save guidance, current official MONOPOLY GO genre research, official Supercell Hero Journey progression, FTC enforcement concerning deceptive game purchase patterns, Apple randomized-purchase disclosure rules and WHO ICD-11 gaming-disorder guidance. These sources inform principles only; they do not license copying another game's proprietary implementation.
 
 ## Completion contract
 **Completion state:** implementing  
-**Completion evidence:** governance is green in run `37554297029`; CLC-009 persistence is verified by revision `232102f4` / run `37555538295`; CLC-007 has now entered TDD RED with an authored-vector/reduced-motion browser regression and implementation pending.
-- [ ] Complete roll → move → event → earn → upgrade → district loop is playable and verified.
-- [ ] Deterministic engine covers movement, boost, circuit, event, Cargo Cache, streak/shield, fuel recovery and progression edge cases.
-- [x] Versioned durable guest save and shared account-save/reset path have unit/browser/emulator evidence in run `37555538295`; real Firebase remains TASK-003.
-- [ ] Original repository-authored SVG sprite/animation system is integrated with no remote runtime asset dependency.
-- [ ] Keyboard/touch, focus, non-color state, 44px targets, 320px/200% reflow and reduced motion have rendered-browser evidence.
-- [ ] Catalog, lazy registry, GAME_INDEX, PRD, todo, tracker and this spec agree on final shipped state.
-- [ ] Full exact-revision repository validation is green for the completed game.
-- [ ] GitHub Pages deployment and deployed route smoke are green without game-local console/page errors for the completed game.
+**Completion evidence:** CLC-009 only is verified at `232102f4` / `37555538295`; CLC-007 is in RED on `b202378e`; the 2026-10-07 teleological review expands the release contract to CLC-001..CLC-030 and intentionally invalidates any near-complete interpretation based on the former ten-feature scope.
+- [ ] All 30 PRD/todo feature IDs are implemented or explicitly excluded with evidence/rationale.
+- [ ] First-session onboarding is playable, optional/replayable and comprehension-tested.
+- [ ] Full five-region/twenty-district campaign target is authored and pacing/playtime measured; 20–40h target adjusted from evidence if needed.
+- [ ] Rank, permanent airship upgrades, contracts, milestones, collections, achievements/mastery and strategic loadouts produce durable earned progression.
+- [ ] Branching routes, weather/modifiers, expeditions, five region finales and post-campaign Sky Charter are implemented and verified.
+- [x] Schema-v1 durable guest/account-emulator save is verified; expanded schema migrations remain open and real Firebase remains TASK-003.
+- [ ] Professional production art/VFX/motion and audio systems pass rendered quality review; no emoji/crude placeholder art remains.
+- [ ] Keyboard/touch/pointer, focus, non-color state, >=44px targets, 320px/200% reflow, reduced motion and challenge/assist behavior have rendered evidence.
+- [ ] Economy/progression playtest finds no dead progression, excessive grind wall, punitive absence or hidden difficulty manipulation.
+- [ ] PRD/todo/TRACKER/spec/GAME_INDEX agree on final shipped state.
+- [ ] Full exact-revision repository validation and Pages deployment/deployed smoke are green for completed game.
 
 Only after every applicable gate is evidenced may Completion state become verified.
