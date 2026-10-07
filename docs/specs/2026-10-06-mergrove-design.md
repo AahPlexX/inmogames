@@ -108,6 +108,7 @@ New game-local work reopens the game under the continuity contract. The save sch
 
 - **Balance harness (PRD MER-023).** A dev-only bot and simulator live under `tests/unit/support/` and are never imported by the shipped bundle. A unit-test drift gate fails when the released configuration leaves its measured target ranges. The recorded baseline shows two-ply play reaching Bloom about 97% and Sapling about 37% of the time, and never Lantern Tree or an ancient bloom, which is evidence for the roadmap decision on board size. No released rule is changed by this finding.
 - **Next-draw preview (PRD MER-024).** `previewNextDraw(run)` in `engine.ts` peeks the next replacement tier without advancing the RNG. The UI states it in text ("Next to arrive: Seed"). Before Bud it also says when a Sprout would arrive if the placement itself reaches Bud, because the replacement is drawn after merge resolution.
+- **Ruleset registry and replay (PRD MER-025).** `src/games/mergrove/ruleset.ts` freezes the released ruleset `v1`, replays a seed plus action list without throwing, and fingerprints runs. Golden-replay tests fail if released scoring, RNG or draw behavior changes; such a change must ship as a new ruleset id. It is library-only for now: runs do not yet record a `rulesetId`, because that needs the schema v2 migration.
 - **Escape cancels Compost (PRD MER-024).** Escape disarms an armed Compost with the same announcement as the Cancel button and spends nothing. It is never the only path and is documented in "How merging works".
 
 The explicit v1 exclusions are unchanged: no timer, undo, daily challenge, audio, leaderboard, or ninth tier. The preview reveals information the deterministic engine already fixes; it does not create a reroll or any new randomness.
@@ -136,6 +137,7 @@ The explicit v1 exclusions are unchanged: no timer, undo, daily challenge, audio
 - [x] `pnpm validate`-equivalent CI gates were green on the v1.0 revision.
 - [x] GitHub Pages deployment was green for v1.0; the deployed route independently rendered the expected game state.
 - [x] v1.1: balance harness, edge-case unit tests and drift gate exist and pass locally (PRD MER-023).
+- [x] v1.1: ruleset registry, replay and mutation-checked golden fingerprints exist and pass locally (PRD MER-025).
 - [x] v1.1: next-draw preview and Escape-to-cancel compost are implemented with unit and rendered-browser assertions that were mutation-checked to fail when the behavior is removed (PRD MER-024).
 - [ ] v1.1: the full `pnpm validate`-equivalent CI chain, including Auth/Firestore emulator browser tests and the Firebase rules tests that could not run in the authoring sandbox, is green on the exact integrated revision.
 - [ ] v1.1: GitHub Pages deployment is green and a fresh deployed render of `#/games/mergrove` shows the "Next to arrive" line.
