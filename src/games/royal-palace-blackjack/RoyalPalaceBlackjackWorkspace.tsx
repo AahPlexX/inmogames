@@ -118,19 +118,20 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
  const advice=save.preferences.hints&&phase==='player'&&dealerUp&&current&&!insurance?advise({player:current.cards,dealerUp,canDouble:!!canD,canSplit:!!canS,canSurrender:!!canR}):null;
  const phaseLabel=insurance?'Insurance':phase==='betting'?'Betting':phase==='player'?'Your turn':phase==='dealer'?'Dealer turn':'Round complete';
  const phasePrompt=insurance?'Decide on insurance':phase==='betting'?'Build your wager':phase==='player'?'Choose your play':phase==='dealer'?'Dealer is drawing':'Review the result';
- return <section className="rp" aria-label="Royal Palace Blackjack table">
+ const tableWager=phase==='betting'?bet:hands.reduce((total,hand)=>total+hand.wager,0);
+ const outcomeTone=phase==='settled'?(status.startsWith('Round won')?'win':status.startsWith('Round result')||status.startsWith('Surrendered')?'loss':'push'):undefined;
+ return <section className="rp" data-phase={insurance?'insurance':phase} data-outcome={outcomeTone} aria-label="Royal Palace Blackjack table">
   <div className="rp-top"><div><strong>♠ Royal Palace</strong><span>6 decks · S17 · 3:2 · DAS</span></div><div className="rp-stats"><span>Shoe <b>{shoePct}%</b></span><span><b>{save.stats.wins}</b> W · <b>{save.stats.losses}</b> L · <b>{save.stats.pushes}</b> P</span><span>Session <b>{save.sessionNet>=0?'+':''}{money(save.sessionNet)}</b></span></div></div>
   <div className="rp-felt">
    <div className="rp-rules" aria-hidden="true">BLACKJACK PAYS 3 TO 2 · DEALER STANDS ON ALL 17</div>
    <HandView label="Dealer" cards={dealer} hiddenIndex={holeHidden?1:-1}/>
-   <div className="rp-status" role="status" aria-live="polite">{status}</div>
+   <div className="rp-status" role="status" aria-live="polite" aria-atomic="true">{status}</div>
    <div className="rp-hands">{hands.map((h,i)=><HandView key={i} label={hands.length>1?`Hand ${i+1}`:'Player'} cards={h.cards} active={phase==='player'&&i===active} fromSplit={h.fromSplit}/>)}</div>
    {advice&&<aside className="rp-advice"><b>Strategy: {advice.action}</b><span>{advice.reason} Recommendations improve decisions; they do not guarantee a win.</span></aside>}
   </div>
   <div className="rp-console">
    <div className="rp-console-head"><span>{phaseLabel}</span><strong>{phasePrompt}</strong></div>
-   <div className="rp-bank"><span>Bank <b>{money(save.bankroll)}</b></span><span>Bet <b>{money(bet)}</b></span><span>Cards <b>{remaining}</b></span></div>
-   <BlackjackGuide/>
+   <div className="rp-bank"><span>Bank <b>{money(save.bankroll)}</b></span><span className="rp-bank-bet" key={`wager-${tableWager}`}>Bet <b>{money(tableWager)}</b></span><span>Cards <b>{remaining}</b></span></div>
    {phase==='betting'&&save.bankroll<5&&bet===0&&<div className="rp-recovery"><span>Your balance is below the 5-credit minimum. Restore practice credits without clearing your record.</span><button className="primary" onClick={restoreCredits}>Restore 1,000 practice credits</button></div>}
    {phase==='betting'&&<div className="rp-betting" aria-label="Bet controls"><div className="rp-chips">{chips.map(v=><button key={v} disabled={v>save.bankroll} onClick={()=>addChip(v)} aria-label={`Add ${v} virtual-credit chip`}>{v>=1000?'1K':v}</button>)}</div><div className="rp-betmods"><button onClick={undo} disabled={!betStack.length}>Undo</button><button onClick={clear} disabled={!bet}>Clear</button><button onClick={()=>setExactBet(save.lastBet)} disabled={!save.lastBet||save.lastBet>save.bankroll+bet}>Re-bet</button><button onClick={()=>setExactBet(bet*2)} disabled={!bet||bet>save.bankroll}>2×</button><button onClick={()=>setExactBet(save.bankroll+bet)} disabled={!save.bankroll}>All in</button></div></div>}
    <div ref={actionsRef} className="rp-actions" aria-label="Round actions">
@@ -138,6 +139,7 @@ function BlackjackTable({initial,persist,reset}:{initial:BlackjackSave;persist:(
     {phase==='player'&&!insurance&&<><button disabled={!canH} onClick={hit}>Hit</button><button onClick={stand}>Stand</button><button disabled={!canD} onClick={doubleDown}>Double</button><button disabled={!canS} onClick={split}>Split</button><button disabled={!canR} onClick={surrender}>Surrender</button></>}
     {phase==='settled'&&<button className="primary" onClick={nextRound}>Next round</button>}
    </div>
+   <BlackjackGuide/>
    <div className="rp-prefs" aria-label="Table preferences and saved game"><button aria-pressed={save.preferences.sound} onClick={()=>{const next=!save.preferences.sound;setSave(s=>({...s,preferences:{...s.preferences,sound:next}}));if(next)playCue('chip',true)}}>Sound {save.preferences.sound?'on':'off'}</button><button aria-pressed={save.preferences.hints} onClick={()=>setSave(s=>({...s,preferences:{...s.preferences,hints:!s.preferences.hints}}))}>Strategy hints {save.preferences.hints?'on':'off'}</button><button onClick={resetAll}>Reset saved game</button></div>
   </div>
   {insurance&&<div className="rp-modal" role="dialog" aria-modal="true" aria-labelledby="insurance-title" onKeyDown={event=>{

@@ -50,10 +50,16 @@ try {
   const dealBox = await deal.boundingBox();
   assert.ok(actionBox && dealBox, 'Betting action row should have measurable layout boxes.');
   assert.ok(dealBox.width >= actionBox.width - 2, `A lone Deal action should span the mobile action row; got ${dealBox.width}px of ${actionBox.width}px.`);
+  assert.ok(dealBox.y + dealBox.height <= 900, `The primary Deal action should be reachable in the initial 320×900 viewport without scrolling; bottom edge was ${dealBox.y + dealBox.height}px.`);
 
   await page.getByRole('button', { name: 'Add 5 virtual-credit chip', exact: true }).click();
+  assert.equal(await page.locator('.rp-bank-bet b').innerText(), '5', 'The table wager should update immediately when a chip is placed.');
   await deal.click();
   await page.getByText('Your turn', { exact: true }).waitFor();
+  assert.equal(await page.locator('.rp-bank-bet b').innerText(), '5', 'The active-round wager should remain visible after Deal rather than falling back to zero.');
+  const cardAnimation = await page.locator('.rp-hands .rp-card:not(.back)').first().evaluate(element => getComputedStyle(element).animationName);
+  assert.match(cardAnimation, /rp-card-in/, 'Normal-motion card entry should retain the authored deal animation.');
+
   const playerActions = page.locator('.rp-actions button');
   assert.equal(await playerActions.count(), 5, 'Player phase should retain the five-action grid.');
   const firstPlayerAction = await playerActions.first().boundingBox();
@@ -61,7 +67,7 @@ try {
   assert.ok(firstPlayerAction && playerActionBox, 'Player action grid should have measurable layout boxes.');
   assert.ok(firstPlayerAction.width < playerActionBox.width * 0.75, 'Multiple player actions should remain multi-column on mobile.');
 
-  console.log('Royal Palace mobile-layout checks passed: lone Deal spans the row while multi-action play remains compact.');
+  console.log('Royal Palace mobile-layout checks passed: first-viewport Deal reachability, persistent wager state, card motion and compact multi-action play.');
   await context.close();
 } finally {
   await browser?.close();

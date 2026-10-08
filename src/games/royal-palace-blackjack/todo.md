@@ -1,6 +1,6 @@
 # Royal Palace Blackjack Execution Todo
 
-**Status:** Verified; no open game-local implementation work.  
+**Status:** Implementing — table experience/viewport/motion polish reopened on 2026-10-08.  
 **Architecture / engine:** React/Vite casino-table UI over deterministic TypeScript blackjack rules, save contracts, and procedural local audio.  
 **Dependencies:**
 - [x] Uses repository exact-pinned dependency set; no game-local package dependency.
@@ -34,12 +34,13 @@
 **Purpose:** Support complete non-real-money practice wagering and useful session feedback.  
 **Inputs:** virtual balance, chip selection, wager controls, settlement result.  
 **Dependencies Touched:** engine/checkpoint state, workspace, browser tests.  
-**Technical Notes & Edge Cases:** below-minimum restore must preserve intended statistics; no real-money purchase/wager path.  
-**Implementation Details:** chips, re-bet, 2×, all-in, undo, clear, restore, W/L/P and session net.  
+**Technical Notes & Edge Cases:** below-minimum restore must preserve intended statistics; no real-money purchase/wager path; active-round wager display must reflect committed hand exposure after Deal/split/double.  
+**Implementation Details:** chips, re-bet, 2×, all-in, undo, clear, restore, W/L/P/session net, plus persistent visible active-round wager.  
 **Verification & State Sign-off:**
 - [x] Betting controls verified.
 - [x] Restore/reload/stat preservation verified.
 - [x] Settlement statistics verified.
+- [ ] Active wager remains accurate before and after Deal and during round transitions in fresh browser evidence.
 
 ### RPB-004 — Durable Save and Reset
 **Purpose:** Preserve valid table state while keeping save failures from corrupting gameplay.  
@@ -56,23 +57,25 @@
 **Purpose:** Improve learnability and table feedback without external media or forced audio.  
 **Inputs:** table state, user hint/audio preference, current phase.  
 **Dependencies Touched:** strategy module, procedural WebAudio, workspace/help UI, tests.  
-**Technical Notes & Edge Cases:** audio is opt-in/no-autoplay; hints must match exact table rules.  
-**Implementation Details:** exact-table hints, local procedural cues, collapsed rule help, phase guidance.  
+**Technical Notes & Edge Cases:** audio is opt-in/no-autoplay; hints must match exact table rules; help remains native details/summary and secondary to current round actions.  
+**Implementation Details:** exact-table hints, local procedural cues, collapsed rule help, phase guidance; action controls precede secondary help in normal flow.  
 **Verification & State Sign-off:**
 - [x] Strategy hints verified.
 - [x] Audio opt-in/resume/no-autoplay/persistence/cue suppression verified.
-- [x] Rule/help and phase guidance verified.
+- [ ] Revised action/help hierarchy passes keyboard, discovery and rendered regressions.
 
 ### RPB-006 — Accessible Responsive Casino Surface
-**Purpose:** Keep the table fully usable across device sizes and input modes.  
+**Purpose:** Keep the table fully usable and high-quality across device sizes and input modes.  
 **Inputs:** pointer, touch, keyboard, viewport/text scaling, dialogs, reduced-motion preference.  
 **Dependencies Touched:** React workspace, CSS, browser/design-browser coverage.  
-**Technical Notes & Edge Cases:** dialog focus entry/confinement/restoration and lone-action mobile layout are explicit regressions.  
-**Implementation Details:** native controls, accessible cards/status/dialogs, responsive table/action layout, reduced motion.  
+**Technical Notes & Edge Cases:** dialog focus entry/confinement/restoration and lone-action mobile layout remain regressions. New scope adds game-local route-chrome compaction, stable small-viewport sizing, initial primary-action reachability, tactile controls, staggered card/reveal motion, active-turn/outcome emphasis and safe-area-aware console spacing without sticky/fixed control obstruction.  
+**Implementation Details:** native controls, accessible cards/status/dialogs, responsive table/action layout, reduced motion, scoped `:has()` route compaction with progressive fallback, `svh`-aware felt sizing, one-shot motion only.  
 **Verification & State Sign-off:**
-- [x] Keyboard/touch/focus semantics verified.
-- [x] 320px and 200% text reflow plus mobile action layout verified.
-- [x] Dialog, card semantics, live status, target sizing, and reduced motion verified.
+- [x] Prior keyboard/touch/focus semantics evidence retained as baseline.
+- [ ] Fresh 320px and 200% text reflow plus mobile action layout evidence passes after polish.
+- [ ] Primary Deal action is reachable in the initial 320×900 viewport without scrolling.
+- [ ] Normal-motion deal/card feedback is present while `prefers-reduced-motion: reduce` removes cosmetic motion.
+- [ ] Dialog, card semantics, live status, target sizing and focus-not-obscured behavior remain green.
 
 ### RPB-007 — Catalog and Production Integration
 **Purpose:** Keep the game discoverable, lazy-loaded, documented, tested, and deployable.  
@@ -81,18 +84,18 @@
 **Technical Notes & Edge Cases:** verified state may only be restored after fresh evidence when implementation changes.  
 **Implementation Details:** production integration with full repository validation and Pages evidence.  
 **Verification & State Sign-off:**
-- [x] Catalog/lazy workspace integration verified.
-- [x] Full validation and Pages evidence recorded in TRACKER.md.
-- [x] Documentation/task state synchronized for verified implementation.
+- [x] Catalog/lazy workspace integration baseline retained.
+- [ ] Full exact-revision validation and Pages deployment evidence recorded after this UI/UX pass.
+- [ ] Documentation/task state synchronized back to verified only after those gates pass.
 
 ## Final Game Assembly & Verification Checklist
 
-- [x] Zero known uncaught game-local console failures; current MDN/W3C/WCAG-oriented interaction requirements covered by repository browser/design gates.
-- [x] Responsive behavior verified across mobile/tablet/laptop/desktop/large presentation, including 320 CSS px and 200% text.
-- [x] Versioned persistence/reload/reset behavior is deterministic for the defined save contract.
-- [x] Exact dependency policy is repository-enforced; future dependency integration must re-verify current stable releases and retain exact pins without `^` or `~`.
-- [x] TRACKER, authoritative spec, GAME_INDEX, and task state agree on verified game-local status.
-- [x] Full repository validation and Pages deployment evidence are recorded in TRACKER.md.
-- [x] Overall game-local state is Complete/Verified; TASK-003 remains an explicitly external live-Firebase platform blocker.
+- [ ] Zero known uncaught game-local console failures on the polished exact revision.
+- [ ] Responsive behavior freshly verified across repository browser matrices, including 320 CSS px and 200% text.
+- [x] Versioned persistence/reload/reset behavior remains deterministic for the defined save contract.
+- [x] Exact dependency policy is repository-enforced; dependency maintenance run `37859097164` validated and committed the 2026-10-08 latest stable set before this pass.
+- [ ] TRACKER, authoritative spec, GAME_INDEX, PRD/todo and task state agree on the final post-polish status.
+- [ ] Full repository validation and Pages deployment evidence are recorded in TRACKER.md.
+- [ ] Overall game-local state may return to Complete/Verified only after the reopened RPB-003/005/006/007 gates above close; TASK-003 remains a separate live-Firebase platform blocker.
 
 **Continuation rule:** a new table rule, feature, material UI/persistence change, or discovered defect immediately reopens the applicable item above and the matching PRD/spec/TRACKER state before implementation is considered complete.
