@@ -1,6 +1,6 @@
 {
   "requestedOn": "2026-10-08",
-  "requestRevision": 5,
+  "requestRevision": 6,
   "dependencies": {
     "firebase": "13.0.0",
     "react": "19.3.0",
