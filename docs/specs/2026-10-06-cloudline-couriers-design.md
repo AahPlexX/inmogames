@@ -1,7 +1,7 @@
 # Cloudline Couriers design
 
 **Status:** Implementing — expanded long-form scope  
-**Last synchronized:** 2026-10-07  
+**Last synchronized:** 2026-10-08  
 **Route:** `#/games/cloudline-couriers`
 
 ## Product documents
@@ -44,7 +44,9 @@ Complete gameplay remains equivalent across phone/tablet/laptop/desktop/large di
 Workflow `37554746482` is CLC-009 RED evidence. Revision `232102f4` / workflow `37555538295` is schema-v1 GREEN: decoder unit coverage, guest reload, Auth/Firestore emulator cross-browser restoration/reset, design-browser checks, builds and Pages deployment succeeded. Real configured Firebase remains external TASK-003. Expanded systems must migrate this schema without silently discarding earned state.
 
 ## Validation evidence and current CI edge
-The CLC-007 illustrated integration reached repository CI but its first run exposed an account-persistence browser script that still assumed the destructive reset action was always visible. Revision `fab7e07a` corrected the test to open the disclosed Route options first. Workflow `37666102825` then stopped earlier at `pnpm game:check`, not at browser persistence: governance correctly reported that a Cloudline implementation/test change must update both this authoritative spec and `TRACKER.md` in the same integration. This synchronization is the evidence-backed repair for that failure. No CLC-007 GREEN claim is made until a subsequent exact-revision workflow completes successfully.
+The CLC-007 illustrated integration reached repository CI but its first run exposed an account-persistence browser script that still assumed the destructive reset action was always visible. Revision `fab7e07a` corrected the test to open the disclosed Route options first. Workflow `37666102825` then stopped earlier at `pnpm game:check`, not at browser persistence: governance correctly reported that a Cloudline implementation/test change must update both this authoritative spec and `TRACKER.md` in the same integration. That synchronization closed the governance failure but did not itself prove CLC-007 production completion.
+
+On 2026-10-08 the repository's latest-stable dependency refresh reached the Cloudline rendered regression twice in workflow `37857535143` and reproduced the same deterministic failure: the test awaited the shared shell H1 `Cloudline Couriers`, which exists before the lazy Cloudline workspace, then counted workspace sprites before `#cl-title` had mounted. Repository inspection also showed that its exact-one `airship` selector was unscoped even though the decorative hero and active courier intentionally share `AirshipSprite`. The browser regression is therefore repaired to wait for the game-local `#cl-title` plus the active courier sprite, and to scope the exact-one courier assertion to `.cl-courier`; total, tile and landmark sprite-count requirements remain unchanged. This is evidence synchronization/selector correctness only. No CLC-007 GREEN or final production-art claim is made until an exact-revision full validation run succeeds, and later campaign-quality art/VFX/state breadth remains open regardless.
 
 ## Development quality tooling
 Current repository gates already cover exact/latest dependency versions, TypeScript compilation, game documentation synchronization, Vitest unit tests, Firestore rules, Playwright browser/design regressions and both Firebase/Pages builds. A 2026-10-07 tooling review identified two non-duplicative gaps worth evaluating before broad progression implementation: static typed linting and unit-test coverage measurement. Official/current candidates are ESLint flat config with `@eslint/js` and `typescript-eslint`, React's official hooks ESLint plugin, Vite-oriented React Refresh linting, and Vitest's V8 coverage provider. Playwright itself already supplies ARIA snapshots and visual comparisons, so a separate browser snapshot/a11y assertion dependency is not justified solely to duplicate those capabilities. Any added package must remain an exact pin and pass `dependency:current` at the revision where it is introduced.
@@ -54,7 +56,7 @@ Authoritative sources reviewed 2026-10-07 include Apple game/onboarding/feedback
 
 ## Completion contract
 **Completion state:** implementing  
-**Completion evidence:** CLC-009 only is verified at `232102f4` / `37555538295`; CLC-007 RED is established on `b202378e`; the first cohesive visual implementation is integrated as a GREEN candidate pending exact-revision browser evidence. The 2026-10-07 teleological review expands release scope to CLC-001..CLC-030.
+**Completion evidence:** CLC-009 only is verified at `232102f4` / `37555538295`; CLC-007 RED is established on `b202378e`; the first cohesive visual implementation is integrated as a GREEN candidate. The 2026-10-08 dependency-refresh attempts exposed and reproduced a test synchronization/selector defect now repaired, but exact-revision GREEN evidence remains pending. The 2026-10-07 teleological review expands release scope to CLC-001..CLC-030.
 - [ ] All 30 PRD/todo feature IDs are implemented or explicitly excluded with evidence/rationale.
 - [ ] First-session onboarding is playable, optional/replayable and comprehension-tested.
 - [ ] Full five-region/twenty-district campaign target is authored and pacing/playtime measured; 20–40h target adjusted from evidence if needed.
