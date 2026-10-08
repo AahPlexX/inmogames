@@ -43,8 +43,8 @@ try {
   const spriteCount = await page.locator('[data-cl-sprite]').count();
   assert.ok(spriteCount >= 21, `Cloudline must render its repository-authored vector sprite family across board, courier and landmarks; found ${spriteCount}.`);
   assert.equal(await page.locator('.cl-courier [data-cl-sprite="airship"]').count(), 1, 'The active courier must use exactly one original airship vector sprite instead of a typographic placeholder.');
-  assert.equal(await page.locator('.cl-tile [data-cl-sprite]').count(), 16, 'Every skyway stop must have a vector event identity.');
-  assert.equal(await page.locator('.cl-landmark [data-cl-sprite]').count(), 4, 'Every landmark must have an original vector identity.');
+  assert.equal(await page.locator('.cl-tile > [data-cl-sprite^="tile-"]').count(), 16, 'Every skyway stop must have a vector event identity.');
+  assert.equal(await page.locator('.cl-landmark [data-cl-sprite^="landmark-"]').count(), 4, 'Every landmark must have an original vector identity.');
 
   const aerie = page.locator('.cl-landmark').filter({ hasText: 'Aerie Post' });
   assert.match(await aerie.innerText(), /Stage 0\/4/, 'A fresh Cloudline career should start Aerie Post at stage zero.');
