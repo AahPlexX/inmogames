@@ -95,7 +95,7 @@ try {
     await page.getByRole('button', { name: 'Stand', exact: true }).click();
     await page.getByText('Round complete', { exact: true }).waitFor();
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 995 Bet 0/i);
+    assert.match(result.bank, /Bank 995 Bet 5/i);
     assert.equal(result.stats, '0 W · 1 L · 0 P');
     assert.equal(result.session, 'Session -5');
     await page.getByRole('button', { name: 'Next round', exact: true }).click();
@@ -113,7 +113,7 @@ try {
     await page.getByText('Round complete', { exact: true }).waitFor();
     assert.match(await page.locator('.rp-status').innerText(), /Round won: \+10 virtual credits/i);
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 1010 Bet 0/i);
+    assert.match(result.bank, /Bank 1010 Bet 10/i);
     assert.equal(result.stats, '1 W · 0 L · 0 P');
     assert.equal(result.session, 'Session +10');
     await context.close();
@@ -132,7 +132,7 @@ try {
     await page.getByRole('button', { name: 'Stand', exact: true }).click();
     await page.getByText('Round complete', { exact: true }).waitFor();
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 1015 Bet 0/i);
+    assert.match(result.bank, /Bank 1015 Bet 15/i);
     assert.equal(result.stats, '2 W · 0 L · 0 P');
     assert.equal(result.session, 'Session +15');
     await context.close();
@@ -147,7 +147,7 @@ try {
     assert.deepEqual(await page.locator('.rp-hands .rp-hand').evaluateAll((hands) => hands.map((hand) => hand.querySelectorAll('.rp-card').length)), [2, 2]);
     assert.equal(await page.getByRole('button', { name: 'Hit', exact: true }).count(), 0, 'Split Aces should auto-resolve after one additional card each.');
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 1010 Bet 0/i);
+    assert.match(result.bank, /Bank 1010 Bet 10/i);
     assert.equal(result.stats, '2 W · 0 L · 0 P');
     assert.equal(result.session, 'Session +10');
     await context.close();
@@ -161,13 +161,13 @@ try {
     await page.getByText('Round complete', { exact: true }).waitFor();
     assert.match(await page.locator('.rp-status').innerText(), /Surrendered\. Half the wager returned/i);
     const result = await ledger(page);
-    assert.match(result.bank, /Bank 997\.5 Bet 0/i);
+    assert.match(result.bank, /Bank 997\.5 Bet 5/i);
     assert.equal(result.stats, '0 W · 1 L · 0 P');
     assert.equal(result.session, 'Session -2.5');
     await context.close();
   }
 
-  console.log('Royal Palace gameplay checks passed: betting controls, Hit/Stand, Double, Re-bet, split/DAS, split-Ace auto-resolution, surrender, bankroll and W/L/P/session accounting.');
+  console.log('Royal Palace gameplay checks passed: betting controls, visible staged/settled wagers, Hit/Stand, Double, Re-bet, split/DAS, split-Ace auto-resolution, surrender, bankroll and W/L/P/session accounting.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');
