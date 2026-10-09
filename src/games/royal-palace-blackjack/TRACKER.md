@@ -1,7 +1,7 @@
 # Royal Palace Blackjack tracker
 
 **Spec:** `docs/specs/2026-10-03-royal-palace-blackjack-design.md`  
-**Last synchronized:** 2026-10-08
+**Last synchronized:** 2026-10-09
 
 | Capability | Status | Verification |
 | --- | --- | --- |
@@ -14,7 +14,7 @@
 | Insurance at half wager, 2:1 profit | verified | Engine + UI verification |
 | 3:2 natural blackjack payout | verified | Engine settlement tests |
 | Independent split-hand settlement | verified | Engine settlement tests + deterministic split-hand browser settlement |
-| Virtual bankroll and chip betting controls | implementing | Existing betting/checkpoint behavior remains verified; polished UI derives visible table exposure from staged wager before Deal and actual hand wagers afterward. Fresh rendered verification pending. |
+| Virtual bankroll and chip betting controls | started | Existing betting/checkpoint behavior remains verified; polished UI derives visible table exposure from staged wager before Deal and actual hand wagers afterward. Fresh rendered verification pending. |
 | Practice-credit restore below minimum wager | verified | Pure checkpoint test + 320px browser restore/reload/stat-preservation regression |
 | Re-bet / 2× / all-in / undo / clear | verified | Deterministic Chromium betting-control regression |
 | W/L/P and session-net statistics | verified | Deterministic Chromium loss/win/split/surrender settlement accounting |
@@ -24,25 +24,25 @@
 | Saved-game reset | verified | Scoped guest/account repository tests + browser emulator; defaults prevent guest reseeding |
 | Optional exact-table strategy hints | verified | Strategy unit tests |
 | Local procedural sound preference | verified | Unit tests + Chromium WebAudio opt-in/resume/no-autoplay/persistence/cue-suppression regression |
-| Responsive casino-table presentation | implementing | Scoped Royal-only route/header compaction, stable `svh` felt sizing, denser narrow betting controls, safe-area console spacing and first-viewport Deal reachability are implemented; fresh 320px/200% rendered evidence pending. |
-| Table rules/help and phase guidance | implementing | Existing copy/semantics unchanged; secondary native rules disclosure now follows primary round actions. Fresh rendered/keyboard evidence pending. |
-| Keyboard/touch parity and visible focus | implementing | Native controls/focus baseline unchanged; fresh exact-revision browser validation required after hierarchy/layout changes. |
-| Accessible cards/status/dialogs | implementing | Accessible card/dialog semantics retained; status is now atomic and presentation changed, so fresh evidence pending. |
-| Reduced-motion presentation | implementing | One-shot card/reveal/active-hand/wager/result/dialog/help motion added with scoped `prefers-reduced-motion: reduce` suppression; fresh normal/reduced evidence pending. |
+| Responsive casino-table presentation | started | Scoped Royal-only route/header compaction, stable `svh` felt sizing, denser narrow betting controls, safe-area console spacing and first-viewport Deal reachability are implemented; fresh 320px/200% rendered evidence pending. |
+| Table rules/help and phase guidance | started | Existing copy/semantics unchanged; secondary native rules disclosure now follows primary round actions. Fresh rendered/keyboard evidence pending. |
+| Keyboard/touch parity and visible focus | started | Native controls/focus baseline unchanged; fresh exact-revision browser validation required after hierarchy/layout changes. |
+| Accessible cards/status/dialogs | started | Accessible card/dialog semantics retained; status is now atomic and presentation changed, so fresh evidence pending. |
+| Reduced-motion presentation | started | One-shot card/reveal/active-hand/wager/result/dialog/help motion added with scoped `prefers-reduced-motion: reduce` suppression; fresh normal/reduced evidence pending. |
 | Catalog + lazy workspace integration | verified | game-check + both builds baseline; no registry change in this pass |
 | No runtime third-party assets | verified | Source/build design retains CSS/system-only presentation |
 | Runtime network restricted to shared Firebase account/save traffic | verified | Game workspace has no direct Firebase import; browser emulator traffic confined to shared platform services |
-| Documentation/task synchronization | implementing | Spec, tracker, PRD/todo, game index and in-progress ledger reopened together; return to verified only after fresh exact-revision CI + Pages evidence. |
+| Documentation/task synchronization | started | Spec, tracker, PRD/todo, game index and in-progress ledger reopened together; return to verified only after fresh exact-revision CI + Pages evidence. |
 
 ## Current handoff
 
 **Implementation state:** implementing Royal Palace table-experience polish; game rules/engine/save/audio contracts remain unchanged.  
-**Verified baseline retained for unchanged behavior:** repository-wide revision `9ee0f93d` / run `37256390159`, plus Royal-specific gameplay/audio/mobile runs `37253435033`, `37253740411`, `37255447688`. These historical runs do **not** verify the new UI/UX implementation.  
+**Last verified revision:** historical verified baseline is repository revision `9ee0f93d` / run `37256390159`, plus Royal-specific gameplay/audio/mobile runs `37253435033`, `37253740411`, `37255447688`; these runs do not verify the new UI/UX implementation.  
 **Dependency baseline before this pass:** workflow `37859097164` passed full validation and bot commit `853c87b0` refreshed exact current stable dependencies (React/DOM 19.3.0, Firebase 13.0.0, Vite 8.3.4, TypeScript 7.0.2, Vitest 5.0.3, Playwright 1.64.0).  
-**Current implementation edge:** `RoyalPalaceBlackjackWorkspace.tsx` derives `tableWager` from staged betting state before Deal and actual hand wagers afterward; root phase/outcome data attributes drive presentation only; status is atomic; round actions precede the rules disclosure. CSS compacts shared route chrome only when `.rp` is mounted, reduces narrow felt height using `svh` with fallback, keeps controls in normal flow, tightens mobile chip/modifier layout, adds safe-area spacing and adds finite deal/reveal/turn/wager/result/dialog/help feedback. Reduced-motion removes all cosmetic animation. Mobile regression adds first-viewport Deal reachability, staged/post-Deal wager visibility and normal-motion card animation.  
-**Open game-local work:** integrate this candidate atomically with reopened docs; run full exact-revision CI; diagnose/fix any rendered failure without weakening requirements; then verify Pages deployment and restore RPB-003/005/006/007 + completion state only if all applicable gates are green.  
+**Current implementation edge:** revision `5dbe580c` integrates the candidate UI/UX pass: `RoyalPalaceBlackjackWorkspace.tsx` derives `tableWager` from staged betting state before Deal and actual hand wagers afterward; root phase/outcome data attributes drive presentation only; status is atomic; round actions precede the rules disclosure. CSS compacts shared route chrome only when `.rp` is mounted, reduces narrow felt height using `svh` with fallback, keeps controls in normal flow, tightens mobile chip/modifier layout, adds safe-area spacing and finite deal/reveal/turn/wager/result/dialog/help feedback. Reduced-motion removes cosmetic animation. Mobile regression adds first-viewport Deal reachability, staged/post-Deal wager visibility and normal-motion card animation. Its first Pages run `37860044626` stopped at `game:check` because this tracker used unsupported capability status vocabulary and lacked the exact required `Last verified revision` handoff field; no source/browser assertion executed in that run.  
+**Open game-local work:** rerun full exact-revision CI after this tracker-schema repair; diagnose/fix any rendered failure without weakening requirements; then verify Pages deployment and restore RPB-003/005/006/007 + completion state only if all applicable gates are green.  
 **External blockers:** TASK-003 only for real Firebase project account/save verification; unrelated to this game-local polish.  
-**Next action:** commit the candidate on `origin/main` with all continuation docs synchronized, then use GitHub Actions as the execution environment because this session's local container/browser connector cannot access the repo/deployed site directly.
+**Next action:** use the fresh Pages workflow triggered by this tracker-only repair as the authoritative execution environment, then close or repair remaining evidence gates from its exact output.
 
 ## Experience principles now binding
 
