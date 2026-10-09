@@ -68,7 +68,7 @@ A dedicated **Reset saved game** control restores the initial bankroll/statistic
 - `strategy.ts`: optional basic-strategy recommendation for this exact S17/DAS table; advisory only and never auto-plays.
 - `RoyalPalaceBlackjackWorkspace.tsx`: round state machine, derived phase/outcome/current-wager presentation, phase guidance, action-first rule/help hierarchy and accessible presentation.
 - `royal-palace-blackjack.css`: scoped felt/cards/controls responsive visual system, game-local route-shell compaction, stable small-viewport sizing and motion treatments; no external fonts/assets.
-- `royal-palace-guide.css`: scoped phase/rules-help presentation kept separate from the core table treatment.
+- `royal-palace-guide.css`: scoped phase/rules-help presentation plus the final narrow-chip target safeguard required to prevent flex shrink below the 48 CSS-px game-control minimum.
 - `royal-palace-blackjack.meta.ts`: catalog metadata.
 
 ## Interaction and accessibility
@@ -101,7 +101,7 @@ Cards scale with `clamp()`; split hands wrap when needed. Statistics collapse to
 
 The 2026-10-08 pass additionally compacts shared game-route chrome only while the Royal Palace table is mounted using a progressively enhanced `:has()` selector, leaving the shared shell untouched for every other route and providing the existing layout as fallback when relational selectors are unavailable. The felt uses a normal absolute-unit fallback plus `svh`-aware clamped sizing so mobile browser UI does not force the table to assume the larger hidden-chrome viewport. On a representative 320×900 phone, the initial **Deal** action must be reachable in the first viewport without scrolling; smaller/shorter combinations remain allowed to scroll naturally rather than clipping controls.
 
-At narrow widths the five chips remain usable circular targets and wager modifiers use a compact five-column control row when space permits. The preferences remain lower-priority and follow rules/help. Short landscape viewports reduce felt minimum height while retaining cards, status and actions in normal document flow.
+At narrow widths the five chips remain usable circular targets and wager modifiers use a compact five-column control row when space permits. At ≤350 CSS px, the chip controls are explicitly held at 48×48 and prevented from flex-shrinking below that game-control baseline. The preferences remain lower-priority and follow rules/help. Short landscape viewports reduce felt minimum height while retaining cards, status and actions in normal document flow.
 
 ## Sound and motion
 
@@ -135,7 +135,9 @@ Historical verified baseline: run `37255447688` passed exact dependency freshnes
 
 Current dependency baseline: maintenance workflow `37859097164` passed the complete repository validation chain and committed `853c87b0` with exact current stable pins before this UI/UX integration: React/React DOM 19.3.0, Firebase 13.0.0, Vite 8.3.4, TypeScript 7.0.2, Vitest 5.0.3 and Playwright 1.64.0. Fresh exact-revision validation/deployment evidence for the Royal Palace polish is pending and must replace this paragraph's pending state before completion can return to verified.
 
-Governance evidence for the polish is explicit. Initial integration `5dbe580c` triggered Pages run `37860044626`, which stopped at `game:check` before unit/browser execution because the reopened tracker used unsupported capability-state vocabulary and omitted the exact required `Last verified revision` field. Tracker-schema repair `5bc8d6fc` triggered run `37941713765`; that run reached `game-check: 4 game(s) OK` and then correctly stopped because the repository requires this authoritative spec and tracker to be synchronized in the same change. These are documentation-governance failures only and provide no rendered evidence for or against the new UI. This synchronized spec/tracker integration exists specifically to clear that guard without weakening any gameplay or viewport requirement.
+Governance evidence for the polish is explicit. Initial integration `5dbe580c` triggered Pages run `37860044626`, which stopped at `game:check` before unit/browser execution because the reopened tracker used unsupported capability-state vocabulary and omitted the exact required `Last verified revision` field. Tracker-schema repair `5bc8d6fc` triggered run `37941713765`; that run reached `game-check: 4 game(s) OK` and then correctly stopped because the repository requires this authoritative spec and tracker to be synchronized in the same change. These are documentation-governance failures only and provide no rendered evidence for or against the new UI.
+
+Synchronized revision `8f839ef6` triggered run `37942073809` and cleared exact dependency freshness, design lint, TypeScript, documentation governance, 80 unit tests, Firestore rules and the account/persistence browser suite. The first design-browser assertion then exposed a concrete UI regression before the Royal-specific follow-on suites: at the 320 CSS-px / 200%-text checkpoint a wager chip measured 47×47 CSS px even though Royal Palace requires a 48×48 primary-control baseline. That assertion remains unchanged. Repair `fe6e632e` restores the narrow rule to 48×48 and sets the chip flex basis to 48px so layout pressure cannot silently shrink it. Fresh full-chain evidence is pending.
 
 ## Standards/research basis for the 2026-10-08 experience pass
 
@@ -144,12 +146,12 @@ Current official guidance was rechecked before implementation. MDN's viewport-un
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** the prior verified baseline remains valid for unchanged engine/rules/persistence/audio behavior, but the material 2026-10-08 UI/UX change automatically reopens the responsive/presentation and production-integration gates. Do not cite the prior runs as verification of the new layout/motion implementation.
+**Completion evidence:** the prior verified baseline remains valid for unchanged engine/rules/persistence/audio behavior, but the material 2026-10-08 UI/UX change automatically reopens the responsive/presentation and production-integration gates. Run `37942073809` provides partial current evidence through account/persistence browser coverage and identifies the 47px chip defect; it is not a completion run because design-browser failed before the remaining UI gates and builds/deployment.
 
 - [x] A complete betting-to-settlement blackjack round is implemented, including Hit, Stand, Double, one Split/DAS, split-Ace handling, late Surrender and Insurance; rules/engine behavior is unchanged by this pass.
 - [x] Six-deck shoe behavior, S17, natural/split-21 semantics, payouts, action legality, cut-card behavior and representative strategy decisions remain covered by automated tests.
 - [ ] Bankroll/betting presentation must freshly verify staged and active-round wager clarity alongside existing re-bet/2×/all-in/undo/clear, recovery and accounting flows.
-- [ ] Desktop, touch and keyboard interaction plus 320 CSS-px, 200% text, focus, dialog semantics, first-viewport Deal reachability, safe-area behavior, card accessibility and compact-action layout must pass fresh rendered-browser evidence.
+- [ ] Desktop, touch and keyboard interaction plus 320 CSS-px, 200% text, focus, dialog semantics, first-viewport Deal reachability, safe-area behavior, card accessibility, >=48px Royal chip targets and compact-action layout must pass fresh rendered-browser evidence.
 - [ ] Purposeful normal-motion deal/reveal/turn/result/dialog feedback and complete reduced-motion suppression must pass fresh rendered evidence.
 - [x] Procedural WebAudio behavior remains unchanged; its opt-in/resume/no-autoplay/persistence contract remains covered by existing regression and will still execute in repository validation.
 - [x] Guest persistence, reset, migration and shared account-save checkpoints remain unchanged; TASK-003 is an external live Firebase blocker rather than unfinished game code.
