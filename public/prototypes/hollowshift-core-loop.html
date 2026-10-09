@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>Hollowshift Core-Loop Prototype</title>
+  <style>
+    :root {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #f7f2e8;
+      background: #0f1413;
+      --panel: #18201e;
+      --panel-2: #202b28;
+      --line: #40504a;
+      --text-dim: #b8c1bd;
+      --accent: #f0bd62;
+      --good: #8fd9a8;
+      --danger: #ef8f82;
+      --focus: #fff4b1;
+      --cell: clamp(2.55rem, 10.5vw, 4.85rem);
+    }
+
+    * { box-sizing: border-box; }
+    html { min-width: 20rem; background: #0f1413; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(circle at top, #1a2522 0, #0f1413 48rem); color: #f7f2e8; }
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+    .shell {
+      width: min(100%, 78rem);
+      margin-inline: auto;
+      padding: clamp(0.75rem, 2.4vw, 1.5rem);
+      display: grid;
+      gap: 1rem;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem 1rem;
+      align-items: start;
+      justify-content: space-between;
+    }
+
+    .eyebrow { margin: 0 0 .25rem; color: var(--accent); font-size: .78rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(1.55rem, 5vw, 2.5rem); line-height: 1; }
+    .lede { max-width: 62ch; margin: .55rem 0 0; color: var(--text-dim); line-height: 1.45; }
+
+    .status-chip {
+      min-height: 2.75rem;
+      padding: .55rem .8rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #141b19;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      background: color-mix(in srgb, var(--panel) 94%, black);
+      box-shadow: 0 1rem 3rem rgb(0 0 0 / .22);
+    }
+
+    .game-panel { padding: clamp(.6rem, 2vw, 1rem); }
+    .side-panel { padding: 1rem; display: grid; gap: 1rem; }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .55rem;
+      margin-bottom: .75rem;
+    }
+
+    .hud-item {
+      min-width: 0;
+      padding: .65rem .75rem;
+      border: 1px solid #33413d;
+      border-radius: .75rem;
+      background: #121917;
+    }
+
+    .hud-item strong { display: block; font-size: 1rem; }
+    .hud-item span { color: var(--text-dim); font-size: .78rem; }
+
+    .board-wrap {
+      container-type: inline-size;
+      overflow: visible;
+    }
+
+    .board {
+      width: fit-content;
+      max-width: 100%;
+      margin-inline: auto;
+      display: grid;
+      grid-template-columns: repeat(7, var(--cell));
+      grid-template-rows: repeat(7, var(--cell));
+      gap: clamp(.18rem, .65vw, .35rem);
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .cell {
+      position: relative;
+      width: var(--cell);
+      height: var(--cell);
+      min-width: 2.55rem;
+      min-height: 2.55rem;
+      padding: 0;
+      border: 1px solid #46534f;
+      border-radius: .62rem;
+      background: #27332f;
+      color: #eef2ef;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      isolation: isolate;
+    }
+
+    .cell:hover { border-color: #71837c; }
+    .cell[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+    .cell.preview { border-style: dashed; border-color: #f6d998; background: #34433d; }
+    .cell.unstable::after {
+      content: "!";
+      position: absolute;
+      inset: .2rem .22rem auto auto;
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
+      background: var(--danger);
+      color: #14100f;
+      font-size: .72rem;
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      z-index: 3;
+    }
+
+    .tile-glyph { font-size: clamp(1.25rem, 5cqi, 2.3rem); line-height: 1; }
+    .occupant { position: absolute; inset: auto .18rem .16rem; display: flex; justify-content: space-between; pointer-events: none; font-size: clamp(.62rem, 2.5cqi, .9rem); font-weight: 900; }
+    .player { color: var(--good); }
+    .threat { color: var(--danger); }
+    .sample { position: absolute; inset: .18rem auto auto .2rem; color: var(--accent); font-size: .78rem; font-weight: 900; }
+    .anchor { position: absolute; inset: .17rem .2rem auto auto; color: #b8c8ff; font-size: .7rem; font-weight: 900; }
+
+    .action-zone { margin-top: .85rem; display: grid; gap: .65rem; }
+    .action-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+    .action-row.shift { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .action, .secondary, .confirm, .cancel {
+      min-height: 2.75rem;
+      border-radius: .75rem;
+      border: 1px solid #53645e;
+      background: #26332f;
+      color: #f7f2e8;
+      padding: .62rem .75rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .action:hover, .secondary:hover { background: #31413c; }
+    .action:disabled, .secondary:disabled { opacity: .48; cursor: not-allowed; }
+    .confirm { background: #7b5b22; border-color: #b98a3a; }
+    .cancel { background: #392b28; border-color: #73534d; }
+
+    .preview-bar {
+      display: none;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: .5rem;
+      align-items: center;
+      padding: .65rem;
+      border-radius: .8rem;
+      border: 1px solid #715d35;
+      background: #262113;
+    }
+    .preview-bar.active { display: grid; }
+    .preview-bar p { margin: 0; color: #f6e5bd; font-size: .9rem; }
+
+    .side-panel h2 { margin: 0; font-size: 1.05rem; }
+    .side-panel p, .side-panel li { color: var(--text-dim); line-height: 1.45; }
+    .side-panel p { margin: .3rem 0 0; }
+    .side-panel ul { margin: .4rem 0 0; padding-left: 1.15rem; }
+
+    .meter {
+      margin-top: .55rem;
+      height: .65rem;
+      border-radius: 999px;
+      background: #0e1312;
+      overflow: hidden;
+      border: 1px solid #3c4945;
+    }
+    .meter > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ddaa4f, #dc7468); transition: width 160ms ease; }
+
+    .log {
+      min-height: 6.5rem;
+      max-height: 11rem;
+      overflow: auto;
+      padding: .7rem;
+      border-radius: .75rem;
+      background: #101614;
+      border: 1px solid #33413d;
+      font-size: .84rem;
+      line-height: 1.45;
+    }
+    .log p { margin: 0 0 .45rem; color: #d9dfdc; }
+    .log p:last-child { margin-bottom: 0; }
+
+    .end-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+    .end-actions button { min-height: 2.75rem; }
+
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (min-width: 58rem) {
+      .layout { grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem); }
+      .hud { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .action-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .action-row.shift { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 25rem) {
+      :root { --cell: min(11.65vw, 3.15rem); }
+      .shell { padding-inline: .55rem; }
+      .game-panel { padding-inline: .45rem; }
+      .preview-bar { grid-template-columns: 1fr 1fr; }
+      .preview-bar p { grid-column: 1 / -1; }
+    }
+
+    @media (max-height: 30rem) and (orientation: landscape) {
+      .shell { width: min(100%, 72rem); }
+      header .lede { display: none; }
+      .layout { grid-template-columns: minmax(28rem, 1.3fr) minmax(15rem, .7fr); }
+      .side-panel { max-height: calc(100vh - 6.5rem); overflow: auto; }
+      :root { --cell: clamp(2.5rem, 9.3vh, 3.55rem); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .001ms !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">Disposable interaction prototype</p>
+        <h1>Hollowshift</h1>
+        <p class="lede">Manipulate the tunnel network, collect two survey samples, predict the next instability, avoid the Crawler, then return to the blue extraction anchor. Every board action is turn-based.</p>
+      </div>
+      <div class="status-chip" aria-live="polite"><span aria-hidden="true">◆</span><span id="turnLabel">Turn 0</span></div>
+    </header>
+
+    <section class="layout" aria-label="Hollowshift prototype workspace">
+      <div class="panel game-panel">
+        <div class="hud" aria-label="Expedition status">
+          <div class="hud-item"><strong id="lamp">18</strong><span>Lamp</span></div>
+          <div class="hud-item"><strong id="integrity">4</strong><span>Integrity</span></div>
+          <div class="hud-item"><strong id="samples">0 / 2</strong><span>Samples</span></div>
+          <div class="hud-item"><strong id="pressure">0 / 4</strong><span>Pressure</span></div>
+        </div>
+
+        <div class="board-wrap">
+          <div id="board" class="board" role="grid" aria-label="7 by 7 shifting tunnel board"></div>
+        </div>
+
+        <div class="action-zone" aria-label="Board actions">
+          <div class="action-row">
+            <button class="action" id="moveBtn">Move here</button>
+            <button class="action" id="surveyBtn">Survey</button>
+            <button class="action" id="rotateLeftBtn">Rotate left</button>
+            <button class="action" id="rotateRightBtn">Rotate right</button>
+          </div>
+          <div class="action-row shift">
+            <button class="secondary" data-shift="left">Shift row ←</button>
+            <button class="secondary" data-shift="right">Shift row →</button>
+            <button class="secondary" data-shift="up">Shift column ↑</button>
+            <button class="secondary" data-shift="down">Shift column ↓</button>
+          </div>
+          <div id="previewBar" class="preview-bar" aria-live="polite">
+            <p id="previewText">Preview ready.</p>
+            <button class="confirm" id="confirmPreview">Confirm</button>
+            <button class="cancel" id="cancelPreview">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel side-panel">
+        <section>
+          <h2>Objective</h2>
+          <p id="objective">Collect 2 survey samples, then return to extraction.</p>
+        </section>
+
+        <section>
+          <h2>Instability forecast</h2>
+          <p id="forecast">At pressure 4, the marked tile will rotate clockwise.</p>
+          <div class="meter" aria-hidden="true"><span id="pressureMeter"></span></div>
+        </section>
+
+        <section>
+          <h2>How to play</h2>
+          <ul>
+            <li>Select a tile. Connected adjacent tiles can be entered with <strong>Move here</strong>.</li>
+            <li>Rotate or shift to rebuild routes. Lane shifts always show a preview before confirmation.</li>
+            <li>Survey reveals samples within one connected step of your position.</li>
+            <li>The Crawler advances after each committed action when a connected route exists.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Expedition log</h2>
+          <div id="log" class="log" role="log" aria-live="polite" aria-relevant="additions"></div>
+        </section>
+
+        <section class="end-actions">
+          <button class="confirm" id="extractBtn" disabled>Extract</button>
+          <button class="secondary" id="resetBtn">Restart seed</button>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const SIZE = 7;
+      const CELLS = SIZE * SIZE;
+      const PRESSURE_LIMIT = 4;
+      const DIRS = [
+        { key: 'n', dr: -1, dc: 0, opposite: 's' },
+        { key: 'e', dr: 0, dc: 1, opposite: 'w' },
+        { key: 's', dr: 1, dc: 0, opposite: 'n' },
+        { key: 'w', dr: 0, dc: -1, opposite: 'e' },
+      ];
+      const SHAPES = [
+        ['n', 's'], ['e', 'w'], ['n', 'e'], ['e', 's'], ['s', 'w'], ['w', 'n'],
+        ['n', 'e', 's'], ['e', 's', 'w'], ['s', 'w', 'n'], ['w', 'n', 'e'],
+        ['n', 'e', 's', 'w'], ['n'], ['e'], ['s'], ['w']
+      ];
+      const GLYPHS = {
+        'ns': '│', 'ew': '─', 'en': '└', 'es': '┌', 'sw': '┐', 'nw': '┘',
+        'ens': '├', 'esw': '┬', 'nsw': '┤', 'enw': '┴', 'ensw': '┼',
+        'n': '╵', 'e': '╴', 's': '╷', 'w': '╶'
+      };
+      const START = 3;
+      const EXIT = 45;
+      const INITIAL_THREAT = 24;
+      const SAMPLE_CELLS = [16, 32];
+      const UNSTABLE_SEQUENCE = [10, 30, 18, 38, 12, 26];
+
+      const boardEl = document.querySelector('#board');
+      const logEl = document.querySelector('#log');
+      const previewBar = document.querySelector('#previewBar');
+      const previewText = document.querySelector('#previewText');
+      const moveBtn = document.querySelector('#moveBtn');
+      const surveyBtn = document.querySelector('#surveyBtn');
+      const rotateLeftBtn = document.querySelector('#rotateLeftBtn');
+      const rotateRightBtn = document.querySelector('#rotateRightBtn');
+      const extractBtn = document.querySelector('#extractBtn');
+      const resetBtn = document.querySelector('#resetBtn');
+      const confirmPreview = document.querySelector('#confirmPreview');
+      const cancelPreview = document.querySelector('#cancelPreview');
+
+      let initialTiles;
+      let state;
+
+      function seededTiles() {
+        const pattern = [2,1,7,9,1,4,6, 8,10,0,5,6,3,1, 1,2,10,7,0,8,4, 6,0,3,10,2,1,7, 4,8,9,0,10,5,1, 1,6,2,7,4,10,3, 8,1,5,9,2,6,0];
+        return pattern.map((shapeIndex, index) => ({
+          openings: [...SHAPES[shapeIndex]],
+          anchor: index === START || index === EXIT,
+          surveyed: index === START || index === EXIT,
+          sample: SAMPLE_CELLS.includes(index),
+          sampleCollected: false,
+        }));
+      }
+
+      function cloneTiles(tiles) {
+        return tiles.map(tile => ({ ...tile, openings: [...tile.openings] }));
+      }
+
+      function reset() {
+        initialTiles = seededTiles();
+        state = {
+          tiles: cloneTiles(initialTiles),
+          player: START,
+          threat: INITIAL_THREAT,
+          selected: START,
+          turn: 0,
+          lamp: 18,
+          integrity: 4,
+          samples: 0,
+          pressure: 0,
+          unstableStep: 0,
+          preview: null,
+          ended: false,
+        };
+        logEl.textContent = '';
+        note('Entered Slate Veins. Select a tile, then choose an action.');
+        render();
+      }
+
+      function rc(index) { return [Math.floor(index / SIZE), index % SIZE]; }
+      function indexOf(r, c) { return r * SIZE + c; }
+      function inBounds(r, c) { return r >= 0 && r < SIZE && c >= 0 && c < SIZE; }
+      function has(tile, dir) { return tile.openings.includes(dir); }
+      function tileKey(tile) { return [...tile.openings].sort().join(''); }
+      function glyph(tile) { return GLYPHS[tileKey(tile)] || '•'; }
+
+      function neighbor(index, dir) {
+        const [r, c] = rc(index);
+        const d = DIRS.find(item => item.key === dir);
+        const nr = r + d.dr;
+        const nc = c + d.dc;
+        return inBounds(nr, nc) ? indexOf(nr, nc) : -1;
+      }
+
+      function connected(a, b, tiles = state.tiles) {
+        if (a < 0 || b < 0 || a >= CELLS || b >= CELLS) return false;
+        const [ar, ac] = rc(a);
+        const [br, bc] = rc(b);
+        const dr = br - ar;
+        const dc = bc - ac;
+        const dir = DIRS.find(d => d.dr === dr && d.dc === dc);
+        if (!dir) return false;
+        return has(tiles[a], dir.key) && has(tiles[b], dir.opposite);
+      }
+
+      function rotateOpenings(openings, clockwise) {
+        const order = ['n', 'e', 's', 'w'];
+        return openings.map(key => {
+          const i = order.indexOf(key);
+          return order[(i + (clockwise ? 1 : 3)) % 4];
+        });
+      }
+
+      function currentUnstable() {
+        return UNSTABLE_SEQUENCE[state.unstableStep % UNSTABLE_SEQUENCE.length];
+      }
+
+      function note(message) {
+        const p = document.createElement('p');
+        p.textContent = message;
+        logEl.prepend(p);
+      }
+
+      function actionCost(label, pressure = 1) {
+        if (state.ended) return;
+        state.turn += 1;
+        state.lamp = Math.max(0, state.lamp - 1);
+        state.pressure += pressure;
+        note(label);
+        if (state.pressure >= PRESSURE_LIMIT) resolveInstability();
+        moveThreat();
+        resolveThreatContact();
+        if (state.lamp === 0) note('Lamp exhausted: routes remain visible in this prototype, but production would reduce information range.');
+      }
+
+      function resolveInstability() {
+        const target = currentUnstable();
+        if (!state.tiles[target].anchor) {
+          state.tiles[target].openings = rotateOpenings(state.tiles[target].openings, true);
+          note(`Instability rotated tile ${target + 1} clockwise exactly as forecast.`);
+        }
+        state.pressure -= PRESSURE_LIMIT;
+        state.unstableStep += 1;
+      }
+
+      function connectedNeighbors(index, tiles = state.tiles) {
+        return DIRS.map(d => neighbor(index, d.key)).filter(n => n >= 0 && connected(index, n, tiles));
+      }
+
+      function moveThreat() {
+        if (state.ended || state.threat === state.player) return;
+        const options = connectedNeighbors(state.threat);
+        if (!options.length) return;
+        const [pr, pc] = rc(state.player);
+        options.sort((a, b) => {
+          const [ar, ac] = rc(a); const [br, bc] = rc(b);
+          return (Math.abs(ar-pr)+Math.abs(ac-pc)) - (Math.abs(br-pr)+Math.abs(bc-pc));
+        });
+        state.threat = options[0];
+      }
+
+      function resolveThreatContact() {
+        if (state.threat !== state.player) return;
+        state.integrity -= 1;
+        note(`Crawler contact. Integrity fell to ${state.integrity}. The Crawler recoiled.`);
+        state.threat = INITIAL_THREAT;
+        if (state.integrity <= 0) {
+          state.ended = true;
+          note('Expedition failed. Restart the seed to test a different route.');
+        }
+      }
+
+      function select(index) {
+        if (state.preview || state.ended) return;
+        state.selected = index;
+        render();
+      }
+
+      function moveSelected() {
+        if (state.ended || state.preview) return;
+        if (state.selected === state.player) return note('You are already on that tile.');
+        if (!connected(state.player, state.selected)) return note('Move blocked: selected tile is not directly connected.');
+        state.player = state.selected;
+        state.tiles[state.player].surveyed = true;
+        actionCost(`Moved to tile ${state.player + 1}.`);
+        collectSampleIfVisible();
+        render();
+      }
+
+      function survey() {
+        if (state.ended || state.preview) return;
+        const reveal = new Set([state.player, ...connectedNeighbors(state.player)]);
+        reveal.forEach(index => { state.tiles[index].surveyed = true; });
+        actionCost(`Surveyed ${reveal.size} connected tiles.`);
+        collectSampleIfVisible();
+        render();
+      }
+
+      function collectSampleIfVisible() {
+        const tile = state.tiles[state.player];
+        if (tile.sample && tile.surveyed && !tile.sampleCollected) {
+          tile.sampleCollected = true;
+          state.samples += 1;
+          note(`Recovered survey sample ${state.samples} of 2.`);
+        }
+      }
+
+      function rotateSelected(clockwise) {
+        if (state.ended || state.preview) return;
+        const tile = state.tiles[state.selected];
+        if (tile.anchor) return note('Anchored tiles cannot rotate.');
+        tile.openings = rotateOpenings(tile.openings, clockwise);
+        actionCost(`Rotated tile ${state.selected + 1} ${clockwise ? 'clockwise' : 'counterclockwise'}.`);
+        render();
+      }
+
+      function shiftedTiles(direction) {
+        const tiles = cloneTiles(state.tiles);
+        const [row, col] = rc(state.selected);
+        const indexes = [];
+        if (direction === 'left' || direction === 'right') {
+          for (let c = 0; c < SIZE; c++) indexes.push(indexOf(row, c));
+        } else {
+          for (let r = 0; r < SIZE; r++) indexes.push(indexOf(r, col));
+        }
+        if (indexes.some(i => tiles[i].anchor)) return null;
+        const values = indexes.map(i => tiles[i]);
+        if (direction === 'left' || direction === 'up') values.push(values.shift());
+        else values.unshift(values.pop());
+        indexes.forEach((i, n) => { tiles[i] = values[n]; });
+        return { tiles, indexes };
+      }
+
+      function beginShift(direction) {
+        if (state.ended || state.preview) return;
+        const result = shiftedTiles(direction);
+        if (!result) return note('That lane contains an anchored tile and cannot shift.');
+        state.preview = { direction, tiles: result.tiles, indexes: result.indexes };
+        previewText.textContent = `Previewing ${direction} shift. Dashed tiles show the lane after the move; confirm to spend the turn.`;
+        render();
+      }
+
+      function commitPreview() {
+        if (!state.preview || state.ended) return;
+        const { direction, tiles, indexes } = state.preview;
+        const oldPlayer = state.player;
+        const oldThreat = state.threat;
+        const playerPosition = indexes.indexOf(oldPlayer);
+        const threatPosition = indexes.indexOf(oldThreat);
+        state.tiles = cloneTiles(tiles);
+        if (playerPosition >= 0) {
+          const delta = (direction === 'left' || direction === 'up') ? -1 : 1;
+          const nextPos = (playerPosition + delta + indexes.length) % indexes.length;
+          state.player = indexes[nextPos];
+          state.selected = state.player;
+        }
+        if (threatPosition >= 0) {
+          const delta = (direction === 'left' || direction === 'up') ? -1 : 1;
+          const nextPos = (threatPosition + delta + indexes.length) % indexes.length;
+          state.threat = indexes[nextPos];
+        }
+        state.preview = null;
+        actionCost(`Shifted selected lane ${direction}.`);
+        render();
+      }
+
+      function cancelPreviewMode() {
+        if (!state.preview) return;
+        state.preview = null;
+        note('Shift preview cancelled; no turn spent.');
+        render();
+      }
+
+      function canExtract() {
+        return !state.ended && state.player === EXIT && state.samples >= 2;
+      }
+
+      function extract() {
+        if (!canExtract()) return;
+        state.ended = true;
+        note(`Extraction complete in ${state.turn} turns with ${state.integrity} integrity and ${state.lamp} lamp remaining.`);
+        render();
+      }
+
+      function renderBoard() {
+        const tiles = state.preview ? state.preview.tiles : state.tiles;
+        boardEl.textContent = '';
+        for (let i = 0; i < CELLS; i++) {
+          const tile = tiles[i];
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'cell';
+          button.setAttribute('role', 'gridcell');
+          button.setAttribute('aria-pressed', String(i === state.selected));
+          const [r, c] = rc(i);
+          const previewed = state.preview && state.preview.indexes.includes(i);
+          const unstable = i === currentUnstable();
+          if (previewed) button.classList.add('preview');
+          if (unstable) button.classList.add('unstable');
+          const contentBits = [];
+          if (i === state.player) contentBits.push('player');
+          if (i === state.threat) contentBits.push('Crawler');
+          if (tile.anchor) contentBits.push(i === EXIT ? 'extraction anchor' : 'entry anchor');
+          if (tile.sample && tile.surveyed && !tile.sampleCollected) contentBits.push('survey sample');
+          button.setAttribute('aria-label', `Row ${r + 1}, column ${c + 1}, tunnel ${tile.openings.join(' ')}, ${contentBits.join(', ') || 'empty'}`);
+          button.innerHTML = `<span class="tile-glyph" aria-hidden="true">${glyph(tile)}</span>`;
+          const occupant = document.createElement('span');
+          occupant.className = 'occupant';
+          occupant.setAttribute('aria-hidden', 'true');
+          occupant.innerHTML = `<span class="player">${i === state.player ? '●' : ''}</span><span class="threat">${i === state.threat ? '▲' : ''}</span>`;
+          button.appendChild(occupant);
+          if (tile.sample && tile.surveyed && !tile.sampleCollected) {
+            const sample = document.createElement('span'); sample.className = 'sample'; sample.textContent = '◆'; sample.setAttribute('aria-hidden', 'true'); button.appendChild(sample);
+          }
+          if (tile.anchor) {
+            const anchor = document.createElement('span'); anchor.className = 'anchor'; anchor.textContent = i === EXIT ? 'EXIT' : 'IN'; anchor.setAttribute('aria-hidden', 'true'); button.appendChild(anchor);
+          }
+          button.addEventListener('click', () => select(i));
+          boardEl.appendChild(button);
+        }
+      }
+
+      function render() {
+        renderBoard();
+        document.querySelector('#turnLabel').textContent = `Turn ${state.turn}`;
+        document.querySelector('#lamp').textContent = state.lamp;
+        document.querySelector('#integrity').textContent = state.integrity;
+        document.querySelector('#samples').textContent = `${state.samples} / 2`;
+        document.querySelector('#pressure').textContent = `${state.pressure} / ${PRESSURE_LIMIT}`;
+        document.querySelector('#pressureMeter').style.width = `${(state.pressure / PRESSURE_LIMIT) * 100}%`;
+        document.querySelector('#forecast').textContent = `At pressure ${PRESSURE_LIMIT}, marked tile ${currentUnstable() + 1} rotates clockwise.`;
+        document.querySelector('#objective').textContent = state.samples >= 2 ? 'Samples secured. Return to the blue extraction anchor.' : `Collect ${2 - state.samples} more survey sample${2 - state.samples === 1 ? '' : 's'}, then return to extraction.`;
+        previewBar.classList.toggle('active', Boolean(state.preview));
+        extractBtn.disabled = !canExtract();
+        const lock = state.ended || Boolean(state.preview);
+        moveBtn.disabled = lock;
+        surveyBtn.disabled = lock;
+        rotateLeftBtn.disabled = lock;
+        rotateRightBtn.disabled = lock;
+        document.querySelectorAll('[data-shift]').forEach(button => { button.disabled = lock; });
+      }
+
+      moveBtn.addEventListener('click', moveSelected);
+      surveyBtn.addEventListener('click', survey);
+      rotateLeftBtn.addEventListener('click', () => rotateSelected(false));
+      rotateRightBtn.addEventListener('click', () => rotateSelected(true));
+      document.querySelectorAll('[data-shift]').forEach(button => button.addEventListener('click', () => beginShift(button.dataset.shift)));
+      confirmPreview.addEventListener('click', commitPreview);
+      cancelPreview.addEventListener('click', cancelPreviewMode);
+      extractBtn.addEventListener('click', extract);
+      resetBtn.addEventListener('click', reset);
+
+      reset();
+    })();
+  </script>
+</body>
+</html>
