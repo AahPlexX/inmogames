@@ -1,6 +1,6 @@
 # Royal Palace Blackjack Execution Todo
 
-**Status:** Implementing — table experience/viewport/motion polish reopened on 2026-10-08.  
+**Status:** Verified — 2026-10-09 table experience/viewport/motion polish complete.  
 **Architecture / engine:** React/Vite casino-table UI over deterministic TypeScript blackjack rules, save contracts, and procedural local audio.  
 **Dependencies:**
 - [x] Uses repository exact-pinned dependency set; no game-local package dependency.
@@ -40,7 +40,7 @@
 - [x] Betting controls verified.
 - [x] Restore/reload/stat preservation verified.
 - [x] Settlement statistics verified.
-- [ ] Active wager remains accurate before and after Deal and during round transitions in fresh browser evidence.
+- [x] Active wager remains accurate before and after Deal and during round transitions; run `37994433846` passed the dedicated gameplay/mobile regressions.
 
 ### RPB-004 — Durable Save and Reset
 **Purpose:** Preserve valid table state while keeping save failures from corrupting gameplay.  
@@ -51,7 +51,7 @@
 **Verification & State Sign-off:**
 - [x] Guest save decoder/persistence verified.
 - [x] Guest-to-account seeding and scoped reset verified in repository/emulator coverage.
-- [ ] Real deployed Firebase project verification — externally blocked by TASK-003.
+- [ ] Real deployed Firebase project verification — externally blocked by TASK-003 and not a game-local completion gate.
 
 ### RPB-005 — Strategy, Audio, Help and Guidance
 **Purpose:** Improve learnability and table feedback without external media or forced audio.  
@@ -62,20 +62,20 @@
 **Verification & State Sign-off:**
 - [x] Strategy hints verified.
 - [x] Audio opt-in/resume/no-autoplay/persistence/cue suppression verified.
-- [ ] Revised action/help hierarchy passes keyboard, discovery and rendered regressions.
+- [x] Revised action/help hierarchy passes keyboard, discovery and rendered regressions in run `37994433846`.
 
 ### RPB-006 — Accessible Responsive Casino Surface
 **Purpose:** Keep the table fully usable and high-quality across device sizes and input modes.  
 **Inputs:** pointer, touch, keyboard, viewport/text scaling, dialogs, reduced-motion preference.  
 **Dependencies Touched:** React workspace, CSS, browser/design-browser coverage.  
-**Technical Notes & Edge Cases:** dialog focus entry/confinement/restoration and lone-action mobile layout remain regressions. New scope adds game-local route-chrome compaction, stable small-viewport sizing, initial primary-action reachability, tactile controls, staggered card/reveal motion, active-turn/outcome emphasis and safe-area-aware console spacing without sticky/fixed control obstruction.  
+**Technical Notes & Edge Cases:** dialog focus entry/confinement/restoration and lone-action mobile layout remain permanent regressions. The completed scope includes game-local route-chrome compaction, stable small-viewport sizing, initial primary-action reachability, tactile controls, staggered card/reveal motion, active-turn/outcome emphasis and safe-area-aware console spacing without sticky/fixed control obstruction.  
 **Implementation Details:** native controls, accessible cards/status/dialogs, responsive table/action layout, reduced motion, scoped `:has()` route compaction with progressive fallback, `svh`-aware felt sizing, one-shot motion only.  
 **Verification & State Sign-off:**
-- [x] Prior keyboard/touch/focus semantics evidence retained as baseline.
-- [ ] Fresh 320px and 200% text reflow plus mobile action layout evidence passes after polish.
-- [ ] Primary Deal action is reachable in the initial 320×900 viewport without scrolling.
-- [ ] Normal-motion deal/card feedback is present while `prefers-reduced-motion: reduce` removes cosmetic motion.
-- [ ] Dialog, card semantics, live status, target sizing and focus-not-obscured behavior remain green.
+- [x] Keyboard/touch/focus semantics verified.
+- [x] 320px and 200% text reflow plus compact mobile action layout pass the shared rendered suite.
+- [x] Primary Deal action is reachable in the initial 320×900 viewport without scrolling; dedicated mobile-layout suite passed in run `37994433846`.
+- [x] Normal-motion card feedback is present while `prefers-reduced-motion: reduce` removes cosmetic motion.
+- [x] Dialog, card semantics, live status, target sizing and focus behavior remain green.
 
 ### RPB-007 — Catalog and Production Integration
 **Purpose:** Keep the game discoverable, lazy-loaded, documented, tested, and deployable.  
@@ -84,18 +84,18 @@
 **Technical Notes & Edge Cases:** verified state may only be restored after fresh evidence when implementation changes.  
 **Implementation Details:** production integration with full repository validation and Pages evidence.  
 **Verification & State Sign-off:**
-- [x] Catalog/lazy workspace integration baseline retained.
-- [ ] Full exact-revision validation and Pages deployment evidence recorded after this UI/UX pass.
-- [ ] Documentation/task state synchronized back to verified only after those gates pass.
+- [x] Catalog/lazy workspace integration verified.
+- [x] Exact revision `4814d85f375ccd90514252b07692c3c570ca410d` passed the complete validation chain and GitHub Pages deployment in run `37994433846`.
+- [x] Documentation/task state synchronized back to verified after those gates passed.
 
 ## Final Game Assembly & Verification Checklist
 
-- [ ] Zero known uncaught game-local console failures on the polished exact revision.
-- [ ] Responsive behavior freshly verified across repository browser matrices, including 320 CSS px and 200% text.
+- [x] Zero known uncaught game-local console failures on the verified polish revision.
+- [x] Responsive behavior freshly verified across repository browser matrices, including 320 CSS px and 200% text.
 - [x] Versioned persistence/reload/reset behavior remains deterministic for the defined save contract.
-- [x] Exact dependency policy is repository-enforced; dependency maintenance run `37859097164` validated and committed the 2026-10-08 latest stable set before this pass.
-- [ ] TRACKER, authoritative spec, GAME_INDEX, PRD/todo and task state agree on the final post-polish status.
-- [ ] Full repository validation and Pages deployment evidence are recorded in TRACKER.md.
-- [ ] Overall game-local state may return to Complete/Verified only after the reopened RPB-003/005/006/007 gates above close; TASK-003 remains a separate live-Firebase platform blocker.
+- [x] Exact dependency policy is repository-enforced; run `37994433846` reverified the current exact stable set.
+- [x] TRACKER, authoritative spec, GAME_INDEX, PRD/todo and task state agree on the post-polish verified state.
+- [x] Full repository validation and Pages deployment evidence are recorded in TRACKER.md.
+- [x] Overall game-local state is Complete/Verified; TASK-003 remains a separate live-Firebase platform blocker.
 
 **Continuation rule:** a new table rule, feature, material UI/persistence change, or discovered defect immediately reopens the applicable item above and the matching PRD/spec/TRACKER state before implementation is considered complete.

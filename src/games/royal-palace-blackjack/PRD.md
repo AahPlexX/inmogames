@@ -4,7 +4,7 @@ Planned Functional Features Specification:
   game_identity:
     name: "Royal Palace Blackjack"
     slug: "royal-palace-blackjack"
-    development_status: "Implementing — table experience polish"
+    development_status: "Verified — 2026-10-09 table experience polish"
 
   technical_foundation:
     architecture_and_engine: "Static React/Vite casino-table presentation over deterministic TypeScript blackjack rules and persistence boundaries. The authoritative behavioral contract is docs/specs/2026-10-03-royal-palace-blackjack-design.md; TRACKER.md is the live handoff."
@@ -29,7 +29,7 @@ Planned Functional Features Specification:
     - name: "Practice Bankroll and Betting"
       id: "RPB-003"
       details: "Provide virtual practice credits, chip controls, re-bet, 2×, all-in, undo, clear, below-minimum restore, and W/L/P plus session-net statistics without real-money wagering. The active round wager remains visible after Deal and reflects split/double exposure rather than displaying a staged-bet zero."
-      feature_development_status: "Implementing — active-wager presentation awaiting fresh rendered verification"
+      feature_development_status: "Verified"
     - name: "Durable Save and Reset"
       id: "RPB-004"
       details: "Defensively persist versioned guest state, seed first account save without overwriting existing cloud state, and support game-scoped reset through shared repositories."
@@ -37,15 +37,19 @@ Planned Functional Features Specification:
     - name: "Strategy, Audio, Help and Guidance"
       id: "RPB-005"
       details: "Offer optional exact-table strategy hints, opt-in local procedural audio, fixed-rule disclosure, and phase/action guidance without autoplay or external runtime assets. Secondary rules/help must follow the primary round actions in reading/tab order so the decision loop stays visually and operationally primary."
-      feature_development_status: "Implementing — hierarchy polish awaiting fresh rendered verification"
+      feature_development_status: "Verified"
     - name: "Accessible Responsive Casino Surface"
       id: "RPB-006"
       details: "Maintain pointer/touch/keyboard parity, visible focus, accessible cards/status/dialogs, 320px and 200% text reflow, touch targets, reduced motion, responsive table/action presentation, first-viewport primary-action reachability on representative narrow phones, and purposeful one-shot deal/reveal/turn/result/dialog feedback with a complete reduced-motion path."
-      feature_development_status: "Implementing"
+      feature_development_status: "Verified"
     - name: "Catalog and Production Integration"
       id: "RPB-007"
       details: "Register metadata/lazy workspace loading and keep tests, spec, tracker, index, task state, builds, browser evidence, and deployment state synchronized."
-      feature_development_status: "Implementing — fresh exact-revision validation and Pages evidence pending"
+      feature_development_status: "Verified"
+
+## Verification evidence
+
+Exact revision `4814d85f375ccd90514252b07692c3c570ca410d` passed the complete repository validation and deployment chain in GitHub Actions run `37994433846` on 2026-10-09. The run passed exact dependency freshness, design lint, TypeScript, game/document governance, 80 unit tests, Firestore rules, account/persistence browser checks, catalog accessibility, shared 320px/200%-text/keyboard/touch/reduced-motion regressions, Royal accessibility/gameplay/audio, the dedicated Royal mobile-layout suite, Mergrove and Cloudline design regressions, both production builds, Pages artifact upload, and automatic GitHub Pages deployment. The Royal mobile-layout suite explicitly passed first-viewport Deal reachability, persistent wager state, card motion, and compact multi-action play.
 
 ## Continuation contract
 
