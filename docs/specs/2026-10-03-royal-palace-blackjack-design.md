@@ -1,7 +1,7 @@
 # Royal Palace Blackjack design
 
 **Status:** Implementing — table experience/viewport/motion polish; live Firebase account services remain externally blocked by TASK-003  
-**Last synchronized:** 2026-10-08  
+**Last synchronized:** 2026-10-09  
 **Route:** `#/games/royal-palace-blackjack`
 
 ## Product intent
@@ -134,6 +134,8 @@ Rendered browser gates cover 320 CSS-px and 200% text reflow, table-help discove
 Historical verified baseline: run `37255447688` passed exact dependency freshness, design lint, TypeScript, structural checks, 44 unit tests, Firestore rules, account/persistence browser checks, all Royal Palace browser suites, both production builds, artifact upload and automatic Pages deployment. Repository-wide revision `9ee0f93d` later passed the complete validation/deployment chain in run `37256390159`. Independent live desktop inspection was clean; live mobile inspection exposed the former lone-action defect, and an isolated live-browser selector discrimination confirmed that correction before the unchanged 320px regression and Pages deployment passed. A later post-deploy live-browser retry timed out, so no unsupported post-fix live-mobile claim is recorded.
 
 Current dependency baseline: maintenance workflow `37859097164` passed the complete repository validation chain and committed `853c87b0` with exact current stable pins before this UI/UX integration: React/React DOM 19.3.0, Firebase 13.0.0, Vite 8.3.4, TypeScript 7.0.2, Vitest 5.0.3 and Playwright 1.64.0. Fresh exact-revision validation/deployment evidence for the Royal Palace polish is pending and must replace this paragraph's pending state before completion can return to verified.
+
+Governance evidence for the polish is explicit. Initial integration `5dbe580c` triggered Pages run `37860044626`, which stopped at `game:check` before unit/browser execution because the reopened tracker used unsupported capability-state vocabulary and omitted the exact required `Last verified revision` field. Tracker-schema repair `5bc8d6fc` triggered run `37941713765`; that run reached `game-check: 4 game(s) OK` and then correctly stopped because the repository requires this authoritative spec and tracker to be synchronized in the same change. These are documentation-governance failures only and provide no rendered evidence for or against the new UI. This synchronized spec/tracker integration exists specifically to clear that guard without weakening any gameplay or viewport requirement.
 
 ## Standards/research basis for the 2026-10-08 experience pass
 
