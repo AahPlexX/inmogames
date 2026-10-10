@@ -1,12 +1,12 @@
 import { BASE_FREE_SPINS, FREE_SPIN_RETRIGGER, MAX_FREE_SPIN_MULTIPLIER, NORMAL_PAYTABLE, SCATTER_PAYOUT_MULTIPLIER, isRoyalFortuneWager, type RoyalFortuneWager } from './paytable';
 import { PAYLINES, SYMBOLS, type ReelWindow, type RoyalFortuneSymbol } from './reels';
 
-type NormalSymbol = Exclude<RoyalFortuneSymbol, 'Wild' | 'Scatter'>;
+export type NormalRoyalFortuneSymbol = Exclude<RoyalFortuneSymbol, 'Wild' | 'Scatter'>;
 export type SpinMode = 'base' | 'free';
 export interface WinningCell { reel: number; row: number }
 export interface LineWin {
   lineIndex: number;
-  symbol: NormalSymbol;
+  symbol: NormalRoyalFortuneSymbol;
   count: 3 | 4 | 5;
   payout: number;
   cells: readonly WinningCell[];
@@ -24,8 +24,9 @@ export interface SpinEvaluation {
   nextMultiplier: number;
 }
 export interface RoyalFortuneFeatureState { remaining: number; wager: RoyalFortuneWager; multiplier: number }
+export interface SequenceWin { symbol: NormalRoyalFortuneSymbol; count: 3 | 4 | 5; payout: number }
 
-const normalSymbols = SYMBOLS.filter((symbol): symbol is NormalSymbol => symbol !== 'Wild' && symbol !== 'Scatter');
+const normalSymbols = SYMBOLS.filter((symbol): symbol is NormalRoyalFortuneSymbol => symbol !== 'Wild' && symbol !== 'Scatter');
 
 function assertWindow(window: ReelWindow): void {
   if (!Array.isArray(window) || window.length !== 5 || window.some((column) => !Array.isArray(column) || column.length !== 3)) {
@@ -34,16 +35,17 @@ function assertWindow(window: ReelWindow): void {
   for (const column of window) for (const symbol of column) if (!SYMBOLS.includes(symbol)) throw new RangeError('Unknown Royal Fortune symbol.');
 }
 
-function bestAllWildSymbol(count: 3 | 4 | 5): NormalSymbol {
+function bestAllWildSymbol(count: 3 | 4 | 5): NormalRoyalFortuneSymbol {
   return normalSymbols.reduce((best, symbol) => NORMAL_PAYTABLE[symbol][count] > NORMAL_PAYTABLE[best][count] ? symbol : best, normalSymbols[0]);
 }
 
-function evaluateLine(window: ReelWindow, lineIndex: number, wager: RoyalFortuneWager, multiplier: number): LineWin | null {
-  const line = PAYLINES[lineIndex];
-  let target: NormalSymbol | null = null;
+export function evaluateLineSymbols(symbols: readonly RoyalFortuneSymbol[], wager: RoyalFortuneWager, multiplier = 1): SequenceWin | null {
+  if (symbols.length !== 5) throw new RangeError('A Royal Fortune payline contains exactly five symbols.');
+  if (!isRoyalFortuneWager(wager)) throw new RangeError('Unsupported Royal Fortune wager.');
+  if (!Number.isSafeInteger(multiplier) || multiplier < 1 || multiplier > MAX_FREE_SPIN_MULTIPLIER) throw new RangeError('Invalid free-spin multiplier.');
+  let target: NormalRoyalFortuneSymbol | null = null;
   let count = 0;
-  for (let reel = 0; reel < line.length; reel += 1) {
-    const symbol = window[reel][line[reel]];
+  for (const symbol of symbols) {
     if (symbol === 'Scatter') break;
     if (symbol === 'Wild') { count += 1; continue; }
     if (target === null) { target = symbol; count += 1; continue; }
@@ -53,13 +55,18 @@ function evaluateLine(window: ReelWindow, lineIndex: number, wager: RoyalFortune
   if (count < 3) return null;
   const payableCount = count as 3 | 4 | 5;
   const payableSymbol = target ?? bestAllWildSymbol(payableCount);
-  const payout = NORMAL_PAYTABLE[payableSymbol][payableCount] * (wager / 5) * multiplier;
+  return { symbol: payableSymbol, count: payableCount, payout: NORMAL_PAYTABLE[payableSymbol][payableCount] * (wager / 5) * multiplier };
+}
+
+function evaluateLine(window: ReelWindow, lineIndex: number, wager: RoyalFortuneWager, multiplier: number): LineWin | null {
+  const line = PAYLINES[lineIndex];
+  const sequence = line.map((row, reel) => window[reel][row]);
+  const win = evaluateLineSymbols(sequence, wager, multiplier);
+  if (!win) return null;
   return {
     lineIndex,
-    symbol: payableSymbol,
-    count: payableCount,
-    payout,
-    cells: line.slice(0, payableCount).map((row, reel) => ({ reel, row })),
+    ...win,
+    cells: line.slice(0, win.count).map((row, reel) => ({ reel, row })),
   };
 }
 
