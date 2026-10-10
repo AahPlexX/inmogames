@@ -1,6 +1,6 @@
 # Royal Fortune Slots design
 
-**Status:** Approved design — implementation pending  
+**Status:** Implementing — initial production integration under validation  
 **Last synchronized:** 2026-10-10  
 **Proposed route:** `#/games/royal-fortune-slots`
 
@@ -138,3 +138,17 @@ Production completion requires the same repository-wide gates used by Royal Pala
 ## Research basis
 
 The product is not real-money gambling software, but the design intentionally adopts conservative principles from current authoritative sources: rules and likelihood information should be understandable before play; random outcomes should be demonstrably random and non-adaptive; and product design should not pressure stake escalation, loss chasing, or continued play. Accessibility follows WCAG 2.2 reflow/text-resize/target-size principles, with the repo's stronger 48px control baseline, and motion honors the platform `prefers-reduced-motion` preference.
+
+## Completion contract
+
+**Completion state:** implementing  
+**Completion evidence:** Approved design and initial production source are present; exact-revision validation/deployment and final probability evidence are not yet complete.
+
+- [x] Pure reel/payline/Wild/Scatter/free-spin engine exists with deterministic injection seam.
+- [x] Schema-v1 durable state excludes in-flight animation and checkpoints settled free-spin state only.
+- [x] Responsive machine UI, rules/paytable, native controls, reduced-motion handling and opt-in audio are implemented.
+- [ ] Focused engine/persistence probability tests pass on an exact revision.
+- [ ] Dedicated browser gameplay/accessibility/audio/mobile gates pass, including 320px and 200% text.
+- [ ] Exact base-game and full feature probability/RTP evidence is recorded in `TRACKER.md`.
+- [ ] `pnpm validate` passes with game/document governance synchronized.
+- [ ] The exact revision builds and deploys successfully to GitHub Pages before the state changes to verified.
