@@ -22,3 +22,10 @@ Product owner approved a repository-wide quality direction on 2026-10-07: every 
 The written architectural specification is `docs/superpowers/specs/2026-10-07-device-viewport-agnostic-game-quality-design.md`. It defines the representative seven-viewport matrix, invariant-based overflow/clipping/reachability requirements, the existing 44 × 44 CSS-pixel game-action target baseline, 200%-text and reduced-motion matrices, dynamic discovery from the rendered catalog, CI integration under `test:design-browser`, failure diagnostics, and the relationship between shared conformance evidence and per-game reopen/documentation rules.
 
 This task is intentionally documentation-only until the written spec is reviewed. No shared browser harness, package script, CI rule, DESIGN/AGENTS/GOVERNANCE binding change or game-local source change has been made yet. Mergrove is being finished by a separate agent and must not be independently edited under QUALITY-001 while that ownership is active. After written-spec approval, create and review an implementation plan before modifying tests/code/governance. Any actual game defect discovered later must be fixed through that game's normal spec/tracker/PRD/todo continuity workflow.
+
+## GAME-ROYAL-FORTUNE-001: Royal Fortune Slots production implementation
+**Priority:** P1 | **Tags:** slots, arcade, accessibility, persistence, probability, responsive | **Status:** implementing
+
+Approved design: `docs/specs/2026-10-10-royal-fortune-slots-design.md`. Implementation plan: `docs/plans/2026-10-10-royal-fortune-slots.md`.
+
+Initial source now includes explicit five-reel strips, twenty fixed paylines, Wild/Scatter/free-spin rules, schema-v1 settled checkpoints, player-paced free spins, responsive machine UI and opt-in procedural audio. Remaining game-local gates are exact probability/RTP evidence, dedicated browser accessibility/gameplay/audio/mobile validation, repository-wide `pnpm validate`, and exact-revision Pages deployment evidence. Live configured-project account verification remains solely under TASK-003 and must not be conflated with game-local progress.
