@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { SaveStatus } from '../../platform/SaveStatus';
 import { useGameSave } from '../../platform/PlatformProvider';
+import { CONFIGURED_TOTAL_RETURN_RATIO } from './audit';
 import { evaluateSpin, featureAfterBaseSpin, featureAfterFreeSpin, type SpinEvaluation } from './engine';
 import { NORMAL_PAYTABLE, WAGERS, type RoyalFortuneWager } from './paytable';
 import { DEFAULT_SAVE, type RoyalFortuneSave } from './storage';
@@ -14,6 +15,22 @@ const glyphs: Record<RoyalFortuneSymbol, string> = {
   Crown: '♛', Ruby: '♦', Emerald: '◆', Chalice: '♕', Bell: '◉', A: 'A', K: 'K', Q: 'Q', J: 'J', Wild: 'W', Scatter: '✦',
 };
 const format = (value: number) => value.toLocaleString();
+const configuredReturnPercent = (CONFIGURED_TOTAL_RETURN_RATIO * 100).toFixed(2);
+
+function netForResult(evaluation: SpinEvaluation): number {
+  return evaluation.totalPayout - (evaluation.mode === 'base' ? evaluation.wager : 0);
+}
+
+function resultHeadline(evaluation: SpinEvaluation): string {
+  if (evaluation.mode === 'free') return `Free-spin award ${format(evaluation.totalPayout)} credits`;
+  const net = netForResult(evaluation);
+  return `Return ${format(evaluation.totalPayout)} · Net ${net >= 0 ? '+' : '−'}${format(Math.abs(net))}`;
+}
+
+function isCelebratoryResult(evaluation: SpinEvaluation): boolean {
+  if (evaluation.freeSpinsAwarded > 0) return true;
+  return evaluation.mode === 'free' ? evaluation.totalPayout > 0 : netForResult(evaluation) > 0;
+}
 
 export default function RoyalFortuneSlotsWorkspace() {
   const progress = useGameSave(royalFortuneSaveDefinition);
@@ -27,6 +44,7 @@ function RoyalFortuneMachine({ initial, persist, reset }: { initial: RoyalFortun
   const [spinning, setSpinning] = useState(false);
   const [status, setStatus] = useState(initial.feature ? `${initial.feature.remaining} free spins remain.` : 'Choose a wager and spin when you are ready.');
   const [resetConfirm, setResetConfirm] = useState(false);
+  const celebrateResult = result ? isCelebratoryResult(result) : false;
   const winningCells = useMemo(() => {
     const cells = new Set<string>();
     for (const win of result?.lineWins ?? []) for (const cell of win.cells) cells.add(`${cell.reel}:${cell.row}`);
@@ -46,8 +64,15 @@ function RoyalFortuneMachine({ initial, persist, reset }: { initial: RoyalFortun
 
   function describe(evaluation: SpinEvaluation, next: RoyalFortuneSave): string {
     const pieces: string[] = [];
-    if (evaluation.totalPayout > 0) pieces.push(`Won ${format(evaluation.totalPayout)} virtual credits`);
-    else pieces.push('No win this spin');
+    if (evaluation.mode === 'free') {
+      pieces.push(evaluation.totalPayout > 0 ? `Awarded ${format(evaluation.totalPayout)} virtual credits` : 'No credit award on this free spin');
+    } else {
+      const net = netForResult(evaluation);
+      if (net > 0) pieces.push(`Returned ${format(evaluation.totalPayout)} virtual credits · net +${format(net)}`);
+      else if (net === 0) pieces.push(evaluation.totalPayout > 0 ? `Returned ${format(evaluation.totalPayout)} virtual credits · wager recovered` : `No return · net −${format(evaluation.wager)}`);
+      else if (evaluation.totalPayout > 0) pieces.push(`Returned ${format(evaluation.totalPayout)} virtual credits · net −${format(Math.abs(net))}`);
+      else pieces.push(`No return · net −${format(Math.abs(net))}`);
+    }
     if (evaluation.lineWins.length) pieces.push(`${evaluation.lineWins.length} paying ${evaluation.lineWins.length === 1 ? 'line' : 'lines'}`);
     if (evaluation.scatterCount) pieces.push(`${evaluation.scatterCount} Scatter${evaluation.scatterCount === 1 ? '' : 's'}`);
     if (evaluation.freeSpinsAwarded) pieces.push(`${evaluation.freeSpinsAwarded} free spins added`);
@@ -64,11 +89,22 @@ function RoyalFortuneMachine({ initial, persist, reset }: { initial: RoyalFortun
       setStatus('Your practice bankroll is below the selected wager. Choose a smaller wager or restore practice credits.');
       return;
     }
+
+    let nextReels: ReelWindow;
+    let evaluation: SpinEvaluation;
+    let nextFeature;
+    let nextSave: RoyalFortuneSave;
+    try {
+      nextReels = spinReels().window;
+      evaluation = evaluateSpin(nextReels, wager, freeSpin ? 'free' : 'base', feature?.multiplier ?? 1);
+      nextFeature = freeSpin ? featureAfterFreeSpin(feature, evaluation) : featureAfterBaseSpin(evaluation);
+      nextSave = settleRoyalFortuneSpin(save, evaluation, !freeSpin, nextFeature);
+    } catch {
+      setStatus('The random outcome source was unavailable. No virtual credits were deducted. Try the spin again.');
+      return;
+    }
+
     playRoyalFortuneCue('spin', save.preferences.sound);
-    const nextReels = spinReels().window;
-    const evaluation = evaluateSpin(nextReels, wager, freeSpin ? 'free' : 'base', feature?.multiplier ?? 1);
-    const nextFeature = freeSpin ? featureAfterFreeSpin(feature, evaluation) : featureAfterBaseSpin(evaluation);
-    const nextSave = settleRoyalFortuneSpin(save, evaluation, !freeSpin, nextFeature);
     commit(nextSave);
     setReels(nextReels);
     setResult(evaluation);
@@ -78,7 +114,8 @@ function RoyalFortuneMachine({ initial, persist, reset }: { initial: RoyalFortun
     window.setTimeout(() => {
       setSpinning(false);
       setStatus(describe(evaluation, nextSave));
-      playRoyalFortuneCue(evaluation.freeSpinsAwarded ? 'feature' : evaluation.totalPayout > 0 ? 'win' : 'stop', save.preferences.sound);
+      const positive = isCelebratoryResult(evaluation);
+      playRoyalFortuneCue(evaluation.freeSpinsAwarded ? 'feature' : positive ? 'win' : 'stop', save.preferences.sound);
     }, reduceMotion ? 0 : 560);
   }
 
@@ -125,7 +162,7 @@ function RoyalFortuneMachine({ initial, persist, reset }: { initial: RoyalFortun
       <div className="rf-reels" aria-label="Five reels, three rows">
         {reels.map((column, reelIndex) => <div className="rf-reel" key={reelIndex} aria-label={`Reel ${reelIndex + 1}`}>
           {column.map((symbol, rowIndex) => <div
-            className={`rf-symbol rf-symbol--${symbol.toLowerCase()}${winningCells.has(`${reelIndex}:${rowIndex}`) ? ' is-win' : ''}`}
+            className={`rf-symbol rf-symbol--${symbol.toLowerCase()}${celebrateResult && winningCells.has(`${reelIndex}:${rowIndex}`) ? ' is-win' : ''}`}
             key={`${reelIndex}-${rowIndex}-${symbol}`}
             role="img"
             aria-label={`${symbol}, reel ${reelIndex + 1}, row ${rowIndex + 1}`}
@@ -136,7 +173,7 @@ function RoyalFortuneMachine({ initial, persist, reset }: { initial: RoyalFortun
     </div>
 
     <div className="rf-result" role="status" aria-live="polite" aria-atomic="true">
-      <strong>{result ? `${result.totalPayout > 0 ? '+' : ''}${format(result.totalPayout)} credits` : 'Ready'}</strong>
+      <strong>{result ? resultHeadline(result) : 'Ready'}</strong>
       <span>{status}</span>
       {result?.lineWins.length ? <div className="rf-linewins" aria-label="Paying lines">{result.lineWins.slice(0, 6).map((win) => <span key={win.lineIndex}>Line {win.lineIndex + 1}: {win.symbol} ×{win.count} · +{format(win.payout)}</span>)}</div> : null}
     </div>
@@ -161,6 +198,7 @@ function RoyalFortuneMachine({ initial, persist, reset }: { initial: RoyalFortun
             {Object.entries(NORMAL_PAYTABLE).map(([symbol, awards]) => <div className="rf-payrow" role="row" key={symbol}><b role="cell">{symbol}</b><span role="cell">3: {awards[3]}</span><span role="cell">4: {awards[4]}</span><span role="cell">5: {awards[5]}</span></div>)}
           </div>
           <p className="rf-note">Paytable numbers are units per 5 wager credits. Example: at a 20-credit wager, multiply a listed line award by 4. Scatter awards are 1× / 4× / 20× the total wager for 3 / 4 / 5 Scatters.</p>
+          <p className="rf-note">This fixed configuration has a mathematically derived long-run return of about {configuredReturnPercent}% of virtual credits wagered, including free-spin value. That is a simulated-game probability statistic, not a prediction of any spin or session.</p>
           <p className="rf-note">Outcomes use fixed source-controlled reel strips and do not change based on your bankroll, history, session length or choices.</p>
         </div>
       </details>

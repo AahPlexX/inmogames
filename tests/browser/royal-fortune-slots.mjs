@@ -31,9 +31,14 @@ try {
   const context = await browser.newContext({ viewport: { width: 320, height: 900 }, colorScheme: 'light' });
   await context.addInitScript(() => {
     globalThis.__rfStops = [];
+    globalThis.__rfThrow = false;
     globalThis.__rfAudioContexts = 0;
     const original = Crypto.prototype.getRandomValues;
     Crypto.prototype.getRandomValues = function deterministicRoyalFortune(array) {
+      if (globalThis.__rfThrow) {
+        globalThis.__rfThrow = false;
+        throw new Error('Injected random source failure');
+      }
       if (array instanceof Uint32Array && array.length === 1) {
         const queue = globalThis.__rfStops;
         array[0] = Array.isArray(queue) && queue.length ? queue.shift() : 0;
@@ -67,6 +72,12 @@ try {
   assert.ok(overflow <= 1, `320px layout should not create page-level horizontal overflow; overflow=${overflow}.`);
 
   assert.equal(await page.evaluate(() => globalThis.__rfAudioContexts), 0, 'Audio must not initialize before opt-in/user-triggered sound use.');
+  await page.evaluate(() => { globalThis.__rfThrow = true; });
+  await spin.click();
+  await page.getByText(/random outcome source was unavailable/i).waitFor();
+  assert.match(await page.locator('.rf-meter').innerText(), /2,500/, 'Random-source failure must not deduct the wager.');
+  assert.equal(await page.evaluate(() => globalThis.__rfAudioContexts), 0, 'Failed outcome generation must not initialize sound while sound is off.');
+
   await page.evaluate(() => { globalThis.__rfStops = [25, 3, 19, 0, 0]; });
   await spin.focus();
   await page.keyboard.press('Space');
@@ -74,13 +85,18 @@ try {
   assert.match(await page.locator('.rf-feature').innerText(), /8 remaining/i, 'Three Scatters should enter an eight-spin feature.');
   assert.equal(await page.evaluate(() => globalThis.__rfAudioContexts), 0, 'Sound-off spin must remain silent.');
 
+  await page.reload();
+  await page.locator('.rf').waitFor();
+  await page.getByRole('button', { name: /Play free spin · 8 remaining/i }).waitFor();
+  assert.match(await page.locator('.rf-feature').innerText(), /8 remaining/i, 'A settled free-spin checkpoint should survive reload without duplicating or losing spins.');
+
   await page.evaluate(() => { globalThis.__rfStops = [0, 0, 0, 0, 0]; });
   await page.getByRole('button', { name: /Play free spin · 8 remaining/i }).click();
   await page.getByText(/7 free spins remain/i).waitFor({ timeout: 3000 });
 
   await page.getByText('Preferences & saved game', { exact: true }).click();
   await page.getByRole('button', { name: /Reduced effects off/i }).click();
-  assert.equal(await machine.getAttribute('data-reduced'), 'true', 'Explicit reduced-effects preference should mark the machine.');
+  assert.equal(await page.locator('.rf').getAttribute('data-reduced'), 'true', 'Explicit reduced-effects preference should mark the machine.');
   await page.getByRole('button', { name: /Sound off/i }).click();
   await page.evaluate(() => { globalThis.__rfStops = [0, 0, 0, 0, 0]; });
   await page.getByRole('button', { name: /Play free spin · 7 remaining/i }).click();
@@ -93,7 +109,33 @@ try {
   assert.ok(zoomOverflow <= 1, `200% text at 320px should not horizontally overflow; overflow=${zoomOverflow}.`);
   assert.ok(await page.getByRole('button', { name: /Play free spin/i }).isVisible(), 'Primary free-spin control should remain available at 200% text.');
 
-  console.log('Royal Fortune browser checks passed: deterministic feature flow, 320px/200%-text reflow, 48px primary target, reduced effects and opt-in audio.');
+  await page.evaluate(() => {
+    localStorage.setItem('inmogames:royal-fortune-slots:v1', JSON.stringify({
+      schemaVersion: 1,
+      state: {
+        bankroll: 0,
+        selectedWager: 10,
+        spins: 9,
+        freeSpinsPlayed: 2,
+        totalWagered: 50,
+        totalWon: 40,
+        net: -10,
+        largestWin: 20,
+        preferences: { sound: false, reducedEffects: false },
+        lastResult: null,
+        feature: null,
+      },
+    }));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: 'Restore 2,500 practice credits' }).waitFor();
+  assert.match(await page.locator('.rf-foot').innerText(), /9 completed spins/, 'Depleted-save fixture should preserve session history.');
+  await page.getByRole('button', { name: 'Restore 2,500 practice credits' }).click();
+  await page.getByText(/Practice bankroll restored to 2,500/i).waitFor();
+  assert.match(await page.locator('.rf-meter').innerText(), /2,500/, 'Restore action should replenish only the practice bankroll.');
+  assert.match(await page.locator('.rf-foot').innerText(), /9 completed spins/, 'Restore action must preserve prior statistics.');
+
+  console.log('Royal Fortune browser checks passed: RNG failure safety, deterministic feature/reload flow, restore checkpoint, 320px/200%-text reflow, 48px target, reduced effects and opt-in audio.');
   await context.close();
 } finally {
   await browser?.close();
