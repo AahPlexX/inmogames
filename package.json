@@ -15,7 +15,7 @@
     "dependency:check": "node scripts/dependency-check.mjs",
     "test:rules": "firebase emulators:exec --only firestore --project demo-inmogames \"node --test tests/rules/firestore.test.mjs\"",
     "test:browser": "firebase emulators:exec --only auth,firestore --project demo-inmogames \"node tests/browser/account-persistence.mjs\"",
-    "test:design-browser": "node tests/browser/catalog-accessibility.mjs && node tests/browser/design-regression.mjs && node tests/browser/royal-palace-accessibility.mjs && node tests/browser/royal-palace-gameplay.mjs && node tests/browser/royal-palace-audio.mjs && node tests/browser/royal-palace-mobile-layout.mjs && node tests/browser/mergrove-design.mjs && node tests/browser/cloudline-couriers-design.mjs",
+    "test:design-browser": "node tests/browser/catalog-accessibility.mjs && node tests/browser/design-regression.mjs && node tests/browser/royal-palace-accessibility.mjs && node tests/browser/royal-palace-gameplay.mjs && node tests/browser/royal-palace-audio.mjs && node tests/browser/royal-palace-mobile-layout.mjs && node tests/browser/royal-fortune-slots.mjs && node tests/browser/mergrove-design.mjs && node tests/browser/cloudline-couriers-design.mjs",
     "dependency:current": "node scripts/verify-dependency-latest.mjs",
     "design:check": "pnpm dlx @google/design.md@0.4.0 lint DESIGN.md"
   },
