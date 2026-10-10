@@ -37,6 +37,8 @@ Reel strips and the paytable are source-controlled constants so expected return 
 
 The implementation must include a probability audit test that exhaustively or analytically verifies the configured paytable/reel-strip combination and records the resulting theoretical RTP in the game tracker. The UI describes this as a simulated-game probability statistic, not a promise of future results.
 
+The current source-derived base audit is implemented in `audit.ts` and asserted in `tests/unit/royal-fortune-slots-audit.test.ts`. At the 5-credit normalization wager, the committed strips/paytable yield 85.0368022919% normal-payline return plus 0.8312165737% Scatter-credit return, for 85.8680188656% paid-spin return before free-spin feature value. A base spin enters free spins with probability 0.7124483585% and directly awards 0.0584828854 expected free spins per paid spin. These are implementation-stage analytical values, not final verification evidence until the exact revision test run is green. Full feature expected value—including multiplier advancement and retriggers—remains required before any total RTP claim.
+
 ## Bankroll and persistence
 
 Initial practice bankroll: 2,500 virtual credits.
@@ -62,13 +64,14 @@ Authenticated persistence follows the shared versioned save repository at `users
 
 ## Architecture
 
-Proposed game-local modules:
+Game-local modules:
 
 - `engine.ts`: payline definitions, symbol matching, Wild substitution, Scatter evaluation, free-spin state transitions, multiplier rules, payout math. No React/DOM/storage/audio.
-- `reels.ts`: source-controlled reel strips, symbol definitions, random-stop adapter, deterministic seeded test source, visible-window projection.
-- `paytable.ts`: symbol payouts, feature awards, theoretical-return helpers.
+- `reels.ts`: source-controlled reel strips, symbol definitions, random-stop adapter, deterministic injected test source, visible-window projection.
+- `paytable.ts`: symbol payouts, feature awards and wager constants.
+- `audit.ts`: exact source-derived base return and Scatter/feature-entry probability helpers.
 - `storage.ts`: versioned durable-state schema/decoder.
-- `persistence.ts`: shared-platform checkpoint definition.
+- `persistence.ts`: shared-platform checkpoint definition and settled-spin accounting.
 - `audio.ts`: opt-in procedural Web Audio cues.
 - `RoyalFortuneSlotsWorkspace.tsx`: accessible spin state machine and presentation.
 - `royal-fortune-slots.css`: game-scoped responsive machine presentation.
@@ -142,13 +145,13 @@ The product is not real-money gambling software, but the design intentionally ad
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Approved design and initial production source are present; exact-revision validation/deployment and final probability evidence are not yet complete.
+**Completion evidence:** Approved design, production source, focused engine/persistence/browser tests and an exact base-game probability audit are present. Exact-revision CI/deployment and full free-spin feature expected-value evidence are not yet complete.
 
 - [x] Pure reel/payline/Wild/Scatter/free-spin engine exists with deterministic injection seam.
 - [x] Schema-v1 durable state excludes in-flight animation and checkpoints settled free-spin state only.
 - [x] Responsive machine UI, rules/paytable, native controls, reduced-motion handling and opt-in audio are implemented.
-- [ ] Focused engine/persistence probability tests pass on an exact revision.
+- [ ] Focused engine/persistence/probability tests pass on an exact revision.
 - [ ] Dedicated browser gameplay/accessibility/audio/mobile gates pass, including 320px and 200% text.
-- [ ] Exact base-game and full feature probability/RTP evidence is recorded in `TRACKER.md`.
+- [ ] Exact base-game and full feature probability/RTP evidence is verified and recorded in `TRACKER.md`.
 - [ ] `pnpm validate` passes with game/document governance synchronized.
 - [ ] The exact revision builds and deploys successfully to GitHub Pages before the state changes to verified.
