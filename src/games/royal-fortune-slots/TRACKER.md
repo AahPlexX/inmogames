@@ -7,55 +7,57 @@
 
 | Capability | Status | Verification |
 | --- | --- | --- |
-| Explicit five-reel strips and 20 fixed paylines | started | Source and focused tests passed on baseline revision `8c3e2fa` / run `38089533535`; current exact-feature audit revision still requires CI. |
-| Wild/Scatter/free-spin payout engine | started | Engine tests passed on baseline `8c3e2fa`; current audit/polish integration requires fresh exact-revision evidence. |
-| Durable local save/checkpoint contract | started | Schema-v1 settlement tests and account/persistence repository suite passed on baseline run `38089533535`; expanded feature-reload browser gate requires fresh evidence. |
-| Responsive accessible machine UI | started | Dedicated Royal Fortune browser suite passed on baseline run `38089533535`; current RNG-failure/restore/LDW polish expands that suite and requires fresh evidence. |
-| Probability/RTP audit | started | Exact source-derived base and free-feature recurrence are implemented. Current configured theoretical return is 99.4307658688% including feature value; fresh exact-revision unit evidence is required before this becomes verification evidence. |
-| Authenticated account-bound durable save | blocked externally | Shared account-save implementation exists and emulator infrastructure passed the baseline run; live configured Firebase services remain blocked by repository TASK-003. |
-| Production build and GitHub Pages deployment | started | Baseline revision `8c3e2fa` built/deployed in run `38089533535`; current source revision requires its own deployment evidence. |
+| Explicit five-reel strips and 20 fixed paylines | verified | Exact strip/payline engine and focused tests passed on revision `e89b9c64eada44a4a5953c17072d57b7d940b4d2` in run `38090041520`. |
+| Wild/Scatter/free-spin payout engine | verified | Deterministic engine, trigger/retrigger and multiplier tests passed in run `38090041520`. |
+| Durable local save/checkpoint contract | verified | Schema-v1 settlement tests, shared account/persistence emulator suite, feature reload checkpoint and restore-credit browser gates passed in run `38090041520`. |
+| Responsive accessible machine UI | verified | Dedicated Royal Fortune Chromium flow passed RNG-failure safety, keyboard activation, 48px primary target, 320px layout, 200% text, reduced effects, opt-in audio, reload and restore checks in run `38090041520`. |
+| Probability/RTP audit | verified | Exact source-derived base and feature recurrence tests passed in run `38090041520`; configured theoretical return is 99.4307658688%. |
+| Authenticated account-bound durable save | blocked externally | Shared account-save implementation and emulator checks are green; real configured-project Firebase services remain blocked solely by repository TASK-003. |
+| Production build and GitHub Pages deployment | verified | Both production builds, Pages artifact upload and Pages deployment succeeded for revision `e89b9c64eada44a4a5953c17072d57b7d940b4d2` in run `38090041520`. |
 
 ## Current handoff
 
-**Implementation state:** implementing — production integration is green at the prior baseline and the final probability/edge-case evidence pass is being validated.  
-**Last verified revision:** none — Royal Fortune has not yet reached its final verified production revision.  
-**Open game-local work:** obtain fresh exact-revision CI for the full-feature audit and expanded browser safety/reload/restore gates; then atomically close docs/index/task state if all repository gates remain green.  
-**External blockers:** TASK-003 blocks live configured-project Firebase account verification only; it does not block guest gameplay or game-local verification.  
-**Next action:** run the current synchronized source/test/docs integration through full CI; repair any concrete regression; if green, close the Royal Fortune game-local checklist with exact revision/run evidence.
+**Implementation state:** verified — 2026-10-10 Royal Fortune Slots game-local production scope complete.  
+**Last verified revision:** `e89b9c64eada44a4a5953c17072d57b7d940b4d2` / GitHub Actions run `38090041520`.  
+**Open game-local work:** none.  
+**External blockers:** TASK-003 blocks live configured-project Firebase account verification only; it is not game-local work and does not affect guest gameplay or the verified emulator-backed account-save contract.  
+**Next action:** reopen this game only for a new feature, material rule/UI/persistence change, probability rebalance, or regression.
 
-## Implemented source boundary
+## Verified source boundary
 
-- `reels.ts`: five explicit 32-stop strips, 20 paylines, unbiased browser cryptographic random integer adapter, deterministic injected random seam.
+- `reels.ts`: five explicit 32-stop strips, 20 fixed paylines, unbiased browser cryptographic random integer adapter and deterministic injected test seam.
 - `paytable.ts`: supported wagers, normal-symbol units, Scatter awards and free-spin constants.
-- `engine.ts`: line evaluation, Wild substitution, Scatter evaluation, feature transitions and multiplier rules; reusable pure line evaluator for probability analysis.
-- `audit.ts`: exact weighted-symbol base return, exact stop-derived paying-spin/Scatter probabilities, and exact free-spin multiplier/retrigger expected-value recurrence.
-- `storage.ts` / `persistence.ts`: schema-v1 durable state and atomic settled-spin checkpoints.
-- `RoyalFortuneSlotsWorkspace.tsx` / `royal-fortune-slots.css`: machine presentation, controls, rules/paytable, transparent paid-spin net wording, RNG-failure safety, responsive/reduced-motion behavior.
-- `audio.ts`: optional short procedural cues initialized only from user-triggered play/preferences.
-- Focused engine, persistence and probability unit suites plus `tests/browser/royal-fortune-slots.mjs` are registered in the repository validation path.
+- `engine.ts`: pure line/Wild/Scatter evaluation plus free-spin multiplier/retrigger state transitions.
+- `audit.ts`: exact weighted-symbol base return, exact paying-spin/Scatter probabilities and full free-feature expected-value recurrence.
+- `storage.ts` / `persistence.ts`: schema-v1 durable state and atomic settled-spin checkpoints; no in-flight reel state.
+- `RoyalFortuneSlotsWorkspace.tsx` / `royal-fortune-slots.css`: player-paced machine presentation, transparent paid-spin net wording, RNG-failure safety, responsive/reduced-motion behavior and accessible result/rules surfaces.
+- `audio.ts`: optional procedural cues initialized only after enabled user interaction.
+- Focused engine/persistence/probability unit suites and `tests/browser/royal-fortune-slots.mjs` are part of the repository validation chain.
 
 ## Probability evidence
 
-All five reels contain exactly 32 stops and exactly one Scatter stop each. At the 5-credit normalization wager, the source-derived values are:
+All five reels contain exactly 32 stops and exactly one Scatter stop each. At the 5-credit normalization wager, the verified source-derived configuration is:
 
-- normal-payline return before free-spin multiplier value: `0.8503680229187012` (85.0368022919%),
+- normal-payline return: `0.8503680229187012` (85.0368022919%),
 - Scatter-credit return: `0.0083121657371521` (0.8312165737%),
-- combined paid-spin return before free-spin feature value: `0.8586801886558533` (85.8680188656%),
-- probability a paid/free spin has any credit-paying result: `0.4348173141479492` (43.4817314148%),
-- base feature-entry / free-spin retrigger probability: `0.007124483585357666` (0.7124483585%),
+- paid-spin return before free-spin feature value: `0.8586801886558533` (85.8680188656%),
+- any-paying-result probability: `0.4348173141479492` (43.4817314148%),
+- feature-entry / free-spin retrigger probability: `0.007124483585357666` (0.7124483585%),
 - expected free spins awarded directly by a base spin: `0.05848288536071777`,
-- expected free-feature payout when starting with 8 spins: `91.04201497132425` credits at a 5-credit feature wager,
-- expected free-feature payout when starting with 12 spins: `170.11451641181813` credits,
-- expected free-feature payout when starting with 20 spins: `344.06694598262914` credits,
-- free-feature return contribution per paid wager: `0.13562747003238904` (13.5627470032%),
+- expected feature payout starting with 8 spins: `91.04201497132425` credits at a 5-credit feature wager,
+- expected feature payout starting with 12 spins: `170.11451641181813` credits,
+- expected feature payout starting with 20 spins: `344.06694598262914` credits,
+- free-feature return contribution: `0.13562747003238904` (13.5627470032%),
 - configured total theoretical return: `0.9943076586882423` (99.4307658688%).
 
-The base portion is computed from exact symbol/reel-stop distributions. The full feature value uses the exact paying-spin and retrigger probabilities in a finite multiplier-state recurrence; at multiplier ×5, the retrigger queue has closed-form expected value because each free spin adds five queued spins with probability `0.007124483585357666`, safely below the divergence threshold. `tests/unit/royal-fortune-slots-audit.test.ts` binds these values to the committed constants. The current expanded audit still requires its exact-revision CI pass before the capability can move to verified.
+The normal/Scatter base values derive from exact symbol and visible-stop distributions. The paying-spin probability exhausts all 32³ first-three-reel stop combinations and exact tail Scatter counts. The free-feature value uses those exact event probabilities in the documented finite multiplier-state recurrence, with a closed-form ×5 retrigger queue expectation. `tests/unit/royal-fortune-slots-audit.test.ts` binds the figures to source constants and passed in run `38090041520`.
 
-## Baseline validation evidence
+## Verification evidence
 
-Revision `8c3e2fa474dab14f10b5853becac9ad17e434df1` passed GitHub Actions run `38089533535`: exact dependency/current checks, design lint, TypeScript, game/document governance, unit tests, Firestore rules, account/persistence browser checks, the complete design-browser chain including Royal Fortune, both production builds, Pages artifact upload and Pages deployment. This is a valid production baseline but predates the final full-feature recurrence and edge-case browser expansion, so it is not used as the final verified revision.
+Exact revision `e89b9c64eada44a4a5953c17072d57b7d940b4d2` passed GitHub Actions run `38090041520`. The build job passed frozen install, exact dependency checks, current dependency checks, design lint, TypeScript, game/document governance, all unit tests including the complete Royal Fortune probability recurrence, Firestore rules, the shared account/persistence browser suite, catalog/design regressions, the expanded Royal Fortune deterministic browser suite, both production builds and Pages artifact upload. The deploy job then passed `actions/configure-pages` and `actions/deploy-pages`.
+
+The dedicated Royal Fortune browser suite explicitly passed: RNG-source failure without bankroll deduction, deterministic Scatter feature entry, settled free-spin checkpoint reload, player-paced feature progression, depleted-bankroll restore retaining statistics, 320px no-horizontal-overflow, 200% text reflow, >=48px primary Spin target, reduced-effects behavior and sound opt-in/no-autoplay.
 
 ## Continuity note
 
-Do not mark this game verified by inference from Royal Palace or another title. Final verification must name an exact Royal Fortune revision/workflow run containing the full audit and current browser safety gates. TASK-003 must remain separately represented if live Firebase is still unprovisioned.
+TASK-003 remains a separate shared platform blocker. Do not reinterpret the game-local verified state as proof that real Firebase Authentication/Firestore have been provisioned. Any future game source/test/index change must reopen and synchronize this tracker and the authoritative spec under repository governance.

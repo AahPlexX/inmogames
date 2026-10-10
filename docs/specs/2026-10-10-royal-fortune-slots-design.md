@@ -1,6 +1,6 @@
 # Royal Fortune Slots design
 
-**Status:** Implementing — final probability and edge-case evidence under validation  
+**Status:** Verified — 2026-10-10 game-local production scope complete; live Firebase account services remain externally blocked by TASK-003  
 **Last synchronized:** 2026-10-10  
 **Route:** `#/games/royal-fortune-slots`
 
@@ -8,167 +8,158 @@
 
 Royal Fortune Slots is the polished casino-floor member of a three-game slot family. It is a standalone InMo Games title rather than a skin over another slot engine. The game uses virtual credits only: no deposits, purchases, cash-out, ads, telemetry, real-money value, or gambling account functionality.
 
-The experience is a five-reel, three-row video slot with twenty fixed paylines, a readable paytable, Wild and Scatter symbols, free-spin rounds, deterministic payout evaluation, finite audiovisual feedback, and optional local/account-bound persistence through the same shared platform used by other InMo Games titles.
+The experience is a five-reel, three-row video slot with twenty fixed paylines, a readable paytable, Wild and Scatter symbols, free-spin rounds, exact probability evidence, finite audiovisual feedback, and optional local/account-bound persistence through the shared platform used by other InMo Games titles.
 
-The game must be understandable before the first spin. Rules, payline behavior, symbol values, feature triggers, long-run configured return, and the fact that all credits are simulated practice credits remain available from the primary play surface without interrupting play.
+Rules, payline behavior, symbol values, feature triggers, the configured theoretical return, and the simulated-credit boundary are available before play without interrupting the machine.
 
 ## Core rules
 
 - 5 reels × 3 visible rows.
 - 20 fixed paylines; all paylines are always active.
-- One configurable total wager per spin rather than per-line enable/disable complexity.
-- Base wager steps: 5, 10, 20, 40, 100 virtual credits, bounded by available bankroll.
+- Total wager steps: 5, 10, 20, 40, 100 virtual credits, bounded by available bankroll.
 - Symbols: Crown, Ruby, Emerald, Chalice, Bell, A, K, Q, J, Wild, Scatter.
 - Wild substitutes for all normal paying symbols except Scatter.
-- Scatter pays independently of paylines and triggers free spins.
-- Three or more Scatters anywhere trigger 8 free spins; four trigger 12; five trigger 20.
-- Free spins use the triggering wager and cannot be manually increased mid-feature.
-- During free spins, each completed winning spin advances a visible feature multiplier by +1 up to ×5; the multiplier applies to line wins only and resets when the free-spin feature ends.
-- Additional Scatter triggers during free spins add 5 spins without resetting the multiplier.
-- Multiple line wins on one spin add together. Scatter win is then added separately.
-- A spin settles atomically: wager deduction and final payout are one durable logical transaction.
-- A paid spin that returns less than its wager is described as a net loss even when one or more paylines return credits; celebratory win treatment is reserved for positive-net paid results, free-spin awards, or feature awards.
-- No autoplay, turbo autoplay, losses-disguised-as-wins, near-miss manipulation, stake prompting, or adaptive/compensated outcome behavior.
+- Scatter pays independently of paylines.
+- 3 / 4 / 5 Scatters anywhere award 8 / 12 / 20 free spins.
+- Free spins retain the triggering wager and are always player-paced; no free spin starts automatically.
+- Each completed winning free spin advances the line-win multiplier by +1, capped at ×5.
+- Three or more Scatters during free spins add 5 spins without resetting the multiplier.
+- Multiple line wins add together; Scatter return is added separately.
+- A spin settles atomically in durable state only after the logical outcome is complete.
+- A paid spin that returns less than its wager is described as a net loss; celebratory win treatment is reserved for positive-net paid outcomes, free-spin credit awards, or feature awards.
+- No autoplay, turbo autoplay, near-miss manipulation, losses-disguised-as-wins treatment, stake pressure, or behavior-adaptive probability.
 
 ## Probability and reel model
 
-The engine uses explicit virtual reel strips rather than outcome tables hidden inside React state. Each reel owns an ordered 32-stop symbol strip. A spin chooses one stop independently per reel using browser cryptographic randomness in production and an injected deterministic source in tests. Visible rows derive from neighboring strip positions with wraparound.
+The game uses five explicit ordered 32-stop virtual reel strips. Production chooses one independent stop per reel with an unbiased browser `crypto.getRandomValues()` adapter; tests inject deterministic integer stops. The visible three-symbol column is the selected stop plus its immediate neighbors with wraparound.
 
-Reel strips and the paytable are source-controlled constants. Outcome probabilities never change in response to bankroll, recent wins/losses, session duration, or player behavior.
+The paytable and all reel strips are source-controlled. Outcome probabilities never vary with bankroll, history, session duration, recent wins/losses, or player choices.
 
-`audit.ts` performs source-derived analytical verification rather than relying on sampled play. Normal-payline expected return is calculated from exact reel symbol frequencies. Scatter count/feature-entry probability is derived from exact visible-window stop distributions. A paying-spin probability is derived by exhaustively evaluating all 32³ first-three-reel stop combinations—the minimum paying prefix for every fixed payline—and combining non-paying prefixes with exact tail-reel Scatter counts. The free-spin feature then uses those exact event probabilities in a multiplier-state recurrence. Because every retrigger is a winning spin, the multiplier advances toward ×5; once ×5 is reached, the expected retrigger queue has the closed-form denominator `1 - 5p(retrigger)`. The configured retrigger probability is well below the divergence threshold.
+`audit.ts` verifies the configuration analytically:
 
-At the 5-credit normalization wager the committed configuration derives:
+- normal-payline expected value is calculated from exact symbol frequencies on each reel,
+- Scatter count and trigger frequency come from exact visible-window stop distributions,
+- any-paying-result probability exhausts every 32³ first-three-reel stop combination (the minimum fixed-payline paying prefix) and combines non-paying prefixes with exact fourth/fifth-reel Scatter counts,
+- the free-spin feature uses those exact event probabilities in a finite multiplier-state recurrence,
+- after multiplier ×5 is reached, the retrigger queue has a closed-form expectation because each free spin adds five more spins only with the fixed retrigger probability.
+
+At the 5-credit normalization wager, the verified configuration is:
 
 - normal-payline return: 85.0368022919%,
 - Scatter-credit return: 0.8312165737%,
 - paid-spin return before free-spin feature value: 85.8680188656%,
-- any-paying-result probability: 43.4817314148%,
-- feature-entry / free-spin retrigger probability: 0.7124483585%,
+- probability of any credit-paying result: 43.4817314148%,
+- base feature-entry / free-spin retrigger probability: 0.7124483585%,
 - free-feature return contribution: 13.5627470032%,
-- total configured theoretical return: 99.4307658688%.
+- configured total theoretical return: **99.4307658688%**.
 
-The UI identifies the total as a simulated-game long-run probability statistic, never a prediction of a particular spin or session. The implementation-stage values remain subject to exact-revision test verification before this design can be marked verified.
+The rules UI describes that figure as a long-run simulated-game probability statistic, not a prediction for a spin or session.
 
 ## Bankroll and persistence
 
 Initial practice bankroll: 2,500 virtual credits.
 
-Local storage key: `inmogames:royal-fortune-slots:v1`.
+Local storage key: `inmogames:royal-fortune-slots:v1`.  
 Cloud game slug: `royal-fortune-slots`.
 
-Persist only durable state:
-- bankroll after a settled spin,
+Durable state is limited to:
+- settled bankroll,
 - selected base wager,
-- lifetime spin count,
-- free spins played,
-- cumulative virtual-credit wagered/won/net,
-- largest single-spin win,
-- sound preference,
-- reduced-effects preference when explicitly chosen in-game,
+- paid/free spin counters,
+- total wagered/won/net,
+- largest single-spin return,
+- sound and reduced-effects preferences,
 - last completed result summary,
 - fully settled free-spin feature checkpoint when active.
 
-Do not persist an in-flight reel animation or partially evaluated spin. Free-spin state may be checkpointed only after each free spin has fully settled so reload cannot duplicate or erase a settled award. If reload occurs during presentation motion, restore the last completed logical checkpoint.
+In-flight reel animation and partially resolved outcomes are never serialized. Reloading during presentation restores the last completed logical checkpoint, so a completed award cannot duplicate or disappear. When bankroll is below the 5-credit minimum and no free-spin feature is active, **Restore 2,500 practice credits** changes only bankroll and preserves statistics/preferences.
 
-If bankroll falls below the minimum 5-credit wager, expose **Restore 2,500 practice credits**. This changes bankroll only and preserves statistics/preferences.
-
-Authenticated persistence follows the shared versioned save repository at `users/{uid}/games/royal-fortune-slots`; the existing external Firebase provisioning blocker remains platform-level rather than game-local.
+Guest saves use defensive local persistence. Authenticated players use the shared save repository at `users/{uid}/games/royal-fortune-slots`. Shared account-save behavior is emulator-tested; real configured-project Firebase provisioning remains external TASK-003.
 
 ## Architecture
 
-- `engine.ts`: payline symbol matching, Wild substitution, Scatter evaluation, free-spin state transitions, multiplier rules and payout math. No React, DOM, storage or audio.
-- `reels.ts`: source-controlled reel strips, symbol definitions, random-stop adapter, deterministic injected test seam, visible-window projection and paylines.
-- `paytable.ts`: symbol payouts, wager set and feature constants.
-- `audit.ts`: exact base return, paying-spin/Scatter probabilities and full free-feature expected-value recurrence; exports the bound configured return displayed by the rules UI.
-- `storage.ts`: versioned durable-state schema/decoder.
-- `persistence.ts`: shared-platform checkpoint definition and settled-spin accounting.
-- `audio.ts`: opt-in procedural Web Audio cues.
-- `RoyalFortuneSlotsWorkspace.tsx`: accessible spin state machine, transparent net-result language, RNG failure handling and presentation.
-- `royal-fortune-slots.css`: game-scoped responsive machine presentation.
+- `reels.ts`: symbols, five source-controlled reel strips, 20 fixed paylines, unbiased production RNG adapter and deterministic injected seam.
+- `paytable.ts`: supported wagers, normal-symbol awards, Scatter awards and free-spin constants.
+- `engine.ts`: pure payline/Wild/Scatter evaluation, payout math and free-spin multiplier/retrigger transitions.
+- `audit.ts`: exact base/paying-spin/feature probability and full-feature expected-value evidence.
+- `storage.ts`: schema-v1 durable-state decoder/defaults.
+- `persistence.ts`: shared save definition, atomic settlement and practice-credit restoration.
+- `audio.ts`: optional procedural Web Audio cues.
+- `RoyalFortuneSlotsWorkspace.tsx`: accessible spin state/presentation, transparent paid-spin net wording and RNG failure recovery.
+- `royal-fortune-slots.css`: scoped premium cabinet, responsive/reduced-motion visual system.
 - `royal-fortune-slots.meta.ts`: catalog metadata.
-- `PRD.md`, `TRACKER.md`, `todo.md`: game-local living governance.
+- `PRD.md`, `TRACKER.md`, `todo.md`: living game governance.
 
-No gameplay code is shared with Lucky Seven Classic or Cascade Vault. Repo-level persistence/accessibility/test utilities may be reused where their contracts already fit.
+No gameplay engine is shared with Lucky Seven Classic or Cascade Vault. Only repository-level platform/save/test infrastructure is reused.
 
 ## Interaction and visual design
 
-Visual direction: restrained high-end casino cabinet—deep jewel tones, brushed-metal/gold accents, large readable reels, strong separation between bankroll/wager/results and decorative framing. The interface should feel premium without copying Royal Palace Blackjack's table aesthetic.
+The machine uses a restrained luxury-casino identity: deep jewel tones, gold/brushed-metal accents, large reel symbols, a compact bank/wager/net/best meter, strong result hierarchy and a large Spin/free-spin action. It does not reuse Royal Palace Blackjack's felt-table presentation.
 
-Primary interaction order:
-1. bankroll and current wager,
-2. reel window,
-3. result/feature status,
-4. wager controls,
-5. large **Spin** action,
-6. paytable/rules and preferences.
-
-Spin is always a deliberate single activation. The game never begins another paid or free spin automatically. During finite reel motion, duplicate spin inputs are ignored. The result is predetermined before presentation begins; animation reveals rather than determines the outcome.
+Primary interaction order is bankroll/wager → reels → result/feature status → wager controls → Spin → rules/preferences. Spin is always a deliberate single activation. The logical outcome is determined before finite presentation motion; animation reveals the result rather than deciding it.
 
 ## Accessibility and responsive contract
 
-- Native buttons for all actions.
-- Important controls target at least 48×48 CSS px although WCAG 2.2 AA minimum target-size requirements are less strict.
-- Keyboard activation uses native Enter/Space; optional shortcuts are additive only.
-- No required drag, hover, color-only cue, animation, or audio.
-- Visible `:focus-visible` treatment.
-- Reel symbols expose concise text equivalents; decorative duplication is hidden from assistive tech.
-- A polite live region announces the settled return/net result, payout context, remaining free spins and multiplier changes—not every animation frame.
-- Paytable/rules and preferences use native disclosure patterns.
-- At 200% text size, all content and functionality remain available.
-- No page-level horizontal overflow at 320 CSS px.
-- The primary Spin/free-spin action remains available without sticky controls obscuring content.
-- Wide layouts may place controls beside the cabinet; narrow layouts stack machine, status, controls and rules in normal flow.
-- `prefers-reduced-motion: reduce` removes reel blur/travel, win-line sweeps, cabinet flashes and feature transitions while preserving immediate symbol/result changes and textual feedback.
-- An explicit in-game reduced-effects preference provides the same cosmetic suppression independently of OS preference.
-- Touch behavior never depends on hover and honors safe-area insets.
+- All actions are native buttons; rules/preferences use native disclosure surfaces.
+- Important controls meet the game-local 48 CSS-pixel target baseline.
+- Keyboard activation uses normal Enter/Space behavior.
+- Nothing requires drag, hover, color, animation, or sound.
+- Visible `:focus-visible` treatment is present.
+- Reel symbols expose readable names to assistive technology.
+- Aggregate result/free-spin state is announced through a polite atomic live region.
+- Paid-spin return and net result are both explicit so a partial return cannot masquerade as a win.
+- 320 CSS-pixel layout has no page-level horizontal overflow.
+- 200% text preserves controls/content and reflows without horizontal page overflow.
+- Narrow layouts preserve normal document flow; no sticky action dock obscures content.
+- `prefers-reduced-motion: reduce` and the explicit Reduced effects preference suppress cosmetic reel/result motion while preserving state feedback.
+- Safe-area padding is respected on supported mobile browsers.
 
 ## Sound and motion
 
-Audio is opt-in and initialized only after user interaction. Procedural cues represent spin start, stop/non-positive-net settlement, positive result and feature award. Audio failure never blocks play.
+Sound is off by default and Web Audio is created only after the user enables sound and triggers play. Cues are short and procedural. Audio failure never blocks gameplay.
 
-Motion is finite. Normal mode may use staggered reel deceleration and restrained positive-result emphasis. A paid spin that remains net-negative does not receive celebratory payline animation merely because some credits were returned. Reduced-motion mode replaces reel travel with immediate or near-immediate state presentation.
+Normal motion is finite: one reel-settle sequence and restrained positive-result feedback. Paid outcomes that remain net-negative do not receive celebratory payline motion merely because some credits were returned. Reduced-motion/effects mode presents outcomes immediately or near-immediately.
 
 ## Error and edge handling
 
-- Insufficient bankroll: Spin is disabled; the player can choose a supported lower wager or restore practice credits when below the table minimum.
-- Random-source failure: no wager is deducted, no result is persisted, and a nonblocking retry message is shown.
-- Persistence failure: settled play continues locally/in memory and exposes shared save status.
-- Audio failure: silent continuation.
-- Rapid repeated input: phase guard prevents duplicate paid/free spins.
-- Malformed saved state: decoder rejects it so the repository falls back safely rather than inventing credits/statistics.
-- Feature reload: resume only from the last fully settled free-spin checkpoint.
-- Wild-only ambiguous lines: payout evaluator uses the highest valid configured normal-symbol win for that line.
-- Practice-credit restore: available only outside an active feature when bankroll is below 5; restores bankroll to 2,500 while retaining statistics/preferences.
+- Insufficient bankroll: selected wager cannot be spun; supported lower wagers remain available.
+- Bankroll below 5 outside a feature: Restore practice credits is offered.
+- Random-source failure: no wager deduction or result persistence; a retry message is shown.
+- Persistence unavailable: shared save status surfaces the problem while play can continue with available local/in-memory fallback.
+- Audio unavailable: silent continuation.
+- Duplicate input during presentation: phase guard prevents a second spin.
+- Malformed save: decoder rejects it rather than inventing historical values.
+- Feature reload: resumes only the last fully settled feature checkpoint.
+- Wild-only line: engine selects the highest configured normal-symbol award for that payable length.
 
 ## Quality gates
 
-Unit tests cover deterministic reel stops, left-to-right Wild matching, Scatter independence, base/free trigger counts, multiplier progression/cap, invalid inputs, bankroll settlement, schema decoding and restore behavior.
+Unit coverage includes deterministic stops, line/Wild behavior, Scatter trigger counts, multiplier progression/cap, feature checkpoint transitions, invalid wagers/windows, schema decoding, paid/free settlement, restore semantics, exact reel composition, exact base return, paying-spin probability, trigger/retrigger frequency and full-feature theoretical return.
 
-Probability tests bind reel composition, exact base return, paying-spin probability, feature-entry/retrigger probability, initial-feature expected values, feature return contribution and configured total theoretical return to the source-controlled constants.
+The dedicated Chromium suite verifies route rendering, five-reel geometry, pre-spin rules, 48px Spin target, keyboard Space activation, RNG-source failure without deduction, deterministic Scatter feature entry, settled feature reload, player-paced free-spin progression, explicit reduced effects, sound opt-in/no-autoplay, 320px no-overflow, 200% text reflow, depleted-save restore and statistics retention.
 
-The dedicated browser suite covers catalog route rendering, five-reel geometry, pre-spin rules discoverability, native keyboard Spin activation, RNG-failure no-deduction behavior, deterministic Scatter feature entry, free-feature checkpoint reload, player-paced free-spin decrement, reduced-effects preference, sound opt-in/no-autoplay, 320px no-overflow geometry, 200% text reflow, >=48px primary control, depleted-save restore and preservation of statistics.
-
-Production completion requires repository-wide exact dependency checks, design lint, TypeScript, game/document governance, unit tests, Firestore rules, account/persistence browser checks, catalog/design regressions, dedicated Royal Fortune browser checks, both production builds, artifact upload and Pages deployment.
+Repository-wide validation additionally covers dependency exactness/currentness, design lint, TypeScript, documentation governance, Firestore rules, shared account/persistence browser behavior, catalog/shared design regressions, both production builds, Pages artifact upload and Pages deployment.
 
 ## Research basis
 
-The product is not real-money gambling software, but the design intentionally adopts conservative principles from current authoritative sources: rules and likelihood information should be understandable before play; random outcomes should be demonstrably random and non-adaptive; and product design should not pressure stake escalation, loss chasing or continued play. Accessibility follows WCAG 2.2 reflow/text-resize/target-size principles, with the repository's stronger 48px control baseline, and motion honors the platform `prefers-reduced-motion` preference.
+Although the title is free-play software, it adopts conservative principles from current authoritative standards: rules and likelihood information are available before play; random outcomes are fixed/non-adaptive and testable; the interface avoids loss-chasing/stake-pressure mechanics; WCAG 2.2 reflow/text-resize/target principles inform the responsive contract; and reduced-motion preferences are honored.
 
-## Validation history
+## Verification evidence
 
-Revision `8c3e2fa474dab14f10b5853becac9ad17e434df1` passed GitHub Actions run `38089533535`: dependency exactness/current checks, design lint, TypeScript, game/document governance, unit tests, Firestore rules, account/persistence browser tests, the complete design-browser chain including the then-current Royal Fortune suite, both production builds, Pages artifact upload and Pages deployment. That run establishes a green baseline, but it predates the full feature recurrence and final RNG/reload/restore/net-result polish, so it is not the final verified revision.
+Exact functional revision `e89b9c64eada44a4a5953c17072d57b7d940b4d2` passed GitHub Actions run `38090041520`. The build job passed frozen install, dependency exactness/current checks, design lint, TypeScript, game/document governance, all unit tests including the exact Royal Fortune RTP recurrence, Firestore rules, the shared account/persistence browser suite, catalog/shared design regressions, the expanded Royal Fortune browser suite, both production builds and Pages artifact upload. The deploy job then passed Pages configuration and deployment.
+
+The expanded Royal Fortune browser gate explicitly verified RNG-failure no-deduction behavior, deterministic feature entry, free-spin checkpoint reload, player-paced feature progression, depleted-bankroll restore with statistics retained, 320px no-horizontal-overflow, 200% text reflow, >=48px primary target, reduced-effects behavior and sound opt-in/no-autoplay.
 
 ## Completion contract
 
-**Completion state:** implementing  
-**Completion evidence:** The production game, exact base/full-feature probability model, and expanded edge-case browser coverage are present. Baseline production CI is green at `8c3e2fa` / run `38089533535`; the current final evidence integration still requires its own exact-revision run.
+**Completion state:** verified  
+**Completion evidence:** Exact functional revision `e89b9c64eada44a4a5953c17072d57b7d940b4d2` passed the complete repository validation, dedicated Royal Fortune regression chain, both production builds and GitHub Pages deployment in run `38090041520`. Live configured Firebase account verification remains externally blocked by TASK-003 only.
 
-- [x] Pure reel/payline/Wild/Scatter/free-spin engine exists with deterministic injection seam.
-- [x] Schema-v1 durable state excludes in-flight animation and checkpoints settled free-spin state only.
-- [x] Responsive machine UI, rules/paytable, native controls, transparent net wording, reduced-motion handling and opt-in audio are implemented.
-- [x] Exact base-game and full free-feature theoretical-return audit is implemented and bound to source constants.
-- [ ] Current focused engine/persistence/probability tests pass on the final exact revision.
-- [ ] Current dedicated browser safety/gameplay/persistence/audio/mobile gates pass, including 320px and 200% text.
-- [ ] `pnpm validate` passes with game/document governance synchronized on the final exact revision.
-- [ ] That exact revision builds and deploys successfully to GitHub Pages before the state changes to verified.
+- [x] Pure five-reel/payline/Wild/Scatter/free-spin engine and unbiased production RNG adapter are implemented and tested.
+- [x] Schema-v1 durable state excludes in-flight presentation and safely checkpoints settled free-spin progress.
+- [x] Responsive accessible cabinet, transparent net-result language, rules/RTP disclosure, reduced-effects handling and opt-in audio are implemented.
+- [x] Exact base and full-feature theoretical-return audit is bound to source constants and passed on the verified revision.
+- [x] Dedicated browser gameplay/persistence/accessibility/audio/mobile gates passed, including RNG-failure safety, 320px and 200% text.
+- [x] Repository-wide dependency/type/governance/unit/rules/account/design validation passed on the exact verified revision.
+- [x] Both production builds and Pages artifact upload passed on the exact verified revision.
+- [x] GitHub Pages deployment passed for the exact verified revision.
