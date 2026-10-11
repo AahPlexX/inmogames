@@ -6,35 +6,33 @@
 
 | Capability | Status | Verification |
 | --- | --- | --- |
-| Exact 3-reel / 1-payline engine | verified | RED revision `1085f461f474f9d5ac1976a991d4f6079a9aae75` / run `38098884217`; GREEN revision `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`. |
-| Exhaustive RTP / hit-frequency audit | verified | GREEN unit step on `de1136d18390b1044eab16475fab5aee31b2c6f6` derives 94.775390625% RTP, 42.047119140625% paying-result frequency and 1/32,768 three-Gold-7 probability from source-controlled strips/paytable. |
-| Schema-v1 settled persistence | started | RED revision `eb89b259c60a3a12c9a832db94ea21602035d1eb` / run `38099468454` passed dependency/current/design gates then failed TypeScript only because `storage.ts` and `persistence.ts` were intentionally absent. Production decoder/save-definition/atomic-settlement/restore implementation is now present and awaits GREEN evidence. |
-| Mechanical cabinet UI / audio | planned | Placeholder workspace remains non-playable and is not routed; no cabinet/audio claim yet. |
-| Responsive / keyboard / reduced-motion browser regression | planned | Not implemented yet. |
-| Catalog / route / Pages release | planned | GAME_INDEX implementing row exists; playable catalog/workspace routing and final release evidence remain open. |
-| Authenticated live-project persistence | blocked externally | Shared account-save architecture will be reused; real configured-project verification remains under TASK-003. |
+| Exact 3-reel / 1-payline engine | verified | RED `1085f461f474f9d5ac1976a991d4f6079a9aae75` / run `38098884217`; GREEN `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`. |
+| Exhaustive RTP / hit-frequency audit | verified | GREEN unit step on `de1136d18390b1044eab16475fab5aee31b2c6f6` derives 94.775390625% RTP, 42.047119140625% paying-result frequency and 1/32,768 three-Gold-7 probability. |
+| Schema-v1 settled persistence | verified | RED `eb89b259c60a3a12c9a832db94ea21602035d1eb` / run `38099468454` failed only on intentionally absent persistence modules. GREEN functional revision `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416` passed typecheck, game-check, the full unit suite, rules/account browser checks, existing design-browser suites and both builds. |
+| Mechanical cabinet UI / audio | started | One consolidated browser RED is being introduced before catalog/workspace routing and the playable cabinet exist. Contract covers actual machine geometry, deterministic/RNG-failure spin behavior, keyboard, opt-in audio, reload/restore and reduced motion. |
+| Responsive / keyboard / reduced-motion browser regression | started | Same consolidated browser RED requires 320px no-overflow, 200% text reflow, >=48px primary action and reduced-motion suppression. |
+| Catalog / route / Pages release | started | Browser RED is wired into `test:design-browser`; current catalog/workspace registry intentionally still omits Lucky Seven so the new test proves the missing playable integration before production UI work. |
+| Authenticated live-project persistence | blocked externally | Shared account-save architecture is reused; real configured-project verification remains under TASK-003. |
 
 ## Current handoff
 
-**Implementation state:** implementing — engine/probability verified; persistence production implementation awaiting GREEN  
-**Last verified revision:** engine capability `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`; whole game is not verified  
-**Open game-local work:** obtain persistence GREEN; build cabinet UI/audio; add dedicated browser/responsive regression; catalog/routing; full validation; exact-revision Pages evidence  
-**External blockers:** TASK-003 for real configured-project Firebase services only; it does not block guest/local game completion  
-**Next action:** run the unchanged persistence assertions against the newly added `storage.ts`/`persistence.ts`; fix production only if a contract assertion fails, then record exact GREEN evidence before opening UI work.
+**Implementation state:** implementing — engine/probability and settled persistence verified; consolidated UI/browser TDD opening  
+**Last verified revision:** persistence capability `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; whole game is not verified  
+**Open game-local work:** observe UI/browser RED; implement cabinet/audio/catalog/workspace integration; make browser contract green; run exact-revision full validation/Pages; close out docs/tasks  
+**External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local completion  
+**Next action:** run the new `tests/browser/lucky-seven-classic.mjs` from the repository design-browser chain while the route is still absent, record that deliberate RED, then implement only the production UI/integration required by the consolidated contract.
 
 ## Evidence ledger
 
-- `1085f461f474f9d5ac1976a991d4f6079a9aae75` / run `38098884217`: engine RED on intentionally missing modules.
-- `cec193e955e73834fcf5144703b35a8b411d8591`: pure reel/paytable/engine implementation.
-- `47ec333f5d32c4d801b6e74b048aa09faf36b258` / run `38099168522`: source compiled/static game structure passed; history sync correctly detected split evidence.
-- `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`: synchronized game-check, full unit suite, builds and Pages succeeded; engine/probability GREEN.
-- `eb89b259c60a3a12c9a832db94ea21602035d1eb` / run `38099468454`: persistence RED; exact missing `persistence.ts` and `storage.ts` TypeScript errors after dependency/current/design passed.
+- Engine RED: `1085f461f474f9d5ac1976a991d4f6079a9aae75` / `38098884217`.
+- Engine GREEN: `de1136d18390b1044eab16475fab5aee31b2c6f6` / `38099279607`.
+- Persistence RED: `eb89b259c60a3a12c9a832db94ea21602035d1eb` / `38099468454`.
+- Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / `38099724416`; full build job green, Pages deploy was still completing when UI RED was opened.
 
 ## Continuity notes
 
-- Work on `main`; preserve unrelated concurrent work with lease-protected fast-forwards.
-- Do not share gameplay logic with Royal Fortune Slots or Cascade Vault.
-- The v1 paytable/reel frequencies/precedence/theoretical math and schema-v1 persistence contract in the authoritative spec are binding.
-- Use lean behavior-focused TDD: prove each distinct contract once and reuse existing shared-platform tests rather than cloning them.
-- Keep tracker, PRD, todo, GAME_INDEX, authoritative spec and `.tasks` synchronized whenever implementation state materially changes.
-- Do not claim whole-game completion until the exact functional revision passes full repository validation and Pages deployment. TASK-003 may remain explicitly external.
+- Work on `main`; preserve unrelated concurrent work using lease-protected fast-forwards.
+- Gameplay code stays independent from Royal Fortune Slots and Cascade Vault; shared platform/test seams may be reused.
+- Use lean full-coverage TDD: one consolidated browser suite rather than duplicate accessibility/audio/mobile suites.
+- Keep spec, tracker, PRD, todo, GAME_INDEX and `.tasks` synchronized at each material integration.
+- Whole-game completion requires exact functional revision validation plus successful Pages deployment; TASK-003 may remain externally blocked.
