@@ -39,6 +39,13 @@ async function waitForServer() {
   throw new Error('Hollowshift prototype Vite server did not start.');
 }
 
+function watchErrors(page, errors) {
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+}
+
 async function load(page) {
   await page.goto(pageUrl);
   await page.getByRole('heading', { name: 'Hollowshift', exact: true }).waitFor();
@@ -80,6 +87,17 @@ async function assertGridContract(page) {
   );
 }
 
+async function pressGridKey(page, key, expectedIndex) {
+  const current = page.locator('[role="gridcell"][tabindex="0"]');
+  await current.focus();
+  await page.keyboard.press(key);
+  const expected = page.locator(
+    `[role="gridcell"][tabindex="0"][data-index="${expectedIndex}"]`,
+  );
+  await expected.waitFor();
+  assert.equal(await expected.getAttribute('data-index'), String(expectedIndex));
+}
+
 try {
   await waitForServer();
   browser = await chromium.launch({
@@ -87,13 +105,10 @@ try {
     executablePath: process.env.CHROMIUM_PATH || undefined,
   });
 
+  const errors = [];
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
-  const errors = [];
-  page.on('pageerror', error => errors.push(error.message));
-  page.on('console', message => {
-    if (message.type() === 'error') errors.push(message.text());
-  });
+  watchErrors(page, errors);
   await load(page);
 
   await assertGridContract(page);
@@ -101,16 +116,10 @@ try {
   await page.getByRole('group', { name: 'Board legend' }).waitFor();
   await page.getByRole('complementary', { name: 'Expedition guidance' }).waitFor();
 
-  const selected = page.locator('[role="gridcell"][tabindex="0"]');
-  await selected.focus();
-  await page.keyboard.press('ArrowRight');
-  assert.equal(await page.locator('[role="gridcell"][tabindex="0"]').getAttribute('data-index'), '43');
-  await page.keyboard.press('Home');
-  assert.equal(await page.locator('[role="gridcell"][tabindex="0"]').getAttribute('data-index'), '42');
-  await page.keyboard.press('End');
-  assert.equal(await page.locator('[role="gridcell"][tabindex="0"]').getAttribute('data-index'), '48');
-  await page.keyboard.press('ArrowUp');
-  assert.equal(await page.locator('[role="gridcell"][tabindex="0"]').getAttribute('data-index'), '41');
+  await pressGridKey(page, 'ArrowRight', 43);
+  await pressGridKey(page, 'Home', 42);
+  await pressGridKey(page, 'End', 48);
+  await pressGridKey(page, 'ArrowUp', 41);
   const focusStyle = await page.locator('[role="gridcell"][tabindex="0"]').evaluate(element => {
     const style = getComputedStyle(element);
     return { outlineStyle: style.outlineStyle, outlineWidth: parseFloat(style.outlineWidth) };
@@ -148,6 +157,7 @@ try {
 
   const touch = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
   const touchPage = await touch.newPage();
+  watchErrors(touchPage, errors);
   await load(touchPage);
   await touchPage.locator('[role="gridcell"][data-index="24"]').tap();
   await touchPage.locator('[data-shift="right"]').tap();
@@ -158,6 +168,7 @@ try {
 
   const reduced = await browser.newContext({ viewport: { width: 844, height: 390 }, reducedMotion: 'reduce' });
   const reducedPage = await reduced.newPage();
+  watchErrors(reducedPage, errors);
   await load(reducedPage);
   const motionMs = await reducedPage.locator('.cell').first().evaluate(element => {
     const toMs = value => value.split(',').reduce((max, part) => {
