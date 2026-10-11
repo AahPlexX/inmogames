@@ -575,6 +575,18 @@ Required:
 - help contains plain-language rules for shift behavior;
 - accessibility assists are separate from challenge legitimacy.
 
+### Verified prototype evidence (2026-10-10)
+
+The disposable decision-loop prototype at `public/prototypes/hollowshift-core-loop-v2.html` is now covered by `tests/browser/hollowshift-prototype.mjs` and the shared `pnpm test:hollowshift` command. That command is also included in `pnpm test:design-browser`; `.github/workflows/hollowshift-prototype.yml` provides the same check as a fast manually dispatchable/game-local gate with overlapping runs cancelled.
+
+Verified automated browser evidence covers 320×568, 390×844, 844×390, 768×1024, 1024×768, 1440×900 and 1920×1080 CSS-pixel viewports, plus 320×568 with 200% root text. The prototype preserves 44×44 CSS-pixel board/action targets without document horizontal overflow. The validated narrow composition uses a 2×2 HUD, stacked terminal actions and wrapping action labels with reduced inline padding rather than shrinking type or targets.
+
+The board exposes `grid → row → gridcell` ownership with one roving tab stop, visible focus and Arrow/Home/End navigation. Preview/cancel spends no turn while committed geometry does; touch uses explicit actions with no required drag; reduced-motion presentation preserves state transitions; and the test rejects browser console/page errors.
+
+Evidence runs: candidate full-matrix green `38100932047`; post-commit permanent focused green `38101017710`; shared package-entry focused green `38101154123`. Repository-wide run `38101154026` reached `test:design-browser` but stopped earlier in the chain on an unrelated Lucky Seven Classic strict-locator ambiguity before Hollowshift executed; this is not a Hollowshift failure.
+
+Human gates remain authoritative: issue #11 still requires qualitative core-loop play judgment, and issue #14 still requires HITL visual/experiential sign-off even though its objective browser evidence is complete.
+
 ## 25. Persistence and save contract
 
 Implementation must use the shared `useGameSave`/repository abstraction. No direct game-specific Firebase calls.
