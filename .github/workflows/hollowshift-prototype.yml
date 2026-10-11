@@ -7,6 +7,7 @@ on:
     paths:
       - 'public/prototypes/hollowshift-core-loop-v2.html'
       - 'tests/browser/hollowshift-prototype.mjs'
+      - 'package.json'
       - '.github/workflows/hollowshift-prototype.yml'
 
 permissions:
@@ -30,4 +31,4 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
-      - run: node tests/browser/hollowshift-prototype.mjs
+      - run: pnpm test:hollowshift
