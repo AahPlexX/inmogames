@@ -19,6 +19,7 @@
 - Final weighted distribution must produce reproducible 10,000,000-spin Monte Carlo evidence whose 95% confidence interval intersects 94–97% RTP target; implementation remains incomplete otherwise.
 - Responsive at 320 CSS px, 200% text resilient, keyboard/touch accessible, 48px important targets, visible focus, reduced-motion equivalent, aggregate textual cascade announcements, no horizontal overflow.
 - Synchronize spec, PRD, tracker, todo, GAME_INDEX, `.tasks`; TASK-003 remains external Firebase provisioning only.
+- **Exact payout precision:** user-visible awards follow the approved fractional paytable exactly. Runtime/accounting uses integer centi-credit units (`CREDIT_SCALE = 100`, 100 units = 1 credit), paytable factors are integer hundredths, and Vault Run ×1.5 is applied exactly. The former phrase “integer-credit award” means integer accounting units, not whole displayed credits; no whole-credit rounding is allowed.
 
 ---
 
@@ -31,12 +32,12 @@
 - Test: `tests/unit/cascade-vault-engine.test.ts`
 
 **Interfaces:**
-- Consumes: injected random integer source and immutable 6×5 board.
-- Produces: `createInitialBoard(random, mode)`, `evaluateWays(board, wager, modifiers)`, `collapseAndRefill(board, removals, random, modifiers)`, `resolveSpin(...)`, feature transition types.
+- Consumes: injected random/symbol source and immutable 6×5 board.
+- Produces: `createInitialBoard(random)`, `evaluateWays(board, wager, modifiers)`, `collapseAndRefill(board, removals, random, modifiers)`, `resolveSpin(...)`, `advanceVaultRunAfterSpin(...)`, feature transition types.
 
 - [ ] **Step 1: Add focused failing tests**
 
-Assert ways count multiplication; three-to-six-reel awards; Wild substitution without double-paying one concrete way; simultaneous removal; gravity order; refill count/position; multiplier progression/caps; Scatter initial-board-only generation; 4/5/6 Scatter trigger counts; Vault Run persistent multiplier; meter once-per-free-spin progression; step-1 forced Wild; step-2 ×1.5 modifier; one-time step-3 +3; +4 retrigger with 20-spin cap; 50-cascade guard throws explicit engine error.
+Assert ways count multiplication; three-to-six-reel awards; exact centi-credit payout accounting; Wild substitution without duplicate interpretation payout; simultaneous removal; gravity order; refill count/position; multiplier progression/caps; Scatter initial-board-only generation; 4/5/6 Scatter trigger counts; Vault Run persistent multiplier; meter once-per-free-spin progression; step-1 forced Wild; step-2 ×1.5 modifier; one-time step-3 +3; +4 retrigger with 20-spin cap; 50-cascade guard throws explicit engine error.
 
 - [ ] **Step 2: Verify relevant failure**
 
@@ -45,7 +46,7 @@ Expected: non-zero because engine modules are absent.
 
 - [ ] **Step 3: Implement minimum behavior**
 
-Represent board as six reel arrays of five symbols. Evaluate each payable symbol independently from the immutable board, selecting valid Wild assignments without duplicate interpretation payout. Return exact winning coordinates/removal set and integer-credit award. Collapse each reel downward, refill only vacated cells, apply feature Wild replacement through the same random source, and resolve cascades iteratively with corruption guard.
+Represent board as six reel arrays of five symbols. Evaluate each payable symbol independently from the immutable board, deduplicating identical Wild-only coordinate interpretations to the highest valid paytable award. Return exact winning coordinates/removal set and **integer centi-credit award units**. Collapse each reel downward, refill only vacated cells, apply feature Wild replacement through the same random source, and resolve cascades iteratively with corruption guard.
 
 - [ ] **Step 4: Verify focused pass**
 
@@ -57,7 +58,7 @@ Run `pnpm typecheck && pnpm test:unit`; expected zero exit.
 
 - [ ] **Step 6: Commit passing deliverable**
 
-Commit engine/symbols/paytable/tests.
+Commit engine/symbols/paytable/tests and synchronized living docs.
 
 ### Task 2: Simulation/probability audit and balance gate
 
@@ -79,7 +80,7 @@ Run focused simulation tests; expected module-missing failure.
 
 - [ ] **Step 3: Implement minimum behavior**
 
-Keep seeded PRNG test/audit-only; production still uses cryptographic randomness. Stream simulation statistics without retaining all outcomes. Provide a scriptable function capable of 10,000,000 spins within CI/tooling limits or a separate explicitly invoked audit command if full count is too slow for every normal validation run.
+Keep seeded PRNG test/audit-only; production still uses cryptographic randomness. Stream simulation statistics without retaining all outcomes. Provide a scriptable function capable of 10,000,000 spins within tooling limits or a separate explicitly invoked audit command if full count is too slow for every normal validation run. Convert centi-credit award units consistently when calculating RTP.
 
 - [ ] **Step 4: Verify focused pass**
 
@@ -105,7 +106,7 @@ Commit simulation code/tests and record audit output in tracker only after final
 
 - [ ] **Step 1: Add focused failing tests**
 
-Assert 5,000 initial bankroll and valid default wager; supported wager enumeration; malformed/non-finite/negative rejection; stats; settled Vault Run checkpoint decode; no partial cascade representation; restore-to-5,000 preserving stats/preferences.
+Assert 5,000 initial bankroll and valid default wager; exact centi-credit storage/accounting; supported wager enumeration; malformed/non-finite/negative rejection; stats; settled Vault Run checkpoint decode; no partial cascade representation; restore-to-5,000 preserving stats/preferences.
 
 - [ ] **Step 2: Verify failure**
 
@@ -113,7 +114,7 @@ Run focused persistence test; expected missing module failure.
 
 - [ ] **Step 3: Implement minimum behavior**
 
-Schema v1, slug `cascade-vault`, storage key `inmogames:cascade-vault:v1`; persist fully settled bankroll/statistics/preferences plus post-free-spin feature state only. Never serialize board/cascade animation state.
+Schema v1, slug `cascade-vault`, storage key `inmogames:cascade-vault:v1`; persist fully settled bankroll/statistics/preferences plus post-free-spin feature state only. Never serialize board/cascade animation state. Keep credit accounting in integer centi-credit units and convert only at display boundaries.
 
 - [ ] **Step 4: Verify focused pass**
 
@@ -130,15 +131,14 @@ Commit persistence modules/tests.
 ### Task 4: Accessible cascading board UI, finite sequence presentation, and audio
 
 **Files:**
-- Create: `src/games/cascade-vault/CascadeVaultWorkspace.tsx`
+- Replace governance placeholder with production: `src/games/cascade-vault/CascadeVaultWorkspace.tsx`
 - Create: `src/games/cascade-vault/cascade-vault.css`
 - Create: `src/games/cascade-vault/audio.ts`
-- Create: `src/games/cascade-vault/cascade-vault.meta.ts`
 - Test: `tests/browser/cascade-vault.mjs`
 
 **Interfaces:**
 - Consumes: pre-resolved engine event sequence and save contract.
-- Produces: responsive board/feature UI, metadata, opt-in procedural cues.
+- Produces: responsive board/feature UI and opt-in procedural cues.
 
 - [ ] **Step 1: Add focused failing browser test**
 
@@ -146,7 +146,7 @@ Assert initial route/rules; Spin native keyboard/touch operation; deterministic 
 
 - [ ] **Step 2: Verify failure**
 
-Run browser test; expected missing route/workspace.
+Run browser test before catalog/lazy-route registration; expected missing playable route/workspace.
 
 - [ ] **Step 3: Implement minimum behavior**
 
@@ -154,7 +154,7 @@ Resolve full logical sequence before presentation. Present board states in order
 
 - [ ] **Step 4: Verify focused pass**
 
-Run browser test; expected zero exit.
+Run browser test; expected zero exit after Task 5 route registration is integrated atomically with the production workspace.
 
 - [ ] **Step 5: Integration check**
 
@@ -162,35 +162,33 @@ Run `pnpm typecheck && pnpm test:unit && pnpm build`; expected zero exit.
 
 - [ ] **Step 6: Commit passing deliverable**
 
-Commit UI/audio/meta/browser test.
+Commit UI/audio/browser contract and synchronized integration.
 
 ### Task 5: Catalog/governance integration and exact-revision verification
 
 **Files:**
 - Modify: `src/catalog.ts`
 - Modify: `src/games/workspaces.tsx`
-- Modify: `package.json`
-- Create: `src/games/cascade-vault/PRD.md`
-- Create: `src/games/cascade-vault/TRACKER.md`
-- Create: `src/games/cascade-vault/todo.md`
+- Modify: `package.json` if the consolidated browser command requires explicit wiring
+- Existing implementing governance: `src/games/cascade-vault/PRD.md`, `TRACKER.md`, `todo.md`
 - Modify: `docs/GAME_INDEX.md`
 - Modify: `.tasks/IN_PROGRESS.md`
-- Test: `tests/unit/catalog.test.ts`
+- Test: `tests/unit/catalog.test.ts` where a new assertion is materially necessary
 
 **Interfaces:**
 - Produces discoverable `#/games/cascade-vault` and synchronized handoff/evidence.
 
 - [ ] **Step 1: Add/update integration assertions**
 
-Assert catalog slug uniqueness/workspace route and add browser suite to `test:design-browser`.
+Assert catalog slug uniqueness/workspace route only if existing generic coverage does not already prove it; add browser suite to `test:design-browser` without duplicating shared checks.
 
-- [ ] **Step 2: Verify governance failure before completion**
+- [ ] **Step 2: Preserve the earlier browser RED**
 
-Run `pnpm game:check` while required game docs/index link are absent; expected targeted failure.
+The playable route must remain absent through Task 4 Step 2 so the initial browser failure proves missing integration rather than a test-harness problem.
 
 - [ ] **Step 3: Complete integration/governance**
 
-Register metadata/workspace. Add PRD/tracker/todo in implementing state; synchronize Completion contract, GAME_INDEX, task ledger. Record final 10M-spin audit seed/count/RTP/SE/95% CI/feature frequency/average cascade depth and exact tested constants.
+Register metadata/workspace. Synchronize Completion contract, GAME_INDEX and task ledger. Record final 10M-spin audit seed/count/RTP/SE/95% CI/feature frequency/average cascade depth and exact tested constants.
 
 - [ ] **Step 4: Verify integration**
 
@@ -198,12 +196,12 @@ Run `pnpm game:check && pnpm typecheck && pnpm test:unit`; expected zero exit.
 
 - [ ] **Step 5: Full validation**
 
-Run `pnpm validate`; expected zero exit. Confirm GitHub Actions build and Pages deployment for exact revision.
+Run canonical repository validation; expected zero exit. Confirm GitHub Actions build and Pages deployment for exact revision.
 
 - [ ] **Step 6: Synchronize verification evidence**
 
-Update tracker/spec/todo/GAME_INDEX/.tasks atomically with exact revision/workflow evidence. Keep TASK-003 external where live authenticated saves remain blocked.
+Update tracker/spec/todo/GAME_INDEX/.tasks atomically with exact revision/workflow evidence. Keep TASK-003 external where live authenticated saves remain blocked. Validate the verified-state closeout commit itself before claiming completion.
 
 ## Unresolved externally observable decisions
 
-None. The approved design resolves feature thresholds, paytable multipliers, meter semantics, retrigger/cascade caps, and RTP acceptance range. Symbol distribution weights remain an engineering tuning parameter constrained by the documented probability acceptance gate.
+None. The approved design resolves feature thresholds, paytable multipliers, meter semantics, retrigger/cascade caps, payout precision, and RTP acceptance range. Symbol distribution weights remain an engineering tuning parameter constrained by the documented probability acceptance gate.

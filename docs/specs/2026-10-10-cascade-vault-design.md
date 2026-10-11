@@ -1,7 +1,7 @@
 # Cascade Vault design
 
-**Status:** Approved design — implementation pending  
-**Last synchronized:** 2026-10-10  
+**Status:** Implementing — Task 1 exact ways/cascade engine TDD RED opening  
+**Last synchronized:** 2026-10-11  
 **Proposed route:** `#/games/cascade-vault`
 
 ## Product intent
@@ -50,6 +50,12 @@ Multipliers are applied per way before the cascade/feature multiplier:
 
 The Wild has no standalone paytable entry. Scatter feature awards do not pay a separate credit prize in v1.
 
+### Exact payout precision
+
+The approved formula intentionally permits fractional virtual-credit results. Example: a 10-credit Copper 3-reel way pays 1.5 credits before cascade modifiers; Vault Run step 2 can further produce quarter-credit values after its ×1.5 modifier. Runtime scoring therefore uses **integer centi-credit units**, with `CREDIT_SCALE = 100` and 100 internal units equal to 1 displayed virtual credit. Paytable factors are represented as integer hundredths and the feature ×1.5 modifier as an exact rational factor. This preserves the approved formula without floating-point rounding drift. No rule rounds an award to whole credits.
+
+The implementation plan's earlier phrase “integer-credit award” is superseded by this exact-accounting rule: awards are integer **accounting units**, not necessarily whole displayed credits. Simulation, persistence and UI must consume the same centi-credit contract.
+
 ## Outcome and randomness model
 
 A paid spin obtains a production random source from browser cryptographic randomness. Initial-board generation and every refill draw for that spin consume that source through a pure engine adapter. Tests inject deterministic seeded sources.
@@ -70,7 +76,7 @@ Local storage key: `inmogames:cascade-vault:v1`.
 Cloud game slug: `cascade-vault`.
 
 Persist:
-- settled bankroll,
+- settled bankroll using exact centi-credit accounting,
 - selected base wager,
 - lifetime paid spins,
 - total wagered/won/net,
@@ -89,16 +95,16 @@ Authenticated saves use `users/{uid}/games/cascade-vault`; external Firebase pro
 
 ## Architecture
 
-Proposed game-local modules:
+Game-local modules:
 
 - `engine.ts`: board generation contract, ways evaluation, Wild substitution, simultaneous removal, gravity/refill cascade loop, multiplier state, Scatter/feature transitions, corruption guards.
-- `symbols.ts`: weighted symbol distributions, symbol metadata, deterministic draw adapter.
-- `paytable.ts`: payout functions, multiplier/feature modifiers, audit helpers.
+- `symbols.ts`: weighted symbol distributions, symbol metadata, deterministic/production draw adapter.
+- `paytable.ts`: exact centi-credit payout functions, multiplier/feature modifiers, audit helpers.
 - `simulation.ts`: deterministic reproducible probability/RTP simulation utilities used by tests/tooling, not runtime UI.
 - `storage.ts`: durable schema/decoder.
 - `persistence.ts`: shared-platform checkpoint definition.
 - `audio.ts`: opt-in procedural cues.
-- `CascadeVaultWorkspace.tsx`: accessible paid-spin/cascade/feature state machine and presentation.
+- `CascadeVaultWorkspace.tsx`: accessible paid-spin/cascade/feature state machine and presentation. An unregistered governance-only placeholder may exist during early engine work; it is not the playable implementation.
 - `cascade-vault.css`: scoped responsive board/feature presentation.
 - `cascade-vault.meta.ts`: catalog metadata.
 - `PRD.md`, `TRACKER.md`, `todo.md`: game-local living governance.
@@ -166,3 +172,17 @@ Production completion requires the same complete repository validation/deploymen
 ## Research basis
 
 Although Cascade Vault is free-play software, its design adopts conservative principles from current authoritative gambling-technology guidance: rules and likelihood information should be understandable before play, random outcomes should be demonstrably random/non-adaptive, and product mechanics should not push loss chasing, stake escalation, or continued play. Accessibility follows WCAG 2.2 resize/reflow/target principles and honors `prefers-reduced-motion`.
+
+## Completion contract
+
+**Completion state:** implementing  
+**Completion evidence:** Approved design/plan are synchronized and Task 1 engine RED is being established; no Cascade Vault gameplay capability is verified yet.
+
+- [ ] Exact ways/Wild/simultaneous-removal/gravity/refill/cascade/Vault Run engine passes focused tests.
+- [ ] Reproducible >=10,000,000-spin audit records RTP/SE/95% CI/feature frequency/cascade depth and the CI intersects 94%-97%.
+- [ ] Settled schema-v1 persistence, reload, feature checkpoint and restore behavior pass focused tests.
+- [ ] Accessible playable board/Vault Run/audio browser contract passes deterministic gameplay, 320px, 200%-text, target-size, keyboard/touch and reduced-motion gates.
+- [ ] Catalog/workspace route and all living governance surfaces remain synchronized.
+- [ ] Exact dependency freshness, TypeScript, repository governance, unit/rules/shared browser and game-specific browser suites pass on the final functional revision.
+- [ ] Both production builds and Pages artifact upload succeed on that exact revision.
+- [ ] GitHub Pages deployment succeeds and tracker/PRD/todo/GAME_INDEX/.tasks close as verified; TASK-003 may remain externally blocked.
