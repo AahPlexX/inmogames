@@ -25,7 +25,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
-      - name: Rebase onto current main and apply exact compact-layout patch
+      - name: Rebase onto current main and apply exact compact-layout candidate
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -36,7 +36,7 @@ jobs:
           path = Path('public/prototypes/hollowshift-core-loop-v2.html')
           text = path.read_text()
           old = '@media(max-width:25rem){.shell{padding:.2rem}.game{padding:.1rem}.panel{border-radius:.65rem}.hud{gap:.2rem}.stat{padding:.35rem .4rem}.row{gap:.28rem}.previewbar{grid-template-columns:1fr 1fr}.previewbar p{grid-column:1/-1}}'
-          new = '@media(max-width:25rem){.shell{padding:.2rem 0}.game{padding:.1rem 0}.panel{border-radius:.65rem}.hud{gap:.2rem}.stat{padding:.35rem .4rem}.row{gap:.28rem}.previewbar{grid-template-columns:1fr 1fr}.previewbar p{grid-column:1/-1}}'
+          new = '@media(max-width:25rem){.shell{padding:.2rem 0}.game{padding:.1rem 0}.panel{border-radius:.65rem}.hud{gap:.2rem}.stat{padding:.35rem .4rem}.row{gap:.28rem}.end{grid-template-columns:1fr}.previewbar{grid-template-columns:1fr 1fr}.previewbar p{grid-column:1/-1}}'
           count = text.count(old)
           if count != 1:
               raise SystemExit(f'Expected exactly one compact-layout block, found {count}. Refusing to patch stale source.')
@@ -44,7 +44,7 @@ jobs:
           PY
       - name: Verify unchanged Hollowshift browser contract
         run: node tests/browser/hollowshift-prototype.mjs
-      - name: Commit product fix and self-remove helper
+      - name: Commit verified product fix and self-remove helper
         run: |
           rm .github/workflows/hollowshift-mobile-oneshot.yml
           git add public/prototypes/hollowshift-core-loop-v2.html .github/workflows/hollowshift-mobile-oneshot.yml
