@@ -1,6 +1,6 @@
 # Lucky Seven Classic design
 
-**Status:** Implementing — engine and settled persistence verified; result-status selector correction awaiting GREEN  
+**Status:** Implementing — complete browser behavior verified; production CSS selector repair awaiting build/Pages GREEN  
 **Last synchronized:** 2026-10-11  
 **Route:** `#/games/lucky-seven-classic`
 
@@ -33,7 +33,7 @@ Initial bankroll is 500 virtual credits. Local key is `inmogames:lucky-seven-cla
 
 The playable UI uses a scoped `.lsc` cabinet with exactly three `.lsc-reel` columns and three visible `.lsc-symbol` cells per reel (previous/center/next). The center row is visually marked and explicitly labelled **Center payline** in its own visible text element; decorative diamonds remain separate `aria-hidden` siblings. Vintage enamel/metal framing, warm reel paper, restrained red/black/gold accents and large symbols distinguish the machine from Royal Fortune.
 
-The canonical action is a native button labelled `Pull / Spin · N credit(s)`; any lever treatment is decorative and never drag-required. The five supported wagers are native buttons. A spin obtains the random reel windows and fully settles the durable state before presentation motion. Rapid repeat activation is phase-guarded. RNG failure reports a nonblocking message and does not consume virtual credits.
+The canonical action is a native button labelled `Pull / Spin · N credit(s)`; any lever treatment is decorative and never drag-required. The five supported wagers are native buttons. A spin obtains the random reel windows and fully settles durable state before presentation motion. Rapid repeat activation is phase-guarded. RNG failure reports a nonblocking message and does not consume virtual credits.
 
 A collapsed **Paytable & rules** disclosure is available before first spin. **Preferences & saved game** exposes sound, cabinet motion and a two-step game-local reset. Audio is opt-in; Web Audio is created only after sound is enabled and the player triggers a spin. Procedural pull/stop/win cues are finite and optional, with no ambient loop.
 
@@ -44,10 +44,10 @@ The completed-spin footer exposes spin count, cumulative wagered and returned vi
 - Native controls; primary spin target at least 48 CSS px tall.
 - Keyboard Space/Enter operates the spin button; no action requires drag/hover/audio/color/motion.
 - A polite `.lsc-status` region communicates result classification and payout in text.
-- Result assertions must read that live status region rather than globally matching paytable copy; the paytable intentionally repeats valid result labels such as `3 Gold 7s` and `3 Red 7s`.
+- Browser result assertions read the live status region rather than globally matching paytable copy; the paytable intentionally repeats valid result labels such as `3 Gold 7s` and `3 Red 7s`.
 - The semantic `Center payline` label is independently discoverable as exact visible text; decorative symbols do not alter its text identity.
 - 320 CSS-px layout has no page-level horizontal overflow.
-- At 200% browser text sizing, primary action and all gameplay remain reachable without horizontal overflow.
+- At 200% browser text sizing, primary action and gameplay remain reachable without horizontal overflow.
 - `prefers-reduced-motion: reduce` and the in-game motion preference suppress reel/lever travel while preserving immediate state/result updates.
 - Safe-area-aware normal flow; no fixed action surface may obscure content or focus.
 - Visible focus treatment is mandatory for buttons and disclosures.
@@ -66,9 +66,11 @@ The completed-spin footer exposes spin count, cumulative wagered and returned vi
 8. 200% text retains no horizontal overflow and primary-action access;
 9. a valid depleted saved fixture restores bankroll to 500 while retaining nine completed spins.
 
-The Red-7 sound fixture is `[0,9,14]`, the actual Red-7 positions for the three source-controlled reels. The original `[0,0,0]` fixture was identified before GREEN implementation as incorrect because reel 2/3 position 0 are not Red 7. The test assertion remains `3 Red 7s`; this is a deterministic fixture correction, not weaker coverage.
+The Red-7 sound fixture is `[0,9,14]`, the actual Red-7 positions for the three source-controlled reels. The original `[0,0,0]` fixture was identified before GREEN implementation as incorrect because reel 2/3 position 0 are not Red 7. The expected `3 Red 7s` behavior was never weakened.
 
-Because the paytable remains visible and correctly includes `3 Gold 7s` and `3 Red 7s`, browser outcome waits are scoped to `.lsc-status`. This removes Playwright strict-mode ambiguity without changing any expected result, payout, bankroll, keyboard, audio, persistence, reduced-motion or responsive assertion.
+## Production CSS/build contract
+
+Lucky Seven styling remains fully scoped to `.lsc`. Descendant box sizing must use valid descendant selectors: `.lsc *`, `.lsc *::before`, `.lsc *::after`. The earlier source accidentally used `.lsc*`, `.lsc*::before`, `.lsc*::after`; dev/browser execution still exercised the cabinet, but Vite 8.3.4's LightningCSS production minifier rejected the selector with `Unexpected token Delim('*')`. The repo's verified Royal Fortune stylesheet demonstrates the same valid scoped descendant pattern (`.rf *`, `.rf *::before`, `.rf *::after`). The current repair changes only the missing descendant spaces and must be proven by both `build:firebase` and standard `build` plus Pages deployment.
 
 ## Architecture
 
@@ -78,8 +80,8 @@ Because the paytable remains visible and correctly includes `3 Gold 7s` and `3 R
 - `storage.ts`: schema-v1 durable state and decoder.
 - `persistence.ts`: shared save definition, atomic settlement and restore.
 - `audio.ts`: opt-in procedural cues; failure never affects gameplay.
-- `LuckySevenClassicWorkspace.tsx`: shared-save adapter plus accessible cabinet state machine, rules/preferences, reset, and standalone semantic payline label.
-- `lucky-seven-classic.css`: scoped responsive cabinet, finite normal motion, reduced-motion override and 320px/200%-text reflow.
+- `LuckySevenClassicWorkspace.tsx`: shared-save adapter plus accessible cabinet state machine, rules/preferences, reset and standalone semantic payline label.
+- `lucky-seven-classic.css`: scoped responsive cabinet, finite normal motion, reduced-motion override, 320px/200%-text reflow and valid scoped descendant box sizing.
 - `lucky-seven-classic.meta.ts`: catalog metadata.
 - `src/catalog.ts` / `src/games/workspaces.tsx`: discoverable catalog entry and lazy route registration.
 
@@ -89,21 +91,23 @@ Because the paytable remains visible and correctly includes `3 Gold 7s` and `3 R
 - Engine GREEN: `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`.
 - Persistence RED: `eb89b259c60a3a12c9a832db94ea21602035d1eb` / run `38099468454`.
 - Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; full build and Pages deployment succeeded.
-- History-sync diagnostics: `a8da91b63a5e43fc049def1ab869659fbeb4f57f` / `38099964934` and `1074ad595271b5c60c0e83632dd9bde86726bead` / `38100085348` stopped before Playwright and are not UI RED evidence.
-- UI/browser RED: `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`. Dependency freshness, design lint, typecheck, game governance, 117 unit tests, rules, shared account browser, catalog/shared design regressions, all Royal Palace suites and Royal Fortune browser checks passed. Lucky Seven then failed exactly on `locator('.lsc')` timeout because the playable route/cabinet did not yet exist.
-- First cabinet candidate source revision `ab6651d6788371b15b0164fe5c3f04c65095ea41` was exercised unchanged by descendant run `38100732011`. All pre-browser gates and earlier browser suites again passed. Lucky Seven advanced into its own assertions and failed only because `getByText('Center payline', { exact: true })` could not match the container text `◆ Center payline ◆`. Production repair `3e662d79645151e7e7fbc7eb666dd2fd273fbe9e` makes `Center payline` a standalone visible span while decorative diamonds remain `aria-hidden`.
-- Tree-identical revision `8cf51f00d14fdf0e2902600719017aff095837a3` / run `38120980679` proved that semantic repair and then advanced through RNG-failure safety and the keyboard-driven Gold-7 settlement: the live status correctly rendered `3 Gold 7s · Returned 500 virtual credits...` and bankroll reached the asserted result path. The run stopped only because the broad `getByText(/3 Gold 7s/i)` selector also matched the intentionally visible paytable row. The harness now scopes Gold-7 and Red-7 outcome waits to `.lsc-status`; all expected text and behavioral assertions remain unchanged.
+- UI/browser RED: `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; all earlier layers passed and Lucky failed exactly on missing `.lsc`.
+- First cabinet candidate source `ab6651d6788371b15b0164fe5c3f04c65095ea41`; descendant run `38100732011` exposed payline exact-text semantics and drove repair `3e662d79645151e7e7fbc7eb666dd2fd273fbe9e`.
+- Tree-identical `8cf51f00d14fdf0e2902600719017aff095837a3` / run `38120980679` proved the semantic repair, RNG safety and Gold-7 settlement, then exposed a harness-only duplicate-text locator ambiguity.
+- Selector correction `3b3faa1a95a04752c813acbcb9e09b3112945ec6` / run `38121283719` passed dependency freshness, design lint, typecheck, game governance, 117 unit tests, Firestore rules, shared account browser, **the complete Lucky Seven browser suite**, Mergrove design, Cloudline design and Hollowshift prototype. Lucky's log explicitly reported: `Lucky Seven browser checks passed: route/cabinet, RNG safety, deterministic settlement/reload, restore, 320px/200%-text reflow, 48px action, reduced motion and opt-in audio.` The run then failed at `build:firebase` when LightningCSS parsed `.lsc*` in `lucky-seven-classic.css` and reported `Unexpected token Delim('*')`.
+- Current repair changes that selector only to valid `.lsc *` descendants and synchronizes living documentation. GREEN is not claimed until the full workflow and Pages deployment succeed.
 
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Engine/probability and persistence are green through `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; the exact UI/browser RED is `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; run `38100732011` exposed and drove the payline semantic repair; run `38120980679` proved that repair and correct Gold-7 output but exposed a harness-only strict-selector ambiguity. Final browser/build/Pages GREEN remains open.
+**Completion evidence:** Engine/probability/persistence and the complete game-specific browser contract are green. Exact release verification remains open solely because run `38121283719` failed at the first production build on the invalid scoped selector.
 
 - [x] Pure reel/paytable/engine behavior is implemented and exhaustively probability-audited.
-- [x] Game-local schema-v1 decoder/save-definition/settlement/restore behavior passes unchanged focused tests.
-- [ ] Mechanical cabinet UI, keyboard/touch behavior, paytable/help, audio preference and finite motion pass the fixed browser contract.
-- [ ] 320px, 200%-text and reduced-motion browser regressions pass without horizontal overflow or obscured controls.
-- [ ] Catalog/workspace routing, PRD, TRACKER, todo, GAME_INDEX and `.tasks` remain synchronized through the completed implementation history.
-- [ ] `pnpm validate` passes on the exact final functional revision.
+- [x] Game-local schema-v1 decoder/save-definition/settlement/restore behavior passes focused tests.
+- [x] Mechanical cabinet UI, keyboard/touch behavior, paytable/help, audio preference and finite motion pass the consolidated browser contract.
+- [x] 320px, 200%-text and reduced-motion browser regressions pass without horizontal overflow or obscured controls.
+- [ ] Corrected CSS passes both production builds on an exact revision.
+- [ ] Catalog/workspace routing, PRD, TRACKER, todo, GAME_INDEX and `.tasks` remain synchronized through final verification.
+- [ ] Full canonical validation passes on the exact final functional revision.
 - [ ] GitHub Pages deployment succeeds for that exact final functional revision.
 - [ ] Tracker/completion state become verified only after exact revision/run evidence exists; TASK-003 may remain externally blocked.

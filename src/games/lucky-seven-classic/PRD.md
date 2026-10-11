@@ -4,11 +4,11 @@ Planned Functional Features Specification:
   game_identity:
     name: "Lucky Seven Classic"
     slug: "lucky-seven-classic"
-    development_status: "Implementing — cabinet behavior reached deterministic Gold-7 settlement; result-status selector correction awaiting GREEN"
+    development_status: "Implementing — all gameplay/browser gates verified; production CSS selector repair awaiting build/Pages GREEN"
 
   technical_foundation:
-    architecture_and_engine: Pure three-reel center-line engine with source-controlled 32-stop strips, exhaustive probability audit, schema-v1 settled persistence, React mechanical-cabinet presentation, procedural Web Audio, and shared versioned save platform.
-    dependencies_used: ["React 19.3.0", "TypeScript 7.0.2", "Vitest 5.0.3", "Playwright 1.64.0", "Firebase 13.0.0"]
+    architecture_and_engine: Pure three-reel center-line engine with source-controlled 32-stop strips, exhaustive probability audit, schema-v1 settled persistence, React mechanical-cabinet presentation, procedural Web Audio, shared versioned save platform, and scoped responsive CSS.
+    dependencies_used: ["React 19.3.0", "TypeScript 7.0.2", "Vitest 5.0.3", "Playwright 1.64.0", "Firebase 13.0.0", "Vite 8.3.4"]
 
   core_feature_specifications:
     - name: "Exact classic reel engine"
@@ -24,13 +24,13 @@ Planned Functional Features Specification:
     - name: "Mechanical cabinet experience"
       id: "LSC-003"
       details: "Distinct vintage 3x3 visible cabinet with one textual center payline, native Pull / Spin action, five wager choices, finite reel/lever motion, opt-in procedural audio, paytable/rules and saved-game/reset controls. One consolidated Playwright suite proves gameplay, persistence, accessibility, audio and responsive behavior."
-      feature_development_status: "started"
+      feature_development_status: "verified"
 
-    - name: "Responsive and accessible production validation"
+    - name: "Responsive, accessible and production release validation"
       id: "LSC-004"
-      details: "320px and 200%-text no-horizontal-overflow contract, >=48px primary action, keyboard/touch operation, reduced-motion suppression, reload/restore verification, catalog/workspace route integration, full validation and exact-revision Pages evidence."
+      details: "320px and 200%-text no-horizontal-overflow contract, >=48px primary action, keyboard/touch operation, reduced-motion suppression, reload/restore verification, catalog/workspace route integration, valid production CSS, both Vite builds and exact-revision Pages evidence."
       feature_development_status: "started"
 
 ## Current evidence
 
-Engine GREEN: `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`. Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`, including Pages deployment. UI/browser RED: `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; all earlier validation layers passed before the dedicated Lucky Seven suite timed out exactly waiting for missing `.lsc`. Descendant run `38100732011` then exposed the exact-text payline markup defect, which production repair `3e662d79645151e7e7fbc7eb666dd2fd273fbe9e` corrected. Tree-identical revision `8cf51f00d14fdf0e2902600719017aff095837a3` / run `38120980679` proved that semantic repair plus RNG-failure safety and deterministic keyboard Gold-7 settlement, then stopped only because the broad text locator matched both the correct live `3 Gold 7s` status and the intentionally visible paytable row. The harness now scopes Gold/Red outcome waits to `.lsc-status` without changing any expected behavior or text. No whole-game completion claim is made until the consolidated suite, both builds and Pages deployment are green.
+Engine GREEN: `de1136d18390b1044eab16475fab5aee31b2c6f6` / `38099279607`. Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / `38099724416`. UI/browser RED: `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / `38100222862`. Production payline semantic repair: `3e662d79645151e7e7fbc7eb666dd2fd273fbe9e`. Harness selector correction: `3b3faa1a95a04752c813acbcb9e09b3112945ec6` / run `38121283719`, which passed dependency/current/design/typecheck/governance, 117 units, Firestore rules, shared account persistence, the complete Lucky Seven browser contract, Mergrove, Cloudline and Hollowshift. The same run then failed at `build:firebase`: LightningCSS rejected `.lsc*` with `Unexpected token Delim('*')`. Current release repair changes only that malformed selector to valid scoped descendants `.lsc *`, `.lsc *::before`, `.lsc *::after`, matching the working repo pattern. Whole-game verification remains open until both builds and Pages are green on one exact revision.
