@@ -89,7 +89,7 @@ try {
 
   await page.getByText('Preferences & saved game', { exact: true }).click();
   await page.getByRole('button', { name: 'Sound off', exact: true }).click();
-  await page.evaluate(() => { globalThis.__lscStops = [0, 0, 0]; });
+  await page.evaluate(() => { globalThis.__lscStops = [0, 9, 14]; });
   await page.getByRole('button', { name: /Pull \/ Spin · 1 credit/i }).click();
   await page.getByText(/3 Red 7s/i).waitFor({ timeout: 2000 });
   assert.ok((await page.evaluate(() => globalThis.__lscAudioContexts)) > 0, 'Sound-on user-triggered play should create Web Audio.');
