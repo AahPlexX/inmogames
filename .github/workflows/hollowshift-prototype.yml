@@ -1,6 +1,7 @@
 name: Hollowshift prototype focused validation
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -10,6 +11,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: hollowshift-prototype-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   focused-browser:
