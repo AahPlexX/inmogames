@@ -1,8 +1,8 @@
 # Lucky Seven Classic design
 
-**Status:** Approved design — implementation pending  
+**Status:** Implementing — engine TDD started 2026-10-10  
 **Last synchronized:** 2026-10-10  
-**Proposed route:** `#/games/lucky-seven-classic`
+**Route:** `#/games/lucky-seven-classic`
 
 ## Product intent
 
@@ -16,18 +16,62 @@ The core appeal is immediacy and physical-machine character: three large reels, 
 - Visible cabinet may show neighboring symbols above/below for mechanical context, but only the center row pays.
 - Wager steps: 1, 2, 5, 10, 25 virtual credits.
 - Symbols: Cherry, Lemon, Orange, Plum, Bell, BAR, Double BAR, Triple BAR, Red 7, Gold 7.
-- Payouts require the exact center-line combination defined by the paytable.
-- Mixed BAR combinations may have their own fixed award; all other wins use exact matching combinations.
-- Cherries may award on one, two, or three appearances according to the source-controlled paytable.
+- Cherry awards have first precedence: one Cherry anywhere pays 1× wager, two Cherries pay 3×, and three Cherries pay 10×.
+- Three BAR-family symbols that are not all identical pay the Mixed BAR award of 5× wager.
+- All remaining awards require an exact three-symbol center-line match.
 - No Wild, Scatter, bonus wheel, autoplay, cascading, expanding symbols, progressive jackpot, or adaptive probability.
-- Optional **Hold** and **Nudge** features are not part of v1 because they materially change classic probability and require a separate probability model; the design preserves them as future expansion only if explicitly reopened.
+- Optional **Hold** and **Nudge** are excluded from v1 because they materially change probability and require a separately approved rules model.
 - Every spin is independently random from explicit reel strips. Recent results, bankroll, or session behavior never alter the strips or stop selection.
+
+### Paytable
+
+All values multiply the selected wager.
+
+| Center-line result | Multiplier |
+| --- | ---: |
+| Any 1 Cherry | 1× |
+| Any 2 Cherries | 3× |
+| 3 Cherries | 10× |
+| Mixed BAR / Double BAR / Triple BAR | 5× |
+| 3 Lemons | 10× |
+| 3 Oranges | 16× |
+| 3 Plums | 24× |
+| 3 BAR | 30× |
+| 3 Double BAR | 60× |
+| 3 Bells | 80× |
+| 3 Triple BAR | 120× |
+| 3 Red 7s | 200× |
+| 3 Gold 7s | 500× |
+
+Cherry precedence prevents an overlapping exact-symbol rule from double-paying. Exact BAR-family matches take precedence over Mixed BAR. Every spin returns one payout classification only.
 
 ## Probability and reel model
 
-Each physical-style reel has an explicit ordered strip. Production uses browser cryptographic randomness to select one stop per reel; tests inject a deterministic seeded source. Visible neighboring symbols derive from the ordered strip with wraparound.
+Each of the three reels is an explicit ordered 32-stop strip. Production chooses one stop per reel using an unbiased browser `crypto.getRandomValues()` adapter; tests inject deterministic integer stops. Visible neighboring symbols derive from the ordered strip with wraparound, but only the selected center stop participates in scoring.
 
-The paytable and strips are source-controlled and separately testable. The implementation calculates the exact probability of each paying combination and the theoretical RTP from strip frequencies. Those values are documented in the live tracker once the final strip lengths/paytable are implemented.
+Each reel has the same source-controlled symbol frequency while using a different order:
+
+| Symbol | Stops per reel |
+| --- | ---: |
+| Cherry | 5 |
+| Lemon | 5 |
+| Orange | 5 |
+| Plum | 4 |
+| Bell | 3 |
+| BAR | 3 |
+| Double BAR | 2 |
+| Triple BAR | 2 |
+| Red 7 | 2 |
+| Gold 7 | 1 |
+| **Total** | **32** |
+
+The complete three-reel state space is `32³ = 32,768` equally likely stop combinations. Exhaustive enumeration of this configuration yields:
+
+- theoretical RTP: **94.775390625%**,
+- probability of any credit-paying result: **42.047119140625%**,
+- probability of three Gold 7s: **1 / 32,768 = 0.0030517578125%**.
+
+The engine audit must derive these values from the actual source-controlled strips/paytable rather than hard-code them as assertions detached from configuration. Outcome probabilities never adapt to bankroll, recent results, session duration, or player behavior.
 
 ## Bankroll and persistence
 
@@ -52,20 +96,18 @@ Authenticated saves use the shared repository at `users/{uid}/games/lucky-seven-
 
 ## Architecture
 
-Proposed game-local modules:
-
-- `engine.ts`: center-line combination classification and payout math.
-- `reels.ts`: three source-controlled reel strips, random-stop adapter, visible-window projection.
-- `paytable.ts`: exact combination awards and probability/RTP helpers.
+- `engine.ts`: center-line classification, payout math and exhaustive probability audit entrypoint.
+- `reels.ts`: three source-controlled ordered strips, cryptographic random-stop adapter, injected deterministic stop source, visible-window projection.
+- `paytable.ts`: supported wagers and exact payout multipliers/labels.
 - `storage.ts`: durable schema/decoder.
-- `persistence.ts`: shared-platform checkpoint definition.
+- `persistence.ts`: shared-platform checkpoint definition and practice-credit restore.
 - `audio.ts`: opt-in procedural mechanical reel/click/win cues.
 - `LuckySevenClassicWorkspace.tsx`: spin state machine and accessible cabinet UI.
 - `lucky-seven-classic.css`: scoped mechanical cabinet presentation.
 - `lucky-seven-classic.meta.ts`: catalog metadata.
 - `PRD.md`, `TRACKER.md`, `todo.md`: game-local living governance.
 
-No gameplay code is shared with the other slot games.
+No gameplay code is shared with the other slot games. Existing platform save/session and repository-wide accessibility/test infrastructure may be reused where their existing contracts fit.
 
 ## Interaction and visual design
 
@@ -80,25 +122,25 @@ Primary layout:
 6. large **Pull / Spin** button,
 7. paytable and preferences.
 
-The lever is a visual affordance only and must never require dragging. The canonical action is a native button that can visually animate like a lever pull. Enter/Space activates it normally.
+The lever is a visual affordance only and never requires dragging. The canonical action is a native button that can visually animate like a lever pull. Enter/Space activates it normally.
 
 ## Accessibility and responsive contract
 
 - Native button controls with at least 48×48 CSS px important targets.
 - No action requires drag, hover, color, animation, or sound.
-- Reel result announced once through a polite live region using symbol names and payout.
+- Reel result is announced once through a polite live region using symbol names and payout.
 - Center payline is conveyed with text/structure in addition to a visual line.
 - `:focus-visible` styling is mandatory.
-- Rules/paytable available before first spin.
+- Rules/paytable are available before first spin.
 - 320 CSS-px viewport must not horizontally overflow.
-- 200% text resizing must preserve all functionality.
+- 200% text resizing preserves all functionality.
 - At narrow widths, cabinet framing compresses before reel labels or controls do; the three reel windows may scale with `clamp()` but remain individually distinguishable.
 - Safe-area padding and normal document flow are preserved; no fixed action footer.
 - `prefers-reduced-motion: reduce` removes lever swing, reel travel, bounce, and celebratory cabinet motion while preserving immediate symbol/result updates.
 
 ## Sound and motion
 
-Audio is opt-in and starts only after interaction. Procedural cues may include handle click, staggered reel stop ticks, a short bell-style win cue, and a neutral losing stop. No ambient loop.
+Audio is opt-in and starts only after interaction. Procedural cues may include handle click, staggered reel-stop ticks, a short bell-style win cue, and a neutral losing stop. No ambient loop.
 
 Normal motion may include a short lever dip and independently decelerating reel windows. Result determination occurs before motion. Reduced-motion mode uses direct symbol replacement or a brief opacity transition.
 
@@ -106,19 +148,33 @@ Normal motion may include a short lever dip and independently decelerating reel 
 
 - Insufficient bankroll: Spin disabled with explanatory text.
 - Random-source failure: no wager deduction; state unchanged.
-- Persistence unavailable: continue in memory/local fallback and show nonblocking status.
+- Persistence unavailable: continue with the platform's safe local/in-memory behavior and show nonblocking status.
 - Audio unavailable: silent play.
 - Repeated activation during spin: ignored by phase guard.
-- Malformed save: sanitize to safe defaults; never invent historical winnings.
-- Exact combination precedence is deterministic so mixed BAR and exact BAR-family results cannot double-pay accidentally.
+- Malformed save: decode to safe defaults through the existing save-session contract; never invent historical winnings.
+- Exact combination precedence is deterministic so Cherry, Mixed BAR and exact BAR-family results cannot double-pay.
 
 ## Quality gates
 
-Unit tests must cover every paying combination, all non-winning near combinations, mixed BAR rules, cherry partial-match rules, wager scaling, bankroll accounting, reel strip composition, deterministic stop injection, probability/RTP calculation, storage decoding, restore credits, and phase guards.
+Unit tests cover every paying classification, representative non-winning near combinations, exact precedence, wager scaling, bankroll accounting, reel composition, deterministic stop injection, exhaustive probability/RTP calculation, storage decoding, practice-credit restore and phase/checkpoint guards.
 
-Browser tests must cover route/catalog integration, accessible paytable, wager changes, spin settlement, keyboard activation, lever visual parity with button action, reload persistence, restore credits, 320px layout, 200% text, reduced motion, touch targets, audio opt-in, and no horizontal overflow.
+Browser tests cover route/catalog integration, accessible paytable, wager changes, spin settlement, keyboard activation, lever/button parity, reload persistence, restore credits, 320px layout, 200% text, reduced motion, touch targets, audio opt-in and no horizontal overflow.
 
 Production completion requires the same repository-wide validation/deployment chain used by Royal Palace Blackjack and Royal Fortune Slots.
+
+## Completion contract
+
+**Completion state:** implementing  
+**Completion evidence:** Engine TDD began on revision `1085f461f474f9d5ac1976a991d4f6079a9aae75`; final exact-revision validation/deployment evidence is not yet claimed.
+
+- [ ] Pure reel/paytable/engine behavior is implemented and exhaustively probability-audited from source-controlled configuration.
+- [ ] Schema-v1 local/account save definition persists only settled durable state and handles restore/reset safely.
+- [ ] Mechanical cabinet UI, keyboard/touch behavior, paytable/help, audio preference and finite motion meet the approved interaction contract.
+- [ ] 320px, 200%-text and reduced-motion browser regressions pass without page-level horizontal overflow or obscured controls.
+- [ ] Catalog/workspace routing, PRD, TRACKER, todo, GAME_INDEX and `.tasks` are synchronized in the same implementation history.
+- [ ] `pnpm validate` passes on the exact functional revision.
+- [ ] GitHub Pages deployment succeeds for that exact functional revision.
+- [ ] Tracker and completion state are changed to verified only after exact revision/run evidence exists; TASK-003 remains external if live Firebase is still unavailable.
 
 ## Research basis
 
