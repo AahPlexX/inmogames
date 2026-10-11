@@ -20,7 +20,7 @@
 **Last verified revision:** persistence capability `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; whole game is not verified  
 **Open game-local work:** reach intended UI/browser RED; implement cabinet/audio/catalog/workspace integration; make browser contract green; run exact-revision full validation/Pages; close out docs/tasks  
 **External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local completion  
-**Next action:** rerun the new `tests/browser/lucky-seven-classic.mjs` after the GAME_INDEX ownership repair so the repository reaches Playwright while the route is still absent; record that deliberate RED, then implement only the production UI/integration required by the consolidated contract.
+**Next action:** this paired Lucky-only evidence commit intentionally advances the workflow sync base beyond the GAME_INDEX restoration at `1074ad595271b5c60c0e83632dd9bde86726bead`; the next run must reach `tests/browser/lucky-seven-classic.mjs` while the playable route is still absent, recording the real UI RED before production cabinet code is written.
 
 ## Evidence ledger
 
@@ -28,7 +28,8 @@
 - Engine GREEN: `de1136d18390b1044eab16475fab5aee31b2c6f6` / `38099279607`.
 - Persistence RED: `eb89b259c60a3a12c9a832db94ea21602035d1eb` / `38099468454`.
 - Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / `38099724416`; full build and Pages deploy succeeded.
-- Initial UI RED integration `a8da91b63a5e43fc049def1ab869659fbeb4f57f` / run `38099964934` did not reach Playwright: static game structure passed, but `game-doc-sync` correctly rejected accidental text changes to Mergrove, Cloudline and Royal Fortune GAME_INDEX rows. No UI RED claim is made from that run. The follow-up restores those unrelated rows byte-for-byte and keeps only the Lucky row change paired with Lucky spec/tracker evidence.
+- Initial UI RED integration `a8da91b63a5e43fc049def1ab869659fbeb4f57f` / run `38099964934` did not reach Playwright: static game structure passed, but `game-doc-sync` correctly rejected accidental text changes to Mergrove, Cloudline and Royal Fortune GAME_INDEX rows. No UI RED claim is made from that run.
+- Index repair `1074ad595271b5c60c0e83632dd9bde86726bead` / run `38100085348` restored those unrelated rows byte-for-byte, but that run still used `a8da91b6...` as its push sync base, so the restoration itself remained visible as unrelated row changes and the guard correctly stopped again before Playwright. This is a history-window diagnostic, not a Lucky Seven functional failure.
 
 ## Continuity notes
 

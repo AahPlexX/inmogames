@@ -81,7 +81,8 @@ The RED integration deliberately wires this browser suite into `test:design-brow
 - Engine GREEN: `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`.
 - Persistence RED: `eb89b259c60a3a12c9a832db94ea21602035d1eb` / run `38099468454`.
 - Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; full build and Pages deployment succeeded.
-- Initial UI RED integration `a8da91b63a5e43fc049def1ab869659fbeb4f57f` / run `38099964934` passed dependency/current/design/typecheck/static game structure but stopped in history-aware game-doc sync because that commit accidentally shortened unrelated Mergrove, Cloudline and Royal Fortune GAME_INDEX prose. The browser suite did not execute, so no UI RED is claimed from that run. The immediate repair restores all unrelated rows byte-for-byte and keeps the Lucky row paired with this spec and tracker.
+- Initial UI RED integration `a8da91b63a5e43fc049def1ab869659fbeb4f57f` / run `38099964934` passed dependency/current/design/typecheck/static game structure but stopped in history-aware game-doc sync because that commit accidentally shortened unrelated Mergrove, Cloudline and Royal Fortune GAME_INDEX prose. The browser suite did not execute, so no UI RED is claimed from that run.
+- Index repair `1074ad595271b5c60c0e83632dd9bde86726bead` / run `38100085348` restored those unrelated rows byte-for-byte, but the run still used `a8da91b6...` as its sync base, making the restoration visible as unrelated GAME_INDEX changes. The guard correctly stopped before Playwright again. A paired Lucky-only evidence commit now advances the next workflow sync base beyond that restoration; product/test behavior remains unchanged.
 
 ## Completion contract
 
