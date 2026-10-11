@@ -52,10 +52,34 @@ async function load(page) {
 }
 
 async function noOverflow(page, label) {
-  const report = await page.evaluate(() => ({
-    innerWidth: window.innerWidth,
-    scrollWidth: document.documentElement.scrollWidth,
-  }));
+  const report = await page.evaluate(() => {
+    const innerWidth = window.innerWidth;
+    const scrollWidth = document.documentElement.scrollWidth;
+    const offenders = [...document.querySelectorAll('body *')]
+      .map(element => {
+        const rect = element.getBoundingClientRect();
+        const overflowRight = Math.max(0, rect.right - innerWidth);
+        const overflowLeft = Math.max(0, -rect.left);
+        const intrinsicOverflow = Math.max(0, element.scrollWidth - element.clientWidth);
+        return {
+          tag: element.tagName.toLowerCase(),
+          id: element.id || null,
+          className: typeof element.className === 'string' ? element.className : null,
+          left: Math.round(rect.left * 10) / 10,
+          right: Math.round(rect.right * 10) / 10,
+          width: Math.round(rect.width * 10) / 10,
+          clientWidth: element.clientWidth,
+          scrollWidth: element.scrollWidth,
+          overflowRight: Math.round(overflowRight * 10) / 10,
+          overflowLeft: Math.round(overflowLeft * 10) / 10,
+          intrinsicOverflow,
+        };
+      })
+      .filter(item => item.overflowRight > 0.5 || item.overflowLeft > 0.5 || item.intrinsicOverflow > 0)
+      .sort((a, b) => Math.max(b.overflowRight, b.overflowLeft, b.intrinsicOverflow) - Math.max(a.overflowRight, a.overflowLeft, a.intrinsicOverflow))
+      .slice(0, 12);
+    return { innerWidth, scrollWidth, offenders };
+  });
   assert.ok(report.scrollWidth <= report.innerWidth, `${label} overflow: ${JSON.stringify(report)}`);
 }
 
