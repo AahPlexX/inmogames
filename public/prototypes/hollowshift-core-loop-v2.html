@@ -19,7 +19,7 @@
 <header><div><p class="eyebrow">Disposable prototype · iteration 2</p><h1>Hollowshift</h1><p class="lede">Read the tunnel machine before you commit. Reveal two survey samples, physically reach them, then return to the blue extraction anchor while the Crawler and instability forecast react to every turn.</p></div><div class="turn" aria-live="polite" id="turn">Turn 0</div></header>
 <section class="layout" aria-label="Hollowshift prototype">
 <div class="panel game">
-<div class="hud" aria-label="Expedition status"><div class="stat"><strong id="lamp">20</strong><span>Lamp</span></div><div class="stat"><strong id="integrity">4</strong><span>Integrity</span></div><div class="stat"><strong id="samples">0 / 2</strong><span>Samples</span></div><div class="stat"><strong id="pressure">0 / 4</strong><span>Pressure</span></div></div>
+<div class="hud" role="group" aria-label="Expedition status"><div class="stat"><strong id="lamp">20</strong><span>Lamp</span></div><div class="stat"><strong id="integrity">4</strong><span>Integrity</span></div><div class="stat"><strong id="samples">0 / 2</strong><span>Samples</span></div><div class="stat"><strong id="pressure">0 / 4</strong><span>Pressure</span></div></div>
 <div id="board" class="board" role="grid" aria-rowcount="7" aria-colcount="7" aria-label="7 by 7 tunnel board. Use arrow keys to move focus between tiles."></div>
 <div class="actions">
 <div id="selection" class="selection" aria-live="polite"></div>
@@ -28,11 +28,11 @@
 <div id="preview" class="previewbar" aria-live="polite"><p id="previewText"></p><button class="btn primary" id="confirm">Commit</button><button class="btn danger" id="cancel">Cancel</button></div>
 </div>
 </div>
-<aside class="panel side">
+<aside class="panel side" aria-label="Expedition guidance">
 <section><h2>Objective</h2><p id="objective">Survey to reveal two samples. Reach each revealed sample, then return to extraction.</p></section>
 <section><h2>Threat intent</h2><p id="intent">Crawler is evaluating the connected network.</p></section>
 <section><h2>Instability forecast</h2><p id="forecast"></p><div class="meter" aria-hidden="true"><span id="meter"></span></div></section>
-<div class="legend" aria-label="Board legend"><span>◆ you</span><span>▲ crawler</span><span>● sample</span><span>⬟ extraction</span><span>! instability</span></div>
+<div class="legend" role="group" aria-label="Board legend"><span>◆ you</span><span>▲ crawler</span><span>● sample</span><span>⬟ extraction</span><span>! instability</span></div>
 <section><h2>Expedition log</h2><div id="log" class="log" role="log" aria-live="polite"></div></section>
 <section class="end"><button class="btn primary" id="extract" disabled>Extract</button><button class="btn" id="restart">Restart seed</button></section>
 </aside>
