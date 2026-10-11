@@ -1,0 +1,28 @@
+name: Hollowshift prototype focused validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/prototypes/hollowshift-core-loop-v2.html'
+      - 'tests/browser/hollowshift-prototype.mjs'
+      - '.github/workflows/hollowshift-prototype.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  focused-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.0.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.12.0'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: node tests/browser/hollowshift-prototype.mjs
