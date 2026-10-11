@@ -1,7 +1,7 @@
 # Lucky Seven Classic design
 
-**Status:** Implementing — engine and settled persistence verified; cabinet semantic-label repair awaiting GREEN  
-**Last synchronized:** 2026-10-10  
+**Status:** Implementing — engine and settled persistence verified; result-status selector correction awaiting GREEN  
+**Last synchronized:** 2026-10-11  
 **Route:** `#/games/lucky-seven-classic`
 
 ## Product intent
@@ -43,7 +43,8 @@ The completed-spin footer exposes spin count, cumulative wagered and returned vi
 
 - Native controls; primary spin target at least 48 CSS px tall.
 - Keyboard Space/Enter operates the spin button; no action requires drag/hover/audio/color/motion.
-- A polite status region communicates result classification and payout in text.
+- A polite `.lsc-status` region communicates result classification and payout in text.
+- Result assertions must read that live status region rather than globally matching paytable copy; the paytable intentionally repeats valid result labels such as `3 Gold 7s` and `3 Red 7s`.
 - The semantic `Center payline` label is independently discoverable as exact visible text; decorative symbols do not alter its text identity.
 - 320 CSS-px layout has no page-level horizontal overflow.
 - At 200% browser text sizing, primary action and all gameplay remain reachable without horizontal overflow.
@@ -58,7 +59,7 @@ The completed-spin footer exposes spin count, cumulative wagered and returned vi
 1. exactly 3 reels × 3 visible symbols plus textual rules/payline;
 2. primary action ≥48px and 320px no horizontal overflow;
 3. injected RNG failure preserves bankroll 500;
-4. injected Gold-7 stops `[20,18,17]`, triggered with keyboard Space, settle a one-credit wager to bankroll 999 and report `3 Gold 7s`;
+4. injected Gold-7 stops `[20,18,17]`, triggered with keyboard Space, settle a one-credit wager to bankroll 999 and report `3 Gold 7s` in the live result status;
 5. sound-off play creates no AudioContext while explicit sound opt-in plus user-triggered play does;
 6. reduced-motion context suppresses reel animation;
 7. settled bankroll and spin count survive reload;
@@ -66,6 +67,8 @@ The completed-spin footer exposes spin count, cumulative wagered and returned vi
 9. a valid depleted saved fixture restores bankroll to 500 while retaining nine completed spins.
 
 The Red-7 sound fixture is `[0,9,14]`, the actual Red-7 positions for the three source-controlled reels. The original `[0,0,0]` fixture was identified before GREEN implementation as incorrect because reel 2/3 position 0 are not Red 7. The test assertion remains `3 Red 7s`; this is a deterministic fixture correction, not weaker coverage.
+
+Because the paytable remains visible and correctly includes `3 Gold 7s` and `3 Red 7s`, browser outcome waits are scoped to `.lsc-status`. This removes Playwright strict-mode ambiguity without changing any expected result, payout, bankroll, keyboard, audio, persistence, reduced-motion or responsive assertion.
 
 ## Architecture
 
@@ -88,12 +91,13 @@ The Red-7 sound fixture is `[0,9,14]`, the actual Red-7 positions for the three 
 - Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; full build and Pages deployment succeeded.
 - History-sync diagnostics: `a8da91b63a5e43fc049def1ab869659fbeb4f57f` / `38099964934` and `1074ad595271b5c60c0e83632dd9bde86726bead` / `38100085348` stopped before Playwright and are not UI RED evidence.
 - UI/browser RED: `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`. Dependency freshness, design lint, typecheck, game governance, 117 unit tests, rules, shared account browser, catalog/shared design regressions, all Royal Palace suites and Royal Fortune browser checks passed. Lucky Seven then failed exactly on `locator('.lsc')` timeout because the playable route/cabinet did not yet exist.
-- First cabinet candidate source revision `ab6651d6788371b15b0164fe5c3f04c65095ea41` was exercised unchanged by descendant run `38100732011`. All pre-browser gates and earlier browser suites again passed. Lucky Seven advanced into its own assertions and failed only because `getByText('Center payline', { exact: true })` could not match the container text `◆ Center payline ◆`. This is a production semantic-markup defect. The repair makes `Center payline` a standalone visible span while decorative diamonds remain `aria-hidden`; no assertion is weakened.
+- First cabinet candidate source revision `ab6651d6788371b15b0164fe5c3f04c65095ea41` was exercised unchanged by descendant run `38100732011`. All pre-browser gates and earlier browser suites again passed. Lucky Seven advanced into its own assertions and failed only because `getByText('Center payline', { exact: true })` could not match the container text `◆ Center payline ◆`. Production repair `3e662d79645151e7e7fbc7eb666dd2fd273fbe9e` makes `Center payline` a standalone visible span while decorative diamonds remain `aria-hidden`.
+- Tree-identical revision `8cf51f00d14fdf0e2902600719017aff095837a3` / run `38120980679` proved that semantic repair and then advanced through RNG-failure safety and the keyboard-driven Gold-7 settlement: the live status correctly rendered `3 Gold 7s · Returned 500 virtual credits...` and bankroll reached the asserted result path. The run stopped only because the broad `getByText(/3 Gold 7s/i)` selector also matched the intentionally visible paytable row. The harness now scopes Gold-7 and Red-7 outcome waits to `.lsc-status`; all expected text and behavioral assertions remain unchanged.
 
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Engine/probability and persistence are green through `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; the exact UI/browser RED is `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; run `38100732011` exposed the first real cabinet semantic-label defect and the production repair is awaiting GREEN.
+**Completion evidence:** Engine/probability and persistence are green through `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; the exact UI/browser RED is `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; run `38100732011` exposed and drove the payline semantic repair; run `38120980679` proved that repair and correct Gold-7 output but exposed a harness-only strict-selector ambiguity. Final browser/build/Pages GREEN remains open.
 
 - [x] Pure reel/paytable/engine behavior is implemented and exhaustively probability-audited.
 - [x] Game-local schema-v1 decoder/save-definition/settlement/restore behavior passes unchanged focused tests.

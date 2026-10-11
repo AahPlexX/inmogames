@@ -4,7 +4,7 @@ Planned Functional Features Specification:
   game_identity:
     name: "Lucky Seven Classic"
     slug: "lucky-seven-classic"
-    development_status: "Implementing — playable cabinet production integration awaiting GREEN"
+    development_status: "Implementing — cabinet behavior reached deterministic Gold-7 settlement; result-status selector correction awaiting GREEN"
 
   technical_foundation:
     architecture_and_engine: Pure three-reel center-line engine with source-controlled 32-stop strips, exhaustive probability audit, schema-v1 settled persistence, React mechanical-cabinet presentation, procedural Web Audio, and shared versioned save platform.
@@ -33,4 +33,4 @@ Planned Functional Features Specification:
 
 ## Current evidence
 
-Engine GREEN: `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`. Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`, including Pages deployment. UI/browser RED: `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; all earlier validation layers passed before the dedicated Lucky Seven suite timed out exactly waiting for missing `.lsc`. Production cabinet, responsive CSS, procedural audio, catalog/workspace route registration, and the deterministic Red-7 fixture correction are now being integrated against that fixed contract. No UI GREEN or whole-game completion claim is made until CI passes.
+Engine GREEN: `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`. Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`, including Pages deployment. UI/browser RED: `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; all earlier validation layers passed before the dedicated Lucky Seven suite timed out exactly waiting for missing `.lsc`. Descendant run `38100732011` then exposed the exact-text payline markup defect, which production repair `3e662d79645151e7e7fbc7eb666dd2fd273fbe9e` corrected. Tree-identical revision `8cf51f00d14fdf0e2902600719017aff095837a3` / run `38120980679` proved that semantic repair plus RNG-failure safety and deterministic keyboard Gold-7 settlement, then stopped only because the broad text locator matched both the correct live `3 Gold 7s` status and the intentionally visible paytable row. The harness now scopes Gold/Red outcome waits to `.lsc-status` without changing any expected behavior or text. No whole-game completion claim is made until the consolidated suite, both builds and Pages deployment are green.

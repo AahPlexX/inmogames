@@ -1,6 +1,6 @@
 # Lucky Seven Classic execution
 
-**Status:** Implementing — playable cabinet production integration awaiting GREEN  
+**Status:** Implementing — cabinet behavior reached deterministic Gold-7 settlement; result-status selector correction awaiting GREEN  
 **Architecture / Engine:** Pure center-line engine → settled durable persistence → React mechanical cabinet/audio → one consolidated browser regression → exact-revision release evidence.  
 **Dependencies Used:** React 19.3.0; TypeScript 7.0.2; Vitest 5.0.3; Playwright 1.64.0; Firebase 13.0.0 shared platform.
 
@@ -33,21 +33,21 @@
 **Inputs / Parameters:** save state, reel windows/result, spin phase, paytable, sound/motion preferences.  
 **Dependencies Touched:** `LuckySevenClassicWorkspace.tsx`, `lucky-seven-classic.css`, `audio.ts`, catalog/workspace registries, consolidated browser test.  
 **Technical Notes & Edge Cases:** 3 reels × 3 visible cells; center row text-labelled; native Pull / Spin button; RNG failure no deduction; phase guard; settlement before finite motion; Web Audio only after opt-in/user spin; game-local two-step reset.  
-**Implementation Details:** RED `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862` passed every prior gate and failed only waiting for missing `.lsc`. Current production integration implements the cabinet/audio/route. The Red-7 deterministic fixture changes from incorrect `[0,0,0]` to actual source-strip stops `[0,9,14]` while retaining the exact `3 Red 7s` assertion.  
-**Verification & State Sign-off:** Awaiting GREEN; production assertions are not weakened.
+**Implementation Details:** RED `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862` passed every prior gate and failed only waiting for missing `.lsc`. Descendant run `38100732011` exposed the standalone `Center payline` markup defect and production repair `3e662d79645151e7e7fbc7eb666dd2fd273fbe9e` corrected it. Tree-identical revision `8cf51f00d14fdf0e2902600719017aff095837a3` / run `38120980679` then passed the repaired payline, RNG failure safety and keyboard-driven Gold-7 settlement before a strict-mode selector ambiguity: `3 Gold 7s` correctly exists in both the live result and paytable. The harness now scopes Gold/Red waits to `.lsc-status`; expected result text is unchanged.  
+**Verification & State Sign-off:** Awaiting consolidated browser GREEN; no product behavior assertion is weakened.
 
 - [x] Consolidated browser test records the expected missing playable route/cabinet RED.
-- [ ] Deterministic Gold-7 keyboard spin, RNG failure safety, reload/restore and opt-in audio pass.
+- [ ] Deterministic Gold-7 keyboard spin, RNG failure safety, reload/restore and opt-in audio all complete in one green run.
 
 ### LSC-004 — Responsive / integration / release
 **Purpose:** Make the game discoverable and production-complete across devices.  
 **Inputs / Parameters:** catalog metadata, lazy workspace route, scoped CSS, consolidated browser suite, synchronized docs.  
 **Dependencies Touched:** `src/catalog.ts`, `src/games/workspaces.tsx`, browser test, GAME_INDEX/spec/tracker/PRD/todo/`.tasks`.  
 **Technical Notes & Edge Cases:** 320px and 200% text cannot horizontally overflow; primary action >=48px; reduced-motion suppresses reel animation; final verified state requires exact functional revision and successful Pages deployment.  
-**Implementation Details:** Catalog/workspace registration is included in the current GREEN candidate; browser GREEN must precede closeout. TASK-003 remains external only.  
-**Verification & State Sign-off:** Open until CI evidence exists.
+**Implementation Details:** Catalog/workspace registration is present. Run `38120980679` reached the deterministic outcome phase but did not yet reach reload/audio/200%-text/restore because of the harness-only duplicate-text selector ambiguity. TASK-003 remains external only.  
+**Verification & State Sign-off:** Open until the corrected consolidated suite and full workflow are green.
 
-- [ ] 320px, 200%-text, reduced-motion and target-size assertions pass.
+- [ ] 320px, 200%-text, reduced-motion and target-size assertions pass in the completed Lucky suite.
 - [ ] Catalog/workspace route is live and final exact-revision validation/Pages evidence is recorded.
 
 ## Final Game Assembly & Verification Checklist
