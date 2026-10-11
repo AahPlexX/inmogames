@@ -70,7 +70,9 @@ The Red-7 sound fixture is `[0,9,14]`, the actual Red-7 positions for the three 
 
 ## Production CSS/build contract
 
-Lucky Seven styling remains fully scoped to `.lsc`. Descendant box sizing must use valid descendant selectors: `.lsc *`, `.lsc *::before`, `.lsc *::after`. The earlier source accidentally used `.lsc*`, `.lsc*::before`, `.lsc*::after`; dev/browser execution still exercised the cabinet, but Vite 8.3.4's LightningCSS production minifier rejected the selector with `Unexpected token Delim('*')`. The repo's verified Royal Fortune stylesheet demonstrates the same valid scoped descendant pattern (`.rf *`, `.rf *::before`, `.rf *::after`). The current repair changes only the missing descendant spaces and must be proven by both `build:firebase` and standard `build` plus Pages deployment.
+Lucky Seven styling remains fully scoped to `.lsc`. Descendant box sizing must use valid descendant selectors: `.lsc *`, `.lsc *::before`, `.lsc *::after`. The earlier source accidentally used `.lsc*`, `.lsc*::before`, `.lsc*::after`; Vite 8.3.4's LightningCSS production minifier rejected that syntax with `Unexpected token Delim('*')`. Royal Fortune's verified stylesheet demonstrates the same valid scoped descendant pattern (`.rf *`, `.rf *::before`, `.rf *::after`). Functional repair `bd5b1cf1c12bc218eca17557caaa9cc0ff92fc0a` changes only the missing descendant spaces.
+
+The first workflow for that repair, run `38121621987`, did **not** reach any production build. It stopped at `game:check` because `todo.md` had been compressed below the repository's required task-document schema and was missing Purpose, Inputs, Dependencies Touched, Technical Notes & Edge Cases, Implementation Details, and Verification & State Sign-off fields. The current follow-up restores that structure without altering the CSS repair or browser contract. Therefore release GREEN remains open until the same source tree reaches both builds and Pages.
 
 ## Architecture
 
@@ -87,20 +89,18 @@ Lucky Seven styling remains fully scoped to `.lsc`. Descendant box sizing must u
 
 ## Implementation evidence
 
-- Engine RED: `1085f461f474f9d5ac1976a991d4f6079a9aae75` / run `38098884217`.
-- Engine GREEN: `de1136d18390b1044eab16475fab5aee31b2c6f6` / run `38099279607`.
-- Persistence RED: `eb89b259c60a3a12c9a832db94ea21602035d1eb` / run `38099468454`.
-- Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; full build and Pages deployment succeeded.
-- UI/browser RED: `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; all earlier layers passed and Lucky failed exactly on missing `.lsc`.
-- First cabinet candidate source `ab6651d6788371b15b0164fe5c3f04c65095ea41`; descendant run `38100732011` exposed payline exact-text semantics and drove repair `3e662d79645151e7e7fbc7eb666dd2fd273fbe9e`.
-- Tree-identical `8cf51f00d14fdf0e2902600719017aff095837a3` / run `38120980679` proved the semantic repair, RNG safety and Gold-7 settlement, then exposed a harness-only duplicate-text locator ambiguity.
-- Selector correction `3b3faa1a95a04752c813acbcb9e09b3112945ec6` / run `38121283719` passed dependency freshness, design lint, typecheck, game governance, 117 unit tests, Firestore rules, shared account browser, **the complete Lucky Seven browser suite**, Mergrove design, Cloudline design and Hollowshift prototype. Lucky's log explicitly reported: `Lucky Seven browser checks passed: route/cabinet, RNG safety, deterministic settlement/reload, restore, 320px/200%-text reflow, 48px action, reduced motion and opt-in audio.` The run then failed at `build:firebase` when LightningCSS parsed `.lsc*` in `lucky-seven-classic.css` and reported `Unexpected token Delim('*')`.
-- Current repair changes that selector only to valid `.lsc *` descendants and synchronizes living documentation. GREEN is not claimed until the full workflow and Pages deployment succeed.
+- Engine RED `1085f461f474f9d5ac1976a991d4f6079a9aae75` / `38098884217`; GREEN `de1136d18390b1044eab16475fab5aee31b2c6f6` / `38099279607`.
+- Persistence RED `eb89b259c60a3a12c9a832db94ea21602035d1eb` / `38099468454`; GREEN `a72d095e3569b056b211803335e6b6d401e048bb` / `38099724416`.
+- UI/browser RED `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / `38100222862`.
+- Payline semantic repair `3e662d79645151e7e7fbc7eb666dd2fd273fbe9e` after descendant run `38100732011`.
+- Tree-identical `8cf51f00d14fdf0e2902600719017aff095837a3` / `38120980679` proved the repair and exposed harness-only duplicate-text ambiguity.
+- `3b3faa1a95a04752c813acbcb9e09b3112945ec6` / `38121283719` passed dependency/current/design/typecheck/governance, 117 units, Firestore rules, shared account browser, **the complete Lucky Seven browser suite**, Mergrove design, Cloudline design and Hollowshift prototype. Lucky's log explicitly reported: `Lucky Seven browser checks passed: route/cabinet, RNG safety, deterministic settlement/reload, restore, 320px/200%-text reflow, 48px action, reduced motion and opt-in audio.` It then failed at `build:firebase` on malformed `.lsc*` CSS.
+- CSS repair `bd5b1cf1c12bc218eca17557caaa9cc0ff92fc0a` / run `38121621987`: dependency/current/design/typecheck passed; governance stopped before units/builds because `todo.md` lacked the required structure. This run is documentation-diagnostic evidence only and does not validate or invalidate the source repair.
 
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Engine/probability/persistence and the complete game-specific browser contract are green. Exact release verification remains open solely because run `38121283719` failed at the first production build on the invalid scoped selector.
+**Completion evidence:** Engine/probability/persistence and the complete game-specific browser contract are green. Exact release verification remains open because the CSS-fixed revision has not yet reached either production build.
 
 - [x] Pure reel/paytable/engine behavior is implemented and exhaustively probability-audited.
 - [x] Game-local schema-v1 decoder/save-definition/settlement/restore behavior passes focused tests.
