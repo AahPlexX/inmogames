@@ -1,0 +1,41 @@
+name: Hollowshift verified evidence one-shot sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hollowshift-doc-sync-oneshot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-and-self-remove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Rebase, insert verified evidence, and self-remove
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git rebase origin/main
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/specs/2026-10-09-hollowshift-design.md')
+          text = path.read_text()
+          heading = '### Verified prototype evidence (2026-10-10)'
+          if heading in text:
+              raise SystemExit('Verified prototype evidence already exists; refusing duplicate insertion.')
+          marker = '- accessibility assists are separate from challenge legitimacy.\n\n## 25. Persistence and save contract'
+          if text.count(marker) != 1:
+              raise SystemExit(f'Expected one accessibility-to-persistence marker, found {text.count(marker)}.')
+          evidence = '''- accessibility assists are separate from challenge legitimacy.\n\n### Verified prototype evidence (2026-10-10)\n\nThe disposable decision-loop prototype at `public/prototypes/hollowshift-core-loop-v2.html` is now covered by `tests/browser/hollowshift-prototype.mjs` and the shared `pnpm test:hollowshift` command. That command is also included in `pnpm test:design-browser`; `.github/workflows/hollowshift-prototype.yml` provides the same check as a fast manually dispatchable/game-local gate with overlapping runs cancelled.\n\nVerified automated browser evidence covers 320×568, 390×844, 844×390, 768×1024, 1024×768, 1440×900 and 1920×1080 CSS-pixel viewports, plus 320×568 with 200% root text. The prototype preserves 44×44 CSS-pixel board/action targets without document horizontal overflow. The validated narrow composition uses a 2×2 HUD, stacked terminal actions and wrapping action labels with reduced inline padding rather than shrinking type or targets.\n\nThe board exposes `grid → row → gridcell` ownership with one roving tab stop, visible focus and Arrow/Home/End navigation. Preview/cancel spends no turn while committed geometry does; touch uses explicit actions with no required drag; reduced-motion presentation preserves state transitions; and the test rejects browser console/page errors.\n\nEvidence runs: candidate full-matrix green `38100932047`; post-commit permanent focused green `38101017710`; shared package-entry focused green `38101154123`. Repository-wide run `38101154026` reached `test:design-browser` but stopped earlier in the chain on an unrelated Lucky Seven Classic strict-locator ambiguity before Hollowshift executed; this is not a Hollowshift failure.\n\nHuman gates remain authoritative: issue #11 still requires qualitative core-loop play judgment, and issue #14 still requires HITL visual/experiential sign-off even though its objective browser evidence is complete.\n\n## 25. Persistence and save contract'''
+          path.write_text(text.replace(marker, evidence))
+          PY
+          rm .github/workflows/hollowshift-doc-sync-oneshot.yml
+          git add docs/specs/2026-10-09-hollowshift-design.md .github/workflows/hollowshift-doc-sync-oneshot.yml
+          git commit -m "docs: record Hollowshift verified prototype evidence"
+          git push origin HEAD:main
