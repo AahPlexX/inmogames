@@ -36,7 +36,7 @@ jobs:
           path = Path('public/prototypes/hollowshift-core-loop-v2.html')
           text = path.read_text()
           old = '@media(max-width:25rem){.shell{padding:.2rem}.game{padding:.1rem}.panel{border-radius:.65rem}.hud{gap:.2rem}.stat{padding:.35rem .4rem}.row{gap:.28rem}.previewbar{grid-template-columns:1fr 1fr}.previewbar p{grid-column:1/-1}}'
-          new = '@media(max-width:25rem){.shell{padding:.2rem 0}.game{padding:.1rem 0}.panel{border-radius:.65rem}.hud{gap:.2rem}.stat{padding:.35rem .4rem}.row{gap:.28rem}.end{grid-template-columns:1fr}.previewbar{grid-template-columns:1fr 1fr}.previewbar p{grid-column:1/-1}}'
+          new = '@media(max-width:25rem){.shell{padding:.2rem 0}.game{padding:.1rem 0}.panel{border-radius:.65rem}.hud{grid-template-columns:repeat(2,minmax(0,1fr));gap:.2rem}.stat{padding:.35rem .4rem}.row{gap:.28rem}.end{grid-template-columns:1fr}.previewbar{grid-template-columns:1fr 1fr}.previewbar p{grid-column:1/-1}}'
           count = text.count(old)
           if count != 1:
               raise SystemExit(f'Expected exactly one compact-layout block, found {count}. Refusing to patch stale source.')
