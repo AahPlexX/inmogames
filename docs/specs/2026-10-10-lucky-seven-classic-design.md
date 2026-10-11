@@ -1,6 +1,6 @@
 # Lucky Seven Classic design
 
-**Status:** Implementing — engine and settled persistence verified; playable cabinet integration awaiting GREEN  
+**Status:** Implementing — engine and settled persistence verified; cabinet semantic-label repair awaiting GREEN  
 **Last synchronized:** 2026-10-10  
 **Route:** `#/games/lucky-seven-classic`
 
@@ -31,7 +31,7 @@ Initial bankroll is 500 virtual credits. Local key is `inmogames:lucky-seven-cla
 
 ## Mechanical cabinet interaction contract
 
-The playable UI uses a scoped `.lsc` cabinet with exactly three `.lsc-reel` columns and three visible `.lsc-symbol` cells per reel (previous/center/next). The center row is visually marked and explicitly labelled **Center payline** in text. Vintage enamel/metal framing, warm reel paper, restrained red/black/gold accents and large symbols distinguish the machine from Royal Fortune.
+The playable UI uses a scoped `.lsc` cabinet with exactly three `.lsc-reel` columns and three visible `.lsc-symbol` cells per reel (previous/center/next). The center row is visually marked and explicitly labelled **Center payline** in its own visible text element; decorative diamonds remain separate `aria-hidden` siblings. Vintage enamel/metal framing, warm reel paper, restrained red/black/gold accents and large symbols distinguish the machine from Royal Fortune.
 
 The canonical action is a native button labelled `Pull / Spin · N credit(s)`; any lever treatment is decorative and never drag-required. The five supported wagers are native buttons. A spin obtains the random reel windows and fully settles the durable state before presentation motion. Rapid repeat activation is phase-guarded. RNG failure reports a nonblocking message and does not consume virtual credits.
 
@@ -44,6 +44,7 @@ The completed-spin footer exposes spin count, cumulative wagered and returned vi
 - Native controls; primary spin target at least 48 CSS px tall.
 - Keyboard Space/Enter operates the spin button; no action requires drag/hover/audio/color/motion.
 - A polite status region communicates result classification and payout in text.
+- The semantic `Center payline` label is independently discoverable as exact visible text; decorative symbols do not alter its text identity.
 - 320 CSS-px layout has no page-level horizontal overflow.
 - At 200% browser text sizing, primary action and all gameplay remain reachable without horizontal overflow.
 - `prefers-reduced-motion: reduce` and the in-game motion preference suppress reel/lever travel while preserving immediate state/result updates.
@@ -74,7 +75,7 @@ The Red-7 sound fixture is `[0,9,14]`, the actual Red-7 positions for the three 
 - `storage.ts`: schema-v1 durable state and decoder.
 - `persistence.ts`: shared save definition, atomic settlement and restore.
 - `audio.ts`: opt-in procedural cues; failure never affects gameplay.
-- `LuckySevenClassicWorkspace.tsx`: shared-save adapter plus accessible cabinet state machine, rules/preferences and reset.
+- `LuckySevenClassicWorkspace.tsx`: shared-save adapter plus accessible cabinet state machine, rules/preferences, reset, and standalone semantic payline label.
 - `lucky-seven-classic.css`: scoped responsive cabinet, finite normal motion, reduced-motion override and 320px/200%-text reflow.
 - `lucky-seven-classic.meta.ts`: catalog metadata.
 - `src/catalog.ts` / `src/games/workspaces.tsx`: discoverable catalog entry and lazy route registration.
@@ -87,12 +88,12 @@ The Red-7 sound fixture is `[0,9,14]`, the actual Red-7 positions for the three 
 - Persistence GREEN: `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; full build and Pages deployment succeeded.
 - History-sync diagnostics: `a8da91b63a5e43fc049def1ab869659fbeb4f57f` / `38099964934` and `1074ad595271b5c60c0e83632dd9bde86726bead` / `38100085348` stopped before Playwright and are not UI RED evidence.
 - UI/browser RED: `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`. Dependency freshness, design lint, typecheck, game governance, 117 unit tests, rules, shared account browser, catalog/shared design regressions, all Royal Palace suites and Royal Fortune browser checks passed. Lucky Seven then failed exactly on `locator('.lsc')` timeout because the playable route/cabinet did not yet exist.
-- The current production integration adds cabinet UI, scoped responsive CSS, opt-in procedural audio, catalog/workspace registration and the Red-7 fixture correction against the otherwise unchanged browser contract. GREEN is not claimed until CI passes.
+- First cabinet candidate source revision `ab6651d6788371b15b0164fe5c3f04c65095ea41` was exercised unchanged by descendant run `38100732011`. All pre-browser gates and earlier browser suites again passed. Lucky Seven advanced into its own assertions and failed only because `getByText('Center payline', { exact: true })` could not match the container text `◆ Center payline ◆`. This is a production semantic-markup defect. The repair makes `Center payline` a standalone visible span while decorative diamonds remain `aria-hidden`; no assertion is weakened.
 
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Engine/probability and persistence are green through `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; the exact UI/browser RED is `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; final cabinet/release verification remains open.
+**Completion evidence:** Engine/probability and persistence are green through `a72d095e3569b056b211803335e6b6d401e048bb` / run `38099724416`; the exact UI/browser RED is `66f0f7a54c7fad33f6ee4953ee6b5220e4e40f58` / run `38100222862`; run `38100732011` exposed the first real cabinet semantic-label defect and the production repair is awaiting GREEN.
 
 - [x] Pure reel/paytable/engine behavior is implemented and exhaustively probability-audited.
 - [x] Game-local schema-v1 decoder/save-definition/settlement/restore behavior passes unchanged focused tests.

@@ -172,7 +172,7 @@ function LuckySevenMachine({
       </div>
 
       <div className="lsc-cabinet">
-        <div className="lsc-payline-label"><span aria-hidden="true">◆</span> Center payline <span aria-hidden="true">◆</span></div>
+        <div className="lsc-payline-label"><span aria-hidden="true">◆</span><span>Center payline</span><span aria-hidden="true">◆</span></div>
         <div className="lsc-reels" aria-label="Three mechanical reels">
           {windows.map((windowSymbols, reelIndex) => (
             <div className="lsc-reel" key={reelIndex} aria-label={`Reel ${reelIndex + 1}`}>
