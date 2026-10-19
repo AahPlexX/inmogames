@@ -1,19 +1,17 @@
 # Cascade Vault execution
 
-**Status:** Implementing — CV-001 source hardened; canonical GREEN dependency/governance-gated  
+**Status:** Implementing — CV-001 verified; CV-002 simulation/balance TDD RED opening  
 **Architecture / Engine:** Immutable 6×5 board → adjacent ways → simultaneous removal → gravity/refill → bounded base/Vault transitions → production-engine simulation → settled persistence → accessible React presentation.  
-**Dependencies Used:** Current committed source still declares React 19.3.0; React DOM 19.3.0; TypeScript 7.0.2; Vitest 5.0.3; Playwright 1.64.0; Firebase 13.0.0; Vite 8.3.4. Dependency refresh request revision 8 targets React/React DOM 19.3.1, Firebase CLI 15.34.0, Playwright 1.64.1 and Vitest 5.0.5; maintenance must validate before the generated package/lockfile commit is accepted.
+**Dependencies Used:** React 19.3.1; React DOM 19.3.1; TypeScript 7.0.2; Vitest 5.0.5; Playwright 1.64.1; Firebase 13.0.0; Vite 8.3.4. Dependency refresh completed through maintenance run `39296252148`; refreshed exact revision `08c3506773d17eee3fed7554f211531141856386` passed Pages run `39296638285`.
 
-## Immediate repository gate
+## CV-001 canonical verification
 
-Pages run `39280095530` stopped at dependency freshness before game checks. Maintenance run `39294812001` verified the revision-8 dependency targets, then exposed two Cascade document-schema regressions after TypeScript GREEN. Commit `af5a10b6ba4551a7b940382a5d36b67a2b9aaf75` restored those exact PRD/todo structures. Maintenance run `39295604436` then proved `game-check: 7 game(s) OK`; history-aware `game-doc-sync` correctly required the changed tracker and authoritative spec to be updated together. This integration performs that atomic spec+tracker synchronization and preserves all evidence without changing gameplay source.
+Exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` passed the full repository chain and GitHub Pages deployment in run `39296638285`. Dependency freshness, design lint, TypeScript, history-aware governance, unit/rules/shared browser/design-game browser suites, both production builds and artifact upload were all green.
 
-- [x] Dependency request revision 8 resolves the current stable direct-package targets.
-- [x] Maintenance run `39294812001` reaches full validation with dependency-current, design lint and TypeScript green.
-- [x] Required PRD/todo governance schema restored; run `39295604436` proves `game-check` passes.
-- [ ] Atomic spec+tracker synchronization passes history-aware `game-doc-sync` on maintenance rerun.
-- [ ] Remainder of `pnpm validate` passes and verified dependency refresh bot commit lands package.json/pnpm-lock.yaml.
-- [ ] Pages validation reruns on refreshed `main` before CV-001 is called GREEN.
+- [x] Exact current direct dependency pins and lockfile validated.
+- [x] History-aware spec/tracker governance validated.
+- [x] Full CV-001 unit and repository regression chain passed.
+- [x] Both production builds, artifact upload and Pages deployment passed.
 
 ## Core Feature Execution Pipeline
 
@@ -23,21 +21,21 @@ Pages run `39280095530` stopped at dependency freshness before game checks. Main
 **Dependencies Touched:** `symbols.ts`, `paytable.ts`, `engine.ts`, `tests/unit/cascade-vault-engine.test.ts`.  
 **Technical Notes & Edge Cases:** reel-1 consecutive ways >=3; Wild normal-symbol substitution only; concrete all-Wild way paid once at highest interpretation; immutable simultaneous evaluation; refill rejects Scatter; base ×1..×10; Vault ×2..×20; meter once/free spin; step-3 +3 once; +4 retrigger; 20-spin cap; exact centi-credit units; 51st winning cascade throws; after all free-spin awards, zero remaining spins terminates the feature and `nextVaultState` is null.  
 **Implementation Details:** RED `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; implementation `f71588d2ca0c96e685f54631c0afb6ded56ade84`; fixture correction `ae5a7e3630964d13efb23bb06c57dc582dbb2455`; terminal-feature hardening `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820`. Independent strict TypeScript + reconstructed behavior harness pass after the fixture-only correction. Canonical runs have so far been blocked before unit execution by repository dependency/governance gates, not a CV-001 assertion failure.  
-**Verification & State Sign-off:** canonical GREEN still required before CV-001 is terminal.
+**Verification & State Sign-off:** verified on `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`.
 
 - [x] Focused unit contract records the intended missing-module RED.
 - [x] Fixture collision corrected without weakening the 400-unit deterministic assertion.
 - [x] Terminal final-free-spin state hardened to `nextVaultState: null` in source + focused regression.
-- [ ] Exact ways/Wild/dedup/removal/gravity/refill behavior passes canonical focused/full tests after repository gate recovery.
-- [ ] Base/Vault multiplier/meter/retrigger/cap and terminal-null behavior pass canonical focused/full tests after repository gate recovery.
-- [ ] 50-cascade guard passes canonical focused/full tests after repository gate recovery.
+- [x] Exact ways/Wild/dedup/removal/gravity/refill behavior passes focused/full tests (`08c35067…`, run `39296638285`).
+- [x] Base/Vault multiplier/meter/retrigger/cap and terminal-null behavior pass focused/full tests (`08c35067…`, run `39296638285`).
+- [x] 50-cascade guard passes focused/full tests (`08c35067…`, run `39296638285`).
 
 ### CV-002 — Reproducible probability / balance audit
 **Purpose:** Fix final source-controlled probability/paytable configuration from evidence, not intuition.  
 **Inputs / Parameters:** GREEN production engine; provisional paytable + initial/refill distributions; deterministic audit seed; >=10,000,000 paid spins.  
 **Dependencies Touched:** planned `simulation.ts`, `tests/unit/cascade-vault-simulation.test.ts`, audit command/evidence; `paytable.ts` and/or `symbols.ts` may change only through measured rebalancing.  
 **Technical Notes & Edge Cases:** seeded PRNG is audit/test-only; simulation must call production `createWeightedVaultRandomSource` + `resolveSpin`; one observation is a paid spin plus complete attached Vault Run value; free spins add no wager denominator; stream online mean/variance; corruption-guard hits invalidate a candidate rather than being omitted; primary average cascade depth is winning cascades per paid spin, with engine-spin count diagnostic.  
-**Implementation Details:** two isolated advisory reviews were centrally checked against source. Wager arguments remain displayed credits, while awards/totals remain centi-credit integers. Supporting pre-audit math/scratch simulation shows current balance is many multiples above target and even a favorable no-Wild/no-Scatter first-board probability optimization stays above 400% before cascades. The authoritative design permits rebalancing **distributions/paytable**, so weights-only tuning is rejected as an implementation strategy.  
+**Implementation Details:** CV-002 opens with `tests/unit/cascade-vault-simulation.test.ts` before `simulation.ts` exists; the intended RED is missing-module/type resolution after governance. Two isolated advisory reviews were centrally checked against source. Wager arguments remain displayed credits, while awards/totals remain centi-credit integers. Supporting pre-audit math/scratch simulation shows current balance is many multiples above target and even a favorable no-Wild/no-Scatter first-board probability optimization stays above 400% before cascades. The authoritative design permits rebalancing **distributions/paytable**, so weights-only tuning is rejected as an implementation strategy.  
 **Verification & State Sign-off:** final 95% RTP interval must intersect 94%-97% and corruption-guard incidence must be zero in the accepted audit.
 
 - [ ] Simulation module RED recorded after CV-001 canonical GREEN.

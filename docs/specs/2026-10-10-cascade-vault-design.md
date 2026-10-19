@@ -1,6 +1,6 @@
 # Cascade Vault design
 
-**Status:** Implementing — CV-001 source hardened; canonical GREEN dependency/governance-gated  
+**Status:** Implementing — CV-001 verified; CV-002 simulation/balance TDD RED opening  
 **Last synchronized:** 2026-10-19  
 **Proposed route:** `#/games/cascade-vault`
 
@@ -134,6 +134,7 @@ Production completion requires exact dependency freshness, TypeScript, game/docu
 - Canonical run `39280095530` on `206f2a6a…` passed frozen install/exact-pin checks, then stopped at dependency-current because newer stable patches had appeared before any game checks.
 - Dependency request revision 8 corrected those targets. Maintenance run `39294812001` verified every target as npm latest, passed design lint and TypeScript, and then exposed two handoff-document schema regressions. The PRD/todo schema repair in `af5a10b6ba4551a7b940382a5d36b67a2b9aaf75` passed `game-check` in maintenance run `39295604436`; history-aware `game-doc-sync` then correctly required this authoritative spec and tracker to move together. This integration satisfies that atomic-pair rule before maintenance is rerun.
 - No CV-001 GREEN claim is made until the refreshed-dependency full validator reaches and passes the unchanged focused/full unit suite.
+- **CV-001 canonical GREEN:** refreshed exact revision `08c3506773d17eee3fed7554f211531141856386` passed frozen install, dependency freshness, design lint, TypeScript, history-aware game/document governance, the full unit suite, Firestore rules, shared account/persistence browser checks, the complete design/game browser suite, both production builds, Pages artifact upload and GitHub Pages deployment in run `39296638285`. CV-001 is therefore verified; the game remains implementing because CV-002 through CV-005 are open.
 
 ## Research basis
 
@@ -142,9 +143,9 @@ The free-play design follows conservative gambling-technology principles: unders
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Task CV-001 RED is exact revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; engine/fixture/terminal-feature hardening exists, and dependency/governance recovery has reached TypeScript + `game-check` GREEN, but canonical unit/browser/build validation and all downstream gates remain open.
+**Completion evidence:** CV-001 is verified on refreshed exact revision `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`; CV-002 opens test-first with a focused missing-`simulation.ts` contract. Whole-game completion remains open for probability, persistence, playable UI/audio and release gates.
 
-- [ ] Exact ways/Wild/removal/gravity/refill/cascade/Vault Run/final-feature-termination engine passes focused/full tests.
+- [x] Exact ways/Wild/removal/gravity/refill/cascade/Vault Run/final-feature-termination engine passes focused/full tests (`08c35067…`, run `39296638285`).
 - [ ] Reproducible >=10,000,000-spin audit records RTP/SE/95% CI/feature frequency/cascade depth/guard incidence and the interval intersects 94%–97% with zero guard hits.
 - [ ] Settled schema-v1 persistence, reload, feature termination/checkpoint and restore behavior pass focused tests.
 - [ ] Accessible playable board/Vault Run/audio browser contract passes deterministic gameplay, 320px, 200%-text, target-size, keyboard/touch and reduced-motion gates.

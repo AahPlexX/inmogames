@@ -4,23 +4,23 @@ Planned Functional Features Specification:
   game_identity:
     name: "Cascade Vault"
     slug: "cascade-vault"
-    development_status: "Implementing — CV-001 source hardened; canonical GREEN dependency/governance-gated"
+    development_status: "Implementing — CV-001 verified; CV-002 simulation/balance TDD RED opening"
 
   technical_foundation:
     architecture_and_engine: Pure six-reel/five-row adjacent-ways cascade engine with immutable evaluation, exact centi-credit accounting, injected randomness, bounded base/Vault multipliers, explicit final-feature termination, reproducible production-engine simulation, settled persistence, React presentation and shared save platform.
-    dependencies_used: ["React 19.3.0", "React DOM 19.3.0", "TypeScript 7.0.2", "Vitest 5.0.3", "Playwright 1.64.0", "Firebase 13.0.0", "Vite 8.3.4"]
-    dependency_refresh: "Request revision 8 targets React/React DOM 19.3.1, Firebase CLI 15.34.0, Playwright 1.64.1 and Vitest 5.0.5. Maintenance run 39294812001 verified those target versions as npm latest, then reached repository validation and exposed two Cascade governance-schema regressions before package/lockfile commit."
+    dependencies_used: ["React 19.3.1", "React DOM 19.3.1", "TypeScript 7.0.2", "Vitest 5.0.5", "Playwright 1.64.1", "Firebase 13.0.0", "Vite 8.3.4"]
+    dependency_refresh: "Completed through maintenance run 39296252148 and dependency-only bot commit 08c3506773d17eee3fed7554f211531141856386; exact refreshed Pages run 39296638285 passed full validation and deployment."
 
   core_feature_specifications:
     - name: "Exact ways/cascade/Vault Run engine"
       id: "CV-001"
       details: "6x5 immutable ways from reel 1; Wild substitution with concrete all-Wild interpretation dedup; simultaneous removals; gravity/top refill; base x1..x10; persistent Vault Run x2..x20; three-step meter; +4 retrigger; 20-spin cap; 50-cascade guard; exact centi-credit payout math; completed final free spin returns nextVaultState null after all awards are applied."
-      feature_development_status: "started — source/test hardening integrated; canonical GREEN pending refreshed dependency validation and repaired governance schema"
+      feature_development_status: "verified — exact refreshed revision 08c3506773d17eee3fed7554f211531141856386 / run 39296638285"
 
     - name: "Reproducible probability and balance audit"
       id: "CV-002"
       details: "Deterministic seeded audit reuses production createWeightedVaultRandomSource and resolveSpin. Each observation is one paid spin plus all value/cascades from its complete triggered Vault Run, with no extra free-spin wager denominator. Final >=10,000,000 paid spins report RTP, standard error, 95% CI, Vault Run entry frequency, defined average cascade depth and corruption-guard incidence. Current distributions and paytable are provisional for balance; the authoritative design permits rebalancing both, and the accepted interval must intersect 94%-97% with zero corruption-guard hits."
-      feature_development_status: "planned — supporting reconnaissance rules out a weights-only tuning assumption"
+      feature_development_status: "started — focused simulation TDD RED opening; balance remains provisional"
 
     - name: "Settled durable practice progression"
       id: "CV-003"
@@ -48,3 +48,7 @@ Planned Functional Features Specification:
 - Dependency-maintenance run `39294812001` verified every revision-8 direct dependency as npm latest and reached `pnpm validate`; design lint and TypeScript passed. `game:check` then correctly rejected the Cascade PRD/todo because the previous handoff rewrite renamed the required `technical_foundation.dependencies_used` field and the required `Dependencies` todo heading. These governance structures are restored without changing gameplay source.
 - Two isolated advisory implementation reviews were centrally reconciled with source. Supporting pre-audit analysis indicates current balance is far above the target and that weights-only tuning is not credible; CV-002 therefore exercises the spec-authorized paytable + distribution rebalance rather than treating the current paytable as final.
 - No gameplay capability is marked verified until canonical repository validation passes. TASK-003 remains the separate external live-Firebase blocker only.
+
+## CV-001 verification and CV-002 opening — 2026-10-19
+
+CV-001 is verified on exact refreshed revision `08c3506773d17eee3fed7554f211531141856386`, run `39296638285`, which passed the full repository validation, both builds, artifact upload and Pages deployment. CV-002 now opens test-first: `tests/unit/cascade-vault-simulation.test.ts` is added before `simulation.ts` exists, so the expected RED is the missing simulation module after governance reaches TypeScript. No simulation/balance result is claimed from the RED commit.
