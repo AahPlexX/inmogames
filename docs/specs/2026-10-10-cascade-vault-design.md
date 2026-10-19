@@ -1,6 +1,6 @@
 # Cascade Vault design
 
-**Status:** Implementing — Task 1 RED evidenced; pure engine GREEN implementation pending verification  
+**Status:** Implementing — Task 1 RED evidenced; pure engine GREEN implementation pending canonical verification  
 **Last synchronized:** 2026-10-19  
 **Proposed route:** `#/games/cascade-vault`
 
@@ -178,12 +178,13 @@ Although Cascade Vault is free-play software, its design adopts conservative pri
 ## Implementation evidence
 
 - Task CV-001 RED: exact revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a`, GitHub Actions run `38122640264`. Dependency freshness and design lint passed; TypeScript then failed on the intentionally absent `symbols.ts`, `paytable.ts`, and `engine.ts`. The remaining implicit-any errors were downstream of those missing imports.
-- GREEN implementation: the fixed RED contract remains unchanged while `symbols.ts`, `paytable.ts`, and `engine.ts` are integrated. No GREEN or verification claim is valid until the integration revision passes the focused/full unit and repository gates.
+- Engine implementation: exact revision `f71588d2ca0c96e685f54631c0afb6ded56ade84` introduced only the three pure modules plus synchronized governance; no playable route was registered and no GREEN claim was made.
+- Independent reproduction: repository-shaped strict TypeScript (`moduleResolution: bundler`, strict/noEmit/isolated modules) accepts the three engine modules. A no-framework behavior harness reproducing the focused assertions initially exposed one **fixture-only** mismatch: the deterministic fixture already contained Copper on reel 4, so the engine correctly produced a 4-reel second win (700 total) while the assertion intended a 3-reel second win (400 total). Replacing that unrelated fixture cell with Silver preserves every expected payout/multiplier/refill assertion, and the full reconstructed Task 1 harness passes. This is supporting evidence only; canonical repository GREEN is still required.
 
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Task CV-001 RED is evidenced by revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; pure engine modules are integrated for GREEN verification. Whole-game completion remains open.
+**Completion evidence:** Task CV-001 RED is evidenced by revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; pure engine modules are integrated and locally reproduced after the fixture-only correction. Whole-game completion remains open and canonical GREEN is still pending.
 
 - [ ] Exact ways/Wild/simultaneous-removal/gravity/refill/cascade/Vault Run engine passes focused tests.
 - [ ] Reproducible >=10,000,000-spin audit records RTP/SE/95% CI/feature frequency/cascade depth and the CI intersects 94%-97%.

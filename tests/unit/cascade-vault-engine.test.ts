@@ -44,7 +44,7 @@ const singleQuartzBoard = () => board([
   ['quartz', 'silver', 'gold', 'sapphire', 'emerald'],
   ['quartz', 'ruby', 'vault_crown', S, 'silver'],
   ['quartz', 'gold', 'sapphire', 'emerald', 'ruby'],
-  ['copper', 'emerald', 'ruby', 'gold', 'sapphire'],
+  ['silver', 'emerald', 'ruby', 'gold', 'sapphire'],
   ['silver', 'gold', 'sapphire', 'emerald', 'ruby'],
   ['vault_crown', 'copper', 'silver', 'gold', 'sapphire'],
 ]);
