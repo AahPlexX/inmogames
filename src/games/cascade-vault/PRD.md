@@ -56,3 +56,5 @@ CV-001 is verified on exact refreshed revision `08c3506773d17eee3fed7554f2115311
 CV-002 RED evidence: exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487` fails only on the intentionally absent `simulation.ts` after dependency/design gates. The production module now being integrated must satisfy that unchanged contract.
 
 CV-002 implementation evidence: `cf8f6e3723f483bc126b0f50b0f42161c14dff56` passed full validation and Pages deployment in run `39298014858`. Before balance screening, independent review required additional deterministic evidence; the current test hardening adds nonzero Vault Run award aggregation, a published seeded-PRNG vector and explicit corruption-guard propagation without changing production simulation logic.
+
+Evidence-hardening note: run `39299103907` failed only the new nonzero feature fixture because its first refill choice created a second Sapphire cascade. Production simulation stayed unchanged; the corrected refill triplet is `vault_crown/copper/copper`, independently checked to terminate after one 200-unit quartz cascade.

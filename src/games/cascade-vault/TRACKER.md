@@ -20,7 +20,7 @@
 **Last verified revision:** `08c3506773d17eee3fed7554f211531141856386` / GitHub Actions run `39296638285` — CV-001 exact engine/accounting scope plus full repository validation and Pages deployment  
 **Open game-local work:** CV-002 production-engine simulation/paytable+weight balance and >=10M audit; CV-003 settled persistence; CV-004 playable UI/audio/browser quality; CV-005 catalog/release closeout  
 **External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local implementation or verification  
-**Next action:** validate the strengthened CV-002 simulation evidence, then add a dedicated non-routine audit harness and use it to screen the unchanged current configuration before selecting an exact paytable/weight candidate for the >=10M acceptance run.  
+**Next action:** validate the fixture-only correction after run `39299103907` exposed an unintended second Sapphire cascade; then add the dedicated non-routine audit harness and begin production-engine screening.  
 
 ## Canonical verification recovery — 2026-10-19
 

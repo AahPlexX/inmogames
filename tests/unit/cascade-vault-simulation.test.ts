@@ -90,7 +90,7 @@ describe('Cascade Vault probability simulation', () => {
     const source = queuedSource([
       ...triggeringBoard().flat(),
       ...singleQuartzBoard().flat(),
-      'emerald', 'sapphire', 'ruby',
+      'vault_crown', 'copper', 'copper',
       ...Array.from({ length: 7 }, () => quietBoard().flat()).flat(),
     ]);
     const sample = simulateCascadeVaultPaidSpin(10, source);
