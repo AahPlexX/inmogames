@@ -6,12 +6,13 @@
 
 ## Immediate repository gate
 
-Pages run `39280095530` on exact CV-001 revision `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820` passed frozen install and exact-pin policy, then stopped at `dependency:current` before any game checks. Maintenance run `39293588043` exposed stale dependency request revision 7. Revision 8 corrected those targets. Maintenance run `39294812001` then verified every target as npm latest, installed Playwright, and reached `pnpm validate`: dependency checks, design lint and TypeScript passed; `game:check` rejected only two Cascade documentation schema regressions introduced by the handoff rewrite (`technical_foundation.dependencies_used` and the top-level `Dependencies` todo structure). This revision restores those required governance shapes without modifying game source.
+Pages run `39280095530` stopped at dependency freshness before game checks. Maintenance run `39294812001` verified the revision-8 dependency targets, then exposed two Cascade document-schema regressions after TypeScript GREEN. Commit `af5a10b6ba4551a7b940382a5d36b67a2b9aaf75` restored those exact PRD/todo structures. Maintenance run `39295604436` then proved `game-check: 7 game(s) OK`; history-aware `game-doc-sync` correctly required the changed tracker and authoritative spec to be updated together. This integration performs that atomic spec+tracker synchronization and preserves all evidence without changing gameplay source.
 
 - [x] Dependency request revision 8 resolves the current stable direct-package targets.
 - [x] Maintenance run `39294812001` reaches full validation with dependency-current, design lint and TypeScript green.
-- [ ] Repaired PRD/todo governance schema passes `game:check` and the remainder of `pnpm validate`.
-- [ ] Verified dependency refresh bot commit lands package.json/pnpm-lock.yaml.
+- [x] Required PRD/todo governance schema restored; run `39295604436` proves `game-check` passes.
+- [ ] Atomic spec+tracker synchronization passes history-aware `game-doc-sync` on maintenance rerun.
+- [ ] Remainder of `pnpm validate` passes and verified dependency refresh bot commit lands package.json/pnpm-lock.yaml.
 - [ ] Pages validation reruns on refreshed `main` before CV-001 is called GREEN.
 
 ## Core Feature Execution Pipeline
@@ -35,8 +36,8 @@ Pages run `39280095530` on exact CV-001 revision `206f2a6aa0ab4a3b0c31aeb4f450b7
 **Purpose:** Fix final source-controlled probability/paytable configuration from evidence, not intuition.  
 **Inputs / Parameters:** GREEN production engine; provisional paytable + initial/refill distributions; deterministic audit seed; >=10,000,000 paid spins.  
 **Dependencies Touched:** planned `simulation.ts`, `tests/unit/cascade-vault-simulation.test.ts`, audit command/evidence; `paytable.ts` and/or `symbols.ts` may change only through measured rebalancing.  
-**Technical Notes & Edge Cases:** seeded PRNG is audit/test-only; simulation must call production `createWeightedVaultRandomSource` + `resolveSpin`; one observation is a paid spin plus complete attached Vault Run value; free spins add no wager denominator; stream online mean/variance; corruption-guard hits invalidate a candidate rather than being omitted; average cascade-depth denominator must be explicit.  
-**Implementation Details:** two isolated advisory reviews were centrally checked against source. Wager arguments remain displayed credits, while awards/totals remain centi-credit integers. Supporting pre-audit math/scratch simulation shows current balance is many multiples above target and even a favorable no-Wild/no-Scatter first-board probability optimization stays above 400% before cascades. The authoritative design already permits rebalancing **distributions/paytable**, so weights-only tuning is rejected as an implementation strategy.  
+**Technical Notes & Edge Cases:** seeded PRNG is audit/test-only; simulation must call production `createWeightedVaultRandomSource` + `resolveSpin`; one observation is a paid spin plus complete attached Vault Run value; free spins add no wager denominator; stream online mean/variance; corruption-guard hits invalidate a candidate rather than being omitted; primary average cascade depth is winning cascades per paid spin, with engine-spin count diagnostic.  
+**Implementation Details:** two isolated advisory reviews were centrally checked against source. Wager arguments remain displayed credits, while awards/totals remain centi-credit integers. Supporting pre-audit math/scratch simulation shows current balance is many multiples above target and even a favorable no-Wild/no-Scatter first-board probability optimization stays above 400% before cascades. The authoritative design permits rebalancing **distributions/paytable**, so weights-only tuning is rejected as an implementation strategy.  
 **Verification & State Sign-off:** final 95% RTP interval must intersect 94%-97% and corruption-guard incidence must be zero in the accepted audit.
 
 - [ ] Simulation module RED recorded after CV-001 canonical GREEN.
@@ -51,7 +52,7 @@ Pages run `39280095530` on exact CV-001 revision `206f2a6aa0ab4a3b0c31aeb4f450b7
 **Inputs / Parameters:** centi-credit bankroll/totals; selected `CascadeVaultWager` denomination; paid/free counters; stats; preferences; last settled result; fully resolved Vault checkpoint or null.  
 **Dependencies Touched:** planned `storage.ts`, `persistence.ts`, shared `GameSaveDefinition`, `tests/unit/cascade-vault-persistence.test.ts`.  
 **Technical Notes & Edge Cases:** no board/animation/partial cascade; active feature requires >=1 remaining spin; completed feature is null; malformed/non-finite/negative/unsafe values reject; net invariant; restore 5000 only below 10-credit minimum and outside active feature while preserving stats/preferences.  
-**Implementation Details:** schema v1; slug `cascade-vault`; storage key `inmogames:cascade-vault:v1`. Controller ruling: do not create a second wager-unit type—engine denomination remains 10/20/50/100/250 credits while durable money fields use centi-credit integers. `largestSpinWin` is one resolved engine spin, and `highestCascadeChain` is `result.cascades.length`.  
+**Implementation Details:** schema v1; slug `cascade-vault`; storage key `inmogames:cascade-vault:v1`. Controller ruling: engine denomination remains 10/20/50/100/250 credits while durable money fields use centi-credit integers. `largestSpinWin` is one resolved engine spin, and `highestCascadeChain` is `result.cascades.length`.  
 **Verification & State Sign-off:** open.
 
 - [ ] Persistence RED/GREEN recorded after CV-001 canonical GREEN.

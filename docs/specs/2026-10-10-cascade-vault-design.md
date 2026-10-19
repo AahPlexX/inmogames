@@ -1,6 +1,6 @@
 # Cascade Vault design
 
-**Status:** Implementing — Task 1 engine hardened; canonical GREEN pending  
+**Status:** Implementing — CV-001 source hardened; canonical GREEN dependency/governance-gated  
 **Last synchronized:** 2026-10-19  
 **Proposed route:** `#/games/cascade-vault`
 
@@ -29,7 +29,7 @@ Cascade Vault is the modern high-feature member of the slot family and is mechan
 
 ## Paytable and exact accounting
 
-Per-way multipliers before cascade/feature modifiers:
+The following v1 multipliers are **provisional balance inputs**, not verified final probabilities. CV-002 may rebalance these values together with source weights while preserving symbol-value ordering, exact accounting, and the approved feature rules.
 
 | Symbol | 3 reels | 4 reels | 5 reels | 6 reels |
 | --- | ---: | ---: | ---: | ---: |
@@ -44,20 +44,25 @@ Per-way multipliers before cascade/feature modifiers:
 
 Scatter does not pay a separate credit prize in v1.
 
-Fractional virtual-credit awards are intentional. Runtime, simulation and persistence use integer **centi-credit units**, `CREDIT_SCALE = 100`, so 100 internal units equal 1 displayed credit. Paytable multipliers are integer hundredths and the ×1.5 feature boost is exact 3/2 arithmetic. No rule rounds to whole credits.
+Fractional virtual-credit awards are intentional. Runtime, simulation and persistence use integer **centi-credit units**, `CREDIT_SCALE = 100`, so 100 internal units equal 1 displayed credit. Paytable multipliers are integer hundredths and the ×1.5 feature boost is exact 3/2 arithmetic. No rule rounds to whole credits. Any accepted rebalance must remain exactly representable under this contract or explicitly revise the precision contract across engine, persistence and UI before acceptance.
 
 ## Randomness and probability evidence
 
 Production spins use browser cryptographic randomness through an injected engine adapter. Tests/audits may inject deterministic seeded sources. Outcomes never depend on bankroll, prior outcomes, session length or user behavior.
 
-The current initial/refill weights are provisional engineering values only. CV-002 must run a reproducible Monte Carlo audit of at least **10,000,000 paid spins**, including all triggered free-spin value, and report:
+The current initial/refill weights and paytable are provisional engineering values only. CV-002 must run a reproducible Monte Carlo audit of at least **10,000,000 paid spins**, including all value from every Vault Run triggered by those paid spins, and report:
 - observed RTP,
 - standard error,
 - 95% confidence interval,
 - Vault Run entry frequency,
-- average cascade depth with its denominator definition.
+- average winning-cascade depth per paid spin, with engine-spin diagnostics,
+- corruption-guard incidence.
 
-The final 95% RTP interval must intersect **94%–97%**. Otherwise the distribution/paytable must be rebalanced and rerun before completion.
+One statistical observation is one paid spin plus the complete value of its attached feature. Free spins do not add a wager denominator. Simulation must call the real `createWeightedVaultRandomSource` and `resolveSpin`; it must not duplicate symbol selection, ways, cascade or Vault rules. A 50-cascade corruption-guard hit invalidates a candidate/audit and may not be omitted from statistics.
+
+The final 95% RTP interval must intersect **94%–97%**, with zero observed corruption-guard hits in the accepted audit. Otherwise distributions/paytable must be rebalanced and rerun before completion.
+
+Supporting pre-audit reconnaissance is deliberately non-authoritative but rules out a weights-only assumption: the current configuration produced returns many multiples above target in scratch modeling, and even a favorable no-Wild/no-Scatter first-board optimization remained above 400% expected return before cascades. The final source configuration therefore requires evidence-led paytable + distribution tuning. Only the production-engine CV-002 audit can establish acceptance.
 
 ## Bankroll and persistence
 
@@ -67,6 +72,7 @@ The final 95% RTP interval must intersect **94%–97%**. Otherwise the distribut
 - Persist only settled state: bankroll, wager, paid/free spin counters, wagered/won/net totals, largest completed spin win, highest cascade chain, completed Vault Run count, sound/reduced-effects preferences, last completed result, and fully resolved post-free-spin feature checkpoint.
 - Never persist an in-flight paid spin, board animation state, unresolved cascade or partially settled free spin.
 - A completed Vault Run persists `feature: null`; only a feature with at least 1 remaining spin is durable.
+- `largestSpinWin` is the payout from one fully resolved engine spin, not an aggregate Vault Run total. `highestCascadeChain` is the maximum `result.cascades.length` from one resolved engine spin.
 - Reload must neither duplicate nor lose a completed award.
 - If bankroll drops below the 10-credit minimum and no feature is active, expose **Restore 5,000 practice credits** while retaining statistics/preferences.
 - Authenticated saves use `users/{uid}/games/cascade-vault`; real configured-project verification remains external TASK-003.
@@ -113,7 +119,7 @@ Primary hierarchy: bankroll/wager → 6×5 board → current cascade result/mult
 
 Unit coverage: ways/reel qualification, Wild/dedup, simultaneous wins/removals, gravity/refill, cascade termination/50 guard, multipliers/caps/reset, Scatter triggers/retriggers, all meter steps, final-feature termination, free-spin cap, exact accounting, deterministic random injection, storage decoding and settled checkpoint semantics.
 
-Simulation coverage: source-weight integrity, seeded reproducibility, no adaptive inputs, correct streaming confidence statistics, feature/cascade metrics, and final >=10M acceptance audit.
+Simulation coverage: source-weight integrity, seeded reproducibility, no adaptive inputs, paid-spin-plus-feature aggregation, correct streaming confidence statistics, feature/cascade metrics, corruption-guard reporting, and final >=10M acceptance audit.
 
 Browser coverage: route, first paid spin, deterministic multi-cascade sequence, aggregate announcements, wager changes/locking, Vault Run entry/progression/exit, settled reload/restore, keyboard/touch, 320px, 200% text, >=48px important targets, reduced motion, opt-in audio and no horizontal overflow.
 
@@ -124,7 +130,10 @@ Production completion requires exact dependency freshness, TypeScript, game/docu
 - RED: `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; dependency/design gates passed, TypeScript failed because the three intended engine modules did not exist.
 - Engine implementation: `f71588d2ca0c96e685f54631c0afb6ded56ade84`.
 - Fixture correction: `ae5a7e3630964d13efb23bb06c57dc582dbb2455`. The original deterministic fixture had unrelated Copper on reel 4, legitimately extending the intended 3-reel second cascade to 4 reels (700 total). Replacing only that cell with Silver preserves the intended two-cascade, 400-unit contract. Independent strict TypeScript + reconstructed focused assertions then pass.
-- Terminal feature hardening adds a no-win final-free-spin regression requiring `nextVaultState === null` after remaining spins reach zero. Canonical repository GREEN remains required.
+- Terminal feature hardening: `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820` adds a no-win final-free-spin regression requiring `nextVaultState === null` after remaining spins reach zero.
+- Canonical run `39280095530` on `206f2a6a…` passed frozen install/exact-pin checks, then stopped at dependency-current because newer stable patches had appeared before any game checks.
+- Dependency request revision 8 corrected those targets. Maintenance run `39294812001` verified every target as npm latest, passed design lint and TypeScript, and then exposed two handoff-document schema regressions. The PRD/todo schema repair in `af5a10b6ba4551a7b940382a5d36b67a2b9aaf75` passed `game-check` in maintenance run `39295604436`; history-aware `game-doc-sync` then correctly required this authoritative spec and tracker to move together. This integration satisfies that atomic-pair rule before maintenance is rerun.
+- No CV-001 GREEN claim is made until the refreshed-dependency full validator reaches and passes the unchanged focused/full unit suite.
 
 ## Research basis
 
@@ -133,10 +142,10 @@ The free-play design follows conservative gambling-technology principles: unders
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Task CV-001 RED is exact revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; engine/fixture/terminal-feature hardening exists but canonical GREEN and all downstream gates remain open.
+**Completion evidence:** Task CV-001 RED is exact revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; engine/fixture/terminal-feature hardening exists, and dependency/governance recovery has reached TypeScript + `game-check` GREEN, but canonical unit/browser/build validation and all downstream gates remain open.
 
 - [ ] Exact ways/Wild/removal/gravity/refill/cascade/Vault Run/final-feature-termination engine passes focused/full tests.
-- [ ] Reproducible >=10,000,000-spin audit records RTP/SE/95% CI/feature frequency/cascade depth and the interval intersects 94%–97%.
+- [ ] Reproducible >=10,000,000-spin audit records RTP/SE/95% CI/feature frequency/cascade depth/guard incidence and the interval intersects 94%–97% with zero guard hits.
 - [ ] Settled schema-v1 persistence, reload, feature termination/checkpoint and restore behavior pass focused tests.
 - [ ] Accessible playable board/Vault Run/audio browser contract passes deterministic gameplay, 320px, 200%-text, target-size, keyboard/touch and reduced-motion gates.
 - [ ] Catalog/workspace route and all living governance surfaces are synchronized.
