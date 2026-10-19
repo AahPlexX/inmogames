@@ -1,15 +1,18 @@
 # Cascade Vault execution
 
-**Status:** Implementing — CV-001 source hardened; canonical GREEN dependency-gated  
+**Status:** Implementing — CV-001 source hardened; canonical GREEN dependency/governance-gated  
 **Architecture / Engine:** Immutable 6×5 board → adjacent ways → simultaneous removal → gravity/refill → bounded base/Vault transitions → production-engine simulation → settled persistence → accessible React presentation.  
-**Dependencies Used on current source revision:** React 19.3.0; TypeScript 7.0.2; Vitest 5.0.3; Playwright 1.64.0; Firebase 13.0.0; Vite 8.3.4. Dependency refresh request revision 8 targets current npm-stable patch updates before canonical revalidation.
+**Dependencies Used:** Current committed source still declares React 19.3.0; React DOM 19.3.0; TypeScript 7.0.2; Vitest 5.0.3; Playwright 1.64.0; Firebase 13.0.0; Vite 8.3.4. Dependency refresh request revision 8 targets React/React DOM 19.3.1, Firebase CLI 15.34.0, Playwright 1.64.1 and Vitest 5.0.5; maintenance must validate before the generated package/lockfile commit is accepted.
 
 ## Immediate repository gate
 
-Pages run `39280095530` on exact CV-001 revision `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820` passed frozen install and exact-pin policy, then stopped at `dependency:current` before any design/type/game/unit/browser/build step. Dependency-maintenance run `39293588043` showed request revision 7 was stale and re-applied the old pins. Request revision 8 updates React/React DOM to 19.3.1, Firebase CLI to 15.34.0, Playwright to 1.64.1 and Vitest to 5.0.5 while retaining still-current direct pins.
+Pages run `39280095530` on exact CV-001 revision `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820` passed frozen install and exact-pin policy, then stopped at `dependency:current` before any game checks. Maintenance run `39293588043` exposed stale dependency request revision 7. Revision 8 corrected those targets. Maintenance run `39294812001` then verified every target as npm latest, installed Playwright, and reached `pnpm validate`: dependency checks, design lint and TypeScript passed; `game:check` rejected only two Cascade documentation schema regressions introduced by the handoff rewrite (`technical_foundation.dependencies_used` and the top-level `Dependencies` todo structure). This revision restores those required governance shapes without modifying game source.
 
-- [ ] Dependency request revision 8 passes maintenance `verify-dependency-latest` + full `pnpm validate` and lands its generated lockfile commit.
-- [ ] Pages validation reruns after the verified dependency refresh before CV-001 is called GREEN.
+- [x] Dependency request revision 8 resolves the current stable direct-package targets.
+- [x] Maintenance run `39294812001` reaches full validation with dependency-current, design lint and TypeScript green.
+- [ ] Repaired PRD/todo governance schema passes `game:check` and the remainder of `pnpm validate`.
+- [ ] Verified dependency refresh bot commit lands package.json/pnpm-lock.yaml.
+- [ ] Pages validation reruns on refreshed `main` before CV-001 is called GREEN.
 
 ## Core Feature Execution Pipeline
 
@@ -18,15 +21,15 @@ Pages run `39280095530` on exact CV-001 revision `206f2a6aa0ab4a3b0c31aeb4f450b7
 **Inputs / Parameters:** immutable 6×5 board; wagers 10/20/50/100/250; injected random source; base/Vault mode; optional active Vault Run state.  
 **Dependencies Touched:** `symbols.ts`, `paytable.ts`, `engine.ts`, `tests/unit/cascade-vault-engine.test.ts`.  
 **Technical Notes & Edge Cases:** reel-1 consecutive ways >=3; Wild normal-symbol substitution only; concrete all-Wild way paid once at highest interpretation; immutable simultaneous evaluation; refill rejects Scatter; base ×1..×10; Vault ×2..×20; meter once/free spin; step-3 +3 once; +4 retrigger; 20-spin cap; exact centi-credit units; 51st winning cascade throws; after all free-spin awards, zero remaining spins terminates the feature and `nextVaultState` is null.  
-**Implementation Details:** RED `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; implementation `f71588d2ca0c96e685f54631c0afb6ded56ade84`; fixture correction `ae5a7e3630964d13efb23bb06c57dc582dbb2455`; terminal-feature hardening `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820`. Independent strict TypeScript + reconstructed behavior harness pass after the fixture-only correction. Canonical run `39280095530` was dependency-gated before engine checks and is not a CV-001 failure.  
+**Implementation Details:** RED `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; implementation `f71588d2ca0c96e685f54631c0afb6ded56ade84`; fixture correction `ae5a7e3630964d13efb23bb06c57dc582dbb2455`; terminal-feature hardening `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820`. Independent strict TypeScript + reconstructed behavior harness pass after the fixture-only correction. Canonical runs have so far been blocked before unit execution by repository dependency/governance gates, not a CV-001 assertion failure.  
 **Verification & State Sign-off:** canonical GREEN still required before CV-001 is terminal.
 
 - [x] Focused unit contract records the intended missing-module RED.
 - [x] Fixture collision corrected without weakening the 400-unit deterministic assertion.
 - [x] Terminal final-free-spin state hardened to `nextVaultState: null` in source + focused regression.
-- [ ] Exact ways/Wild/dedup/removal/gravity/refill behavior passes canonical focused/full tests after dependency refresh.
-- [ ] Base/Vault multiplier/meter/retrigger/cap and terminal-null behavior pass canonical focused/full tests after dependency refresh.
-- [ ] 50-cascade guard passes canonical focused/full tests after dependency refresh.
+- [ ] Exact ways/Wild/dedup/removal/gravity/refill behavior passes canonical focused/full tests after repository gate recovery.
+- [ ] Base/Vault multiplier/meter/retrigger/cap and terminal-null behavior pass canonical focused/full tests after repository gate recovery.
+- [ ] 50-cascade guard passes canonical focused/full tests after repository gate recovery.
 
 ### CV-002 — Reproducible probability / balance audit
 **Purpose:** Fix final source-controlled probability/paytable configuration from evidence, not intuition.  

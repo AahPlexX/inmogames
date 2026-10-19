@@ -6,7 +6,7 @@
 
 | Capability | Status | Verification |
 | --- | --- | --- |
-| Exact adjacent-ways / cascade engine | started | RED: revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a`, run `38122640264`. Implementation `f71588d2ca0c96e685f54631c0afb6ded56ade84`, fixture correction `ae5a7e3630964d13efb23bb06c57dc582dbb2455`, and terminal-feature hardening `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820` are integrated. Canonical run `39280095530` stopped at repository-wide dependency freshness before TypeScript/game/unit checks, so CV-001 remains unverified rather than failed. |
+| Exact adjacent-ways / cascade engine | started | RED: revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a`, run `38122640264`. Implementation `f71588d2ca0c96e685f54631c0afb6ded56ade84`, fixture correction `ae5a7e3630964d13efb23bb06c57dc582dbb2455`, and terminal-feature hardening `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820` are integrated. Canonical run `39280095530` stopped at dependency freshness; maintenance run `39294812001` reached design lint + TypeScript GREEN, then stopped at two now-repaired documentation-schema checks before unit execution. CV-001 therefore remains unverified rather than failed. |
 | Exact payout precision | started | Runtime awards use integer centi-credit accounting (`CREDIT_SCALE = 100`) and exact rational ×1.5 feature boost. CV-002 may rebalance paytable multipliers, but must preserve exact integer-unit settlement for every supported wager/modifier combination. |
 | Reproducible 10M-spin probability audit | planned | Current symbol weights **and paytable** remain provisional for balance. Supporting pre-audit reconnaissance shows a weights-only tune is not credible: even an optimized no-Wild/no-Scatter first-board distribution stays above 400% expected return before cascades. CV-002 must report RTP, SE, 95% CI, Vault Run entry frequency, average cascade depth and any corruption-guard incidence; final CI must intersect 94%-97%. |
 | Settled durable checkpoints | planned | Schema-v1 settled state only; active Vault state requires 1-20 remaining spins and completed feature is null. Monetary state persists centi-credit integers; selected wager remains the engine denomination 10/20/50/100/250 credits. Restore 5,000 preserves history/preferences. |
@@ -16,19 +16,19 @@
 
 ## Current handoff
 
-**Implementation state:** implementing — CV-001 source hardened; canonical GREEN blocked by repository dependency refresh  
+**Implementation state:** implementing — CV-001 source hardened; canonical GREEN dependency/governance-gated  
 **Last verified revision:** none — no Cascade Vault capability has yet passed the canonical full repository chain  
-**Open game-local work:** dependency-gate recovery; CV-001 canonical GREEN; CV-002 paytable/weight audit and 10M acceptance run; CV-003 settled persistence; browser UI/audio; catalog/release validation  
+**Open game-local work:** repaired governance validation; refreshed dependency bot commit; CV-001 canonical GREEN; CV-002 paytable/weight audit and 10M acceptance run; CV-003 settled persistence; browser UI/audio; catalog/release validation  
 **External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local implementation or verification  
-**Next action:** apply dependency refresh request revision 8, require the maintenance workflow to validate and commit the current stable pins, rerun canonical Pages validation, and only then close CV-001 or open downstream GREEN claims.
+**Next action:** rerun dependency maintenance from request revision 8 after restoring the required PRD/todo schemas; require the remainder of `pnpm validate` plus the bot dependency commit, then rerun Pages validation before closing CV-001.
 
 ## Canonical verification blocker — 2026-10-19
 
-- Pages run `39280095530` targeted exact revision `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820`.
-- Frozen install and `dependency:check` passed.
-- `dependency:current` failed before design/type/game/unit/browser/build steps because npm stable advanced to React/React DOM `19.3.1`, Firebase CLI `15.34.0`, Playwright `1.64.1`, and Vitest `5.0.5`.
-- Dependency maintenance run `39293588043` then proved `.tasks/dependency-refresh-request.json` revision 7 was stale: it reapplied the old pins and failed the same current-version gate.
-- Request revision 8 now carries the newly verified patch versions. This repository-wide freshness issue is not evidence of a Cascade Vault engine defect.
+- Pages run `39280095530` targeted exact revision `206f2a6aa0ab4a3b0c31aeb4f450b7bc2d83b820`; frozen install and `dependency:check` passed, then `dependency:current` failed before game checks due newer stable patches.
+- Dependency maintenance run `39293588043` showed request revision 7 was stale.
+- Request revision 8 carries React/React DOM `19.3.1`, Firebase CLI `15.34.0`, Playwright `1.64.1`, Vitest `5.0.5`, plus still-current direct pins.
+- Maintenance run `39294812001` verified all request-revision-8 versions as npm latest. Its `pnpm validate` passed dependency-current, design lint and TypeScript, then `game:check` rejected only two Cascade governance structures introduced by the handoff rewrite: PRD `technical_foundation.dependencies_used` had been renamed, and todo lacked the exact top-level `Dependencies` label. Both required structures are restored with all evidence retained.
+- No package/lockfile bot commit has yet landed because maintenance correctly requires the full validator to pass first.
 
 ## Task 1 contract and evidence
 
