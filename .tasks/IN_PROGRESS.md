@@ -19,7 +19,7 @@ CV-002 opens test-first with a focused simulation contract before `simulation.ts
 
 The governance-only workspace shell remains non-playable; route registration waits for browser RED. TASK-003 remains the external real-Firebase blocker only.
 
-CV-002 RED is now recorded on exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487`; TypeScript failed only because `simulation.ts` was absent after dependency/design gates. Next: validate the minimal production-engine simulation/statistics implementation against that unchanged contract, then screen balance candidates and run the required >=10M paid-spin acceptance audit before CV-003 integration claims.
+CV-002 RED is exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487`. Simulator implementation `cf8f6e3723f483bc126b0f50b0f42161c14dff56` then passed the full repository validation and Pages deployment chain in run `39298014858`. Independent simulation review identified three test-evidence gaps, now being closed without production changes: nonzero Vault Run award aggregation, a fixed PRNG vector and explicit corruption-guard propagation. Next: validate that hardening, add the non-routine audit harness, screen candidates, and run the required >=10M paid-spin acceptance audit before CV-003 integration claims.
 
 ## GAME-MERGROVE-002: Progression expansion planning
 **Priority:** P1 | **Tags:** mergrove, campaign, levels, power-ups, progression, achievements | **Status:** design approved; implementation separately gated
