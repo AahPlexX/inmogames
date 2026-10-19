@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Exact adjacent-ways / cascade engine | verified | CV-001 passed the exact refreshed full validation/deploy chain on revision `08c3506773d17eee3fed7554f211531141856386`, run `39296638285`: dependency freshness, TypeScript, history-aware governance, unit/rules/browser suites, both builds, artifact upload and Pages deployment all succeeded. |
 | Exact payout precision | verified | Integer centi-credit accounting (`CREDIT_SCALE = 100`), rational ×1.5 feature boost, fractional paytable awards and multiplier progression are covered by the CV-001 focused/full unit suite in run `39296638285`. Balance values remain provisional under CV-002, but accounting precision is verified. |
-| Reproducible 10M-spin probability audit | started | RED `82b7bb2f…` / run `39297705487`; simulator implementation `cf8f6e37…` passed full validation and Pages deployment in run `39298014858`. Independent review then required stronger evidence before tuning: nonzero feature aggregation, fixed seeded-vector stability and explicit guard-abort regression are now added; >=10M acceptance audit remains open. |
+| Reproducible 10M-spin probability audit | started | RED `82b7bb2f…`; simulator GREEN `cf8f6e37…` / run `39298014858`; hardened simulation evidence GREEN `fac39b07…` / run `39299407841`. The opt-in audit test/runner/workflow now provide reproducible screening and >=10M acceptance execution without burdening routine unit validation. Current paytable/weights remain provisional pending screening. |
 | Settled durable checkpoints | planned | Schema-v1 settled state only; active Vault state requires 1-20 remaining spins and completed feature is null. Monetary state persists centi-credit integers; selected wager remains the engine denomination 10/20/50/100/250 credits. Restore 5,000 preserves history/preferences. |
 | Accessible board / Vault Run UI / audio | planned | Consolidated browser contract: deterministic cascade/feature presentation, aggregate live status, 320px/200%-text reflow, >=48px important targets, keyboard/touch, reduced motion, opt-in audio. |
 | Catalog / route / production release | planned | Governance-only metadata/workspace shell exists; playable catalog/lazy route remains intentionally unregistered until browser RED. Exact-revision full validation and Pages deployment are required. |
@@ -20,7 +20,7 @@
 **Last verified revision:** `08c3506773d17eee3fed7554f211531141856386` / GitHub Actions run `39296638285` — CV-001 exact engine/accounting scope plus full repository validation and Pages deployment  
 **Open game-local work:** CV-002 production-engine simulation/paytable+weight balance and >=10M audit; CV-003 settled persistence; CV-004 playable UI/audio/browser quality; CV-005 catalog/release closeout  
 **External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local implementation or verification  
-**Next action:** validate the fixture-only correction after run `39299103907` exposed an unintended second Sapphire cascade; then add the dedicated non-routine audit harness and begin production-engine screening.  
+**Next action:** validate the new audit harness, then dispatch a 25,000-paid-spin production-engine screen on the unchanged current configuration; any corruption-guard hit immediately rejects weights-only/paytable-only acceptance and forces distribution tuning.  
 
 ## Canonical verification recovery — 2026-10-19
 

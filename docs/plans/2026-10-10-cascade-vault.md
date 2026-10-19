@@ -65,6 +65,8 @@ Record the exact GREEN revision/run and then open Task 2.
 
 **Current evidence:** TDD RED recorded on exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487`: dependency/design gates passed, then TypeScript failed only because `simulation.ts` was intentionally absent. GREEN implementation must satisfy the unchanged `tests/unit/cascade-vault-simulation.test.ts` contract and reuse the production engine/random-source adapter.
 
+**Audit harness:** routine `vitest run` keeps the heavy audit skipped. `pnpm audit:cascade-vault` explicitly enables `tests/audit/cascade-vault-audit.test.ts`; `.github/workflows/cascade-vault-audit.yml` supplies reproducible paid-spin/seed/wager inputs, emits one `CASCADE_VAULT_AUDIT_RESULT` JSON record, and optionally enforces the >=10M / zero-guard / 94%-97% CI-intersection acceptance gate.
+
 **Files:**
 - Create: `src/games/cascade-vault/simulation.ts`
 - Test: `tests/unit/cascade-vault-simulation.test.ts`

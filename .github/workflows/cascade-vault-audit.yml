@@ -1,0 +1,62 @@
+name: Cascade Vault probability audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      paidSpins:
+        description: Paid spins to simulate
+        required: true
+        default: '25000'
+        type: string
+      seed:
+        description: Deterministic unsigned 32-bit seed
+        required: true
+        default: '1592594996'
+        type: string
+      wagerCredits:
+        description: Wager per paid spin in displayed credits
+        required: true
+        default: '10'
+        type: choice
+        options:
+          - '10'
+          - '20'
+          - '50'
+          - '100'
+          - '250'
+      requireAcceptance:
+        description: Require >=10M spins and a 95% RTP CI intersecting 94%-97%
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cascade-vault-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm dependency:check
+      - run: pnpm dependency:current
+      - run: pnpm typecheck
+      - run: pnpm exec vitest run tests/unit/cascade-vault-engine.test.ts tests/unit/cascade-vault-simulation.test.ts
+      - name: Run Cascade Vault audit
+        env:
+          CASCADE_VAULT_AUDIT_SPINS: ${{ inputs.paidSpins }}
+          CASCADE_VAULT_AUDIT_SEED: ${{ inputs.seed }}
+          CASCADE_VAULT_AUDIT_WAGER: ${{ inputs.wagerCredits }}
+          CASCADE_VAULT_AUDIT_REQUIRE_ACCEPTANCE: ${{ inputs.requireAcceptance }}
+        run: pnpm audit:cascade-vault

@@ -39,9 +39,9 @@ Exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` passed the f
 **Verification & State Sign-off:** final 95% RTP interval must intersect 94%-97% and corruption-guard incidence must be zero in the accepted audit.
 
 - [x] Simulation module RED recorded after CV-001 canonical GREEN (`82b7bb2f…`, run `39297705487`; missing `simulation.ts` only).
-- [ ] Deterministic seeded PRNG reproducibility/bounds plus fixed known-vector tests GREEN on the current hardening revision.
-- [ ] Paid-spin + complete nonzero Vault Run aggregation, Welford variance/SE/95% CI, feature/cascade reporting and guard-abort behavior GREEN after the fixture-only correction to run `39299103907`.
-- [ ] Candidate screening establishes safe paytable/weight configuration with zero observed corruption-guard hits.
+- [x] Deterministic seeded PRNG reproducibility/bounds plus fixed known-vector tests GREEN (`fac39b07…`, run `39299407841`).
+- [x] Paid-spin + complete nonzero Vault Run aggregation, Welford variance/SE/95% CI, feature/cascade reporting and guard-abort behavior GREEN (`fac39b07…`, run `39299407841`).
+- [ ] Opt-in audit harness/workflow validates, then candidate screening establishes a safe paytable/weight configuration with zero observed corruption-guard hits.
 - [ ] Final >=10M-spin seed/count/RTP/SE/95% CI/feature frequency/cascade depth recorded.
 - [ ] Final paytable/weights frozen only after acceptance and synchronized into spec/PRD/tracker/todo.
 

@@ -18,7 +18,8 @@
     "test:hollowshift": "node tests/browser/hollowshift-prototype.mjs",
     "test:design-browser": "node tests/browser/catalog-accessibility.mjs && node tests/browser/design-regression.mjs && node tests/browser/royal-palace-accessibility.mjs && node tests/browser/royal-palace-gameplay.mjs && node tests/browser/royal-palace-audio.mjs && node tests/browser/royal-palace-mobile-layout.mjs && node tests/browser/royal-fortune-slots.mjs && node tests/browser/lucky-seven-classic.mjs && node tests/browser/mergrove-design.mjs && node tests/browser/cloudline-couriers-design.mjs && pnpm test:hollowshift",
     "dependency:current": "node scripts/verify-dependency-latest.mjs",
-    "design:check": "pnpm dlx @google/design.md@0.4.0 lint DESIGN.md"
+    "design:check": "pnpm dlx @google/design.md@0.4.0 lint DESIGN.md",
+    "audit:cascade-vault": "node scripts/run-cascade-vault-audit.mjs"
   },
   "dependencies": {
     "firebase": "13.0.0",
