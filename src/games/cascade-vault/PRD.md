@@ -4,7 +4,7 @@ Planned Functional Features Specification:
   game_identity:
     name: "Cascade Vault"
     slug: "cascade-vault"
-    development_status: "Implementing — Task 1 engine TDD RED being established"
+    development_status: "Implementing — Task 1 RED evidenced; engine GREEN implementation pending verification"
 
   technical_foundation:
     architecture_and_engine: Pure six-reel/five-row adjacent-ways and cascade engine with immutable-board evaluation, exact centi-credit accounting, deterministic random-source injection, bounded base/feature multipliers, Vault Run state transitions, reproducible simulation tooling, settled persistence, React presentation and shared save platform.
@@ -14,11 +14,11 @@ Planned Functional Features Specification:
     - name: "Exact ways/cascade/Vault Run engine"
       id: "CV-001"
       details: "6x5 immutable-board ways evaluation from reel 1, Wild substitution with duplicate-interpretation protection, simultaneous removals, gravity/refill, base multiplier x1..x10, Vault Run persistent x2..x20, three-step meter, retrigger/free-spin cap and 50-cascade corruption guard. User-visible virtual-credit payouts follow the approved fractional paytable exactly; runtime accounting uses integer centi-credit units (100 units = 1 credit) so x1.5 feature awards remain exact without binary floating-point drift."
-      feature_development_status: "started"
+      feature_development_status: "started — implementation integrated; GREEN pending"
 
     - name: "Reproducible probability and balance audit"
       id: "CV-002"
-      details: "Source-controlled symbol weights plus deterministic seeded simulation. Final 10,000,000-paid-spin audit reports RTP, standard error, 95% confidence interval, Vault Run entry frequency and average cascade depth; the interval must intersect the approved 94%-97% RTP range before verification."
+      details: "Source-controlled symbol weights plus deterministic seeded simulation. Final 10,000,000-paid-spin audit reports RTP, standard error, 95% confidence interval, Vault Run entry frequency and average cascade depth; the interval must intersect the approved 94%-97% RTP range before verification. Current engine weights are provisional until this gate."
       feature_development_status: "planned"
 
     - name: "Settled durable practice progression"
@@ -38,4 +38,4 @@ Planned Functional Features Specification:
 
 ## Current evidence
 
-Approved product/rules design and implementation plan predate source implementation. Task 1 opens with `tests/unit/cascade-vault-engine.test.ts` before `symbols.ts`, `paytable.ts` or `engine.ts` exist, so the intended first RED is a missing-module failure after repository governance accepts this implementing shell. No gameplay capability is claimed verified yet. TASK-003 remains the separate external live-Firebase blocker only.
+Task CV-001 RED is evidenced on exact revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a`, GitHub Actions run `38122640264`: dependency freshness and design lint passed, then TypeScript failed on the intentionally absent `symbols.ts`, `paytable.ts`, and `engine.ts`; the remaining implicit-any diagnostics were downstream of those missing imports. The fixed test contract was not weakened. The three pure production modules are now integrated for GREEN verification, but no gameplay capability is marked verified until the unchanged focused contract and repository gates pass. TASK-003 remains the separate external live-Firebase blocker only.

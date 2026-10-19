@@ -1,7 +1,7 @@
 # Cascade Vault design
 
-**Status:** Implementing — Task 1 exact ways/cascade engine TDD RED opening  
-**Last synchronized:** 2026-10-11  
+**Status:** Implementing — Task 1 RED evidenced; pure engine GREEN implementation pending verification  
+**Last synchronized:** 2026-10-19  
 **Proposed route:** `#/games/cascade-vault`
 
 ## Product intent
@@ -66,6 +66,8 @@ The engine enforces a hard maximum of 50 cascades per spin as a corruption guard
 
 The implementation targets a long-run simulated RTP between 94% and 97% for the final source-controlled distribution. Exact validation covers primitive symbol weights and payout functions; deterministic exhaustive tests cover bounded state spaces; and a reproducible Monte Carlo audit of at least 10,000,000 paid spins reports observed RTP, standard error, 95% confidence interval, feature-entry frequency and average cascade depth in the tracker. If the interval does not intersect the target range, implementation remains incomplete and the distributions/paytable must be rebalanced before verification.
 
+The initial/refill weight tables introduced during CV-001 are **provisional engineering values** only. They become final only after CV-002's reproducible acceptance audit; no RTP claim may be inferred from their presence in source.
+
 ## Bankroll and persistence
 
 Initial practice bankroll: 5,000 virtual credits.
@@ -97,9 +99,9 @@ Authenticated saves use `users/{uid}/games/cascade-vault`; external Firebase pro
 
 Game-local modules:
 
-- `engine.ts`: board generation contract, ways evaluation, Wild substitution, simultaneous removal, gravity/refill cascade loop, multiplier state, Scatter/feature transitions, corruption guards.
-- `symbols.ts`: weighted symbol distributions, symbol metadata, deterministic/production draw adapter.
-- `paytable.ts`: exact centi-credit payout functions, multiplier/feature modifiers, audit helpers.
+- `engine.ts`: board generation, immutable ways evaluation, all-Wild interpretation deduplication, simultaneous removal, gravity/refill cascade loop, multiplier state, Scatter/feature transitions and corruption guards.
+- `symbols.ts`: symbol types, provisional source-controlled initial/refill weights and deterministic weighted draw adapter.
+- `paytable.ts`: exact centi-credit payout functions, supported wagers and multiplier/feature modifiers.
 - `simulation.ts`: deterministic reproducible probability/RTP simulation utilities used by tests/tooling, not runtime UI.
 - `storage.ts`: durable schema/decoder.
 - `persistence.ts`: shared-platform checkpoint definition.
@@ -173,10 +175,15 @@ Production completion requires the same complete repository validation/deploymen
 
 Although Cascade Vault is free-play software, its design adopts conservative principles from current authoritative gambling-technology guidance: rules and likelihood information should be understandable before play, random outcomes should be demonstrably random/non-adaptive, and product mechanics should not push loss chasing, stake escalation, or continued play. Accessibility follows WCAG 2.2 resize/reflow/target principles and honors `prefers-reduced-motion`.
 
+## Implementation evidence
+
+- Task CV-001 RED: exact revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a`, GitHub Actions run `38122640264`. Dependency freshness and design lint passed; TypeScript then failed on the intentionally absent `symbols.ts`, `paytable.ts`, and `engine.ts`. The remaining implicit-any errors were downstream of those missing imports.
+- GREEN implementation: the fixed RED contract remains unchanged while `symbols.ts`, `paytable.ts`, and `engine.ts` are integrated. No GREEN or verification claim is valid until the integration revision passes the focused/full unit and repository gates.
+
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Approved design/plan are synchronized and Task 1 engine RED is being established; no Cascade Vault gameplay capability is verified yet.
+**Completion evidence:** Task CV-001 RED is evidenced by revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; pure engine modules are integrated for GREEN verification. Whole-game completion remains open.
 
 - [ ] Exact ways/Wild/simultaneous-removal/gravity/refill/cascade/Vault Run engine passes focused tests.
 - [ ] Reproducible >=10,000,000-spin audit records RTP/SE/95% CI/feature frequency/cascade depth and the CI intersects 94%-97%.
