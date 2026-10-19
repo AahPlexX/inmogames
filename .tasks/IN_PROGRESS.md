@@ -14,11 +14,11 @@ Authoritative design: `docs/specs/2026-10-10-cascade-vault-design.md`. Plan: `do
 
 Task CV-001 RED is recorded on exact revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a`, run `38122640264`: dependency freshness and design lint passed; TypeScript then failed only because the intended `symbols.ts`, `paytable.ts`, and `engine.ts` modules were absent. The fixed focused test contract remains unchanged.
 
-The three pure engine modules are now integrated for GREEN verification: source-controlled symbol types/provisional weights, exact centi-credit paytable math, immutable adjacent-ways evaluation, all-Wild interpretation deduplication, simultaneous removal, gravity/top refill, initial-only Scatter handling, bounded base/Vault multipliers, meter/retrigger transitions, and the 50-cascade corruption guard. Provisional symbol weights are explicitly not balanced/final until the reproducible >=10,000,000-spin CV-002 acceptance audit passes.
+The three pure engine modules are integrated on exact implementation revision `f71588d2ca0c96e685f54631c0afb6ded56ade84` for GREEN verification: source-controlled symbol types/provisional weights, exact centi-credit paytable math, immutable adjacent-ways evaluation, all-Wild interpretation deduplication, simultaneous removal, gravity/top refill, initial-only Scatter handling, bounded base/Vault multipliers, meter/retrigger transitions, and the 50-cascade corruption guard. No GREEN claim is made until canonical CI validates that tree. Provisional symbol weights are explicitly not balanced/final until the reproducible >=10,000,000-spin CV-002 acceptance audit passes.
 
 The unregistered metadata/workspace shell remains intentionally non-playable. Catalog/lazy-route registration must wait for the later consolidated browser RED phase so route integration is still demonstrated test-first.
 
-Next: require the Task CV-001 integration revision to pass TypeScript, history-aware governance, the unchanged focused engine suite and full unit suite. Only then open CV-002 simulation/balance work and CV-003 persistence work; neither may be marked verified from source inspection alone.
+Next: require the Task CV-001 implementation tree to pass TypeScript, history-aware governance, the unchanged focused engine suite and full unit suite. Only then open CV-002 simulation/balance work and CV-003 persistence work; neither may be marked verified from source inspection alone.
 
 ## GAME-MERGROVE-002: Progression expansion planning
 **Priority:** P1 | **Tags:** mergrove, campaign, levels, power-ups, progression, achievements | **Status:** design approved; implementation separately gated
