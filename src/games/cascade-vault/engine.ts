@@ -296,9 +296,10 @@ export function resolveSpin(input: ResolveSpinInput): ResolveSpinResult {
   }
 
   const triggeredVaultRunSpins = input.mode === 'base' ? vaultRunSpinsForScatters(initialScatterCount) : 0;
-  const nextVaultState = input.mode === 'vault'
+  const advancedVaultState = input.mode === 'vault'
     ? advanceVaultRunAfterSpin(input.vaultState!, { winningCascades: cascades.length, initialScatterCount })
     : null;
+  const nextVaultState = advancedVaultState && advancedVaultState.remainingSpins > 0 ? advancedVaultState : null;
 
   return {
     mode: input.mode,

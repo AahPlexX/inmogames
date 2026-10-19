@@ -1,41 +1,35 @@
 # Cascade Vault design
 
-**Status:** Implementing — Task 1 RED evidenced; pure engine GREEN implementation pending canonical verification  
+**Status:** Implementing — Task 1 engine hardened; canonical GREEN pending  
 **Last synchronized:** 2026-10-19  
 **Proposed route:** `#/games/cascade-vault`
 
 ## Product intent
 
-Cascade Vault is the modern high-feature member of the three-game slot family. It is mechanically and visually independent from Royal Fortune Slots and Lucky Seven Classic. It uses virtual credits only: no purchases, deposits, cash-out, ads, telemetry, or real-money value.
-
-The game is a six-reel cascading-symbol game built around ways wins, symbol removal/refill, escalating cascade multipliers, a bounded bonus meter, and a feature round that changes the board rules without autoplay or adaptive outcomes.
-
-The game should feel energetic and contemporary, but clarity wins over spectacle. Outcome logic remains inspectable and deterministic once the spin random source is created, and all significant state changes have textual equivalents.
+Cascade Vault is the modern high-feature member of the slot family and is mechanically/visually independent from Royal Fortune Slots and Lucky Seven Classic. It uses virtual practice credits only: no purchases, deposits, cash-out, ads, telemetry, real-money value, autoplay, adaptive odds, loss-chasing, or stake-escalation prompts.
 
 ## Core rules
 
-- 6 reels × 5 rows.
-- Symbols are drawn from source-controlled weighted distributions.
-- Wins use an adjacent-reel **ways** model: a paying symbol must appear on at least three consecutive reels starting from reel 1, with one or more occurrences on each participating reel.
-- For one qualifying symbol, `ways = count(reel1) × count(reel2) × ... × count(last qualifying reel)`. Award = `baseWager × paytableMultiplier[symbol][reelCount] × ways`.
-- Wild substitutes for normal paying symbols but never for Scatter.
-- For an ambiguous Wild assignment, each symbol is evaluated independently from the immutable board and the engine chooses the highest valid award for that Wild-containing way; the same concrete symbol position cannot be paid twice for two interpretations of one way.
-- Winning normal symbols are removed simultaneously after all wins on the immutable board are evaluated; remaining symbols fall downward; new symbols refill from the top.
-- The cascade repeats while at least one paying result remains.
-- Base-spin cascade multiplier starts at ×1. After each winning cascade, the multiplier used by the next cascade increases by +1, capped at ×10. It resets at the start of every paid spin.
-- Scatters are generated only on the initial board of each paid/free spin, never in cascade refills. This keeps feature triggering auditable and prevents one unresolved board from accumulating persistent Scatters.
-- Four or more Scatters anywhere on that initial board trigger **Vault Run**: 8 free spins for 4 Scatters, 10 for 5, and 12 for 6 or more.
-- Vault Run begins at a persistent feature multiplier of ×2. Each winning cascade increases it by +1 up to ×20, and the highest reached value carries into the next free spin rather than resetting.
-- A visible three-step vault meter advances by one step when a free spin resolves at least 3 winning cascades. It can advance at most once per free spin.
-- Meter step 1: every cascade refill during remaining free spins receives exactly one additional Wild, replacing one randomly selected non-Scatter refill symbol through the same spin random source.
-- Meter step 2: all normal-symbol ways awards during remaining free spins receive an additional ×1.5 feature modifier after the persistent feature multiplier.
-- Meter step 3: award exactly 3 additional free spins once; the meter then remains full and cannot award them again.
-- Four or more Scatters on the initial board of a Vault Run free spin add 4 free spins. Remaining free spins are capped at 20 after any award, preventing unbounded feature extension.
-- No autoplay, turbo autoplay, infinite cascading loop, loss-chasing prompt, adaptive probability, or stake-escalation prompt.
+- Board: 6 reels × 5 rows.
+- Initial and refill symbols come from source-controlled weighted distributions. Scatters may appear only on an initial paid/free-spin board, never on cascade refills.
+- A normal symbol wins when it appears, directly or through Wild substitution, on at least 3 consecutive reels starting at reel 1. `ways = count(reel1) × ... × count(last qualifying reel)`.
+- Wild substitutes for normal paying symbols only; it never substitutes for Scatter and has no standalone paytable entry.
+- Each paying symbol is evaluated from one immutable board snapshot. A concrete all-Wild way that could represent multiple symbols is paid once using the highest valid award interpretation; it is never double-paid.
+- All accepted winning normal/Wild coordinates are removed simultaneously. Survivors fall downward and new symbols refill from the top. The cascade repeats until no paying ways remain.
+- Base-spin cascade multiplier starts ×1, increases by +1 after each winning cascade, caps ×10, and resets for every paid spin.
+- Four/five/six-or-more initial Scatters trigger 8/10/12 **Vault Run** free spins.
+- Vault Run starts with persistent multiplier ×2. Every winning cascade increases the carried multiplier by +1, capped ×20.
+- Vault meter advances at most once per free spin, and only when that free spin resolves at least 3 winning cascades:
+  1. Step 1: every later cascade refill during the feature receives exactly one extra Wild, replacing one randomly selected non-Scatter refill symbol using the same random source.
+  2. Step 2: all normal-symbol ways awards during later feature cascades receive an additional ×1.5 modifier after the persistent feature multiplier.
+  3. Step 3: award exactly +3 free spins once; the meter stays full afterward.
+- Four or more initial Scatters during a Vault Run free spin retrigger +4 free spins. Remaining feature spins are capped at 20 after all awards.
+- **Feature termination:** after a free spin completely resolves, apply cascade multiplier growth, meter progress, step-3 award and Scatter retrigger. If the resulting `remainingSpins` is zero, the feature is complete and `resolveSpin.nextVaultState` is `null`; a zero-spin active feature object is invalid.
+- Hard corruption guard: a 51st winning cascade throws; unresolved settlement must not be fabricated.
 
-### Base paytable multipliers
+## Paytable and exact accounting
 
-Multipliers are applied per way before the cascade/feature multiplier:
+Per-way multipliers before cascade/feature modifiers:
 
 | Symbol | 3 reels | 4 reels | 5 reels | 6 reels |
 | --- | ---: | ---: | ---: | ---: |
@@ -48,149 +42,104 @@ Multipliers are applied per way before the cascade/feature multiplier:
 | Ruby | 1.00× | 3.00× | 8.00× | 20.00× |
 | Vault Crown | 1.50× | 5.00× | 15.00× | 40.00× |
 
-The Wild has no standalone paytable entry. Scatter feature awards do not pay a separate credit prize in v1.
+Scatter does not pay a separate credit prize in v1.
 
-### Exact payout precision
+Fractional virtual-credit awards are intentional. Runtime, simulation and persistence use integer **centi-credit units**, `CREDIT_SCALE = 100`, so 100 internal units equal 1 displayed credit. Paytable multipliers are integer hundredths and the ×1.5 feature boost is exact 3/2 arithmetic. No rule rounds to whole credits.
 
-The approved formula intentionally permits fractional virtual-credit results. Example: a 10-credit Copper 3-reel way pays 1.5 credits before cascade modifiers; Vault Run step 2 can further produce quarter-credit values after its ×1.5 modifier. Runtime scoring therefore uses **integer centi-credit units**, with `CREDIT_SCALE = 100` and 100 internal units equal to 1 displayed virtual credit. Paytable factors are represented as integer hundredths and the feature ×1.5 modifier as an exact rational factor. This preserves the approved formula without floating-point rounding drift. No rule rounds an award to whole credits.
+## Randomness and probability evidence
 
-The implementation plan's earlier phrase “integer-credit award” is superseded by this exact-accounting rule: awards are integer **accounting units**, not necessarily whole displayed credits. Simulation, persistence and UI must consume the same centi-credit contract.
+Production spins use browser cryptographic randomness through an injected engine adapter. Tests/audits may inject deterministic seeded sources. Outcomes never depend on bankroll, prior outcomes, session length or user behavior.
 
-## Outcome and randomness model
+The current initial/refill weights are provisional engineering values only. CV-002 must run a reproducible Monte Carlo audit of at least **10,000,000 paid spins**, including all triggered free-spin value, and report:
+- observed RTP,
+- standard error,
+- 95% confidence interval,
+- Vault Run entry frequency,
+- average cascade depth with its denominator definition.
 
-A paid spin obtains a production random source from browser cryptographic randomness. Initial-board generation and every refill draw for that spin consume that source through a pure engine adapter. Tests inject deterministic seeded sources.
-
-Weighted symbol tables, feature thresholds, multiplier caps, and paytable values are source-controlled constants. Outcomes never adapt to bankroll, recent results, session length, or user behavior.
-
-The engine enforces a hard maximum of 50 cascades per spin as a corruption guard. Reaching it is an engine error rather than a silently accepted result. The configured distributions must make that guard unreachable in ordinary play except through injected test states or corrupted logic.
-
-The implementation targets a long-run simulated RTP between 94% and 97% for the final source-controlled distribution. Exact validation covers primitive symbol weights and payout functions; deterministic exhaustive tests cover bounded state spaces; and a reproducible Monte Carlo audit of at least 10,000,000 paid spins reports observed RTP, standard error, 95% confidence interval, feature-entry frequency and average cascade depth in the tracker. If the interval does not intersect the target range, implementation remains incomplete and the distributions/paytable must be rebalanced before verification.
-
-The initial/refill weight tables introduced during CV-001 are **provisional engineering values** only. They become final only after CV-002's reproducible acceptance audit; no RTP claim may be inferred from their presence in source.
+The final 95% RTP interval must intersect **94%–97%**. Otherwise the distribution/paytable must be rebalanced and rerun before completion.
 
 ## Bankroll and persistence
 
-Initial practice bankroll: 5,000 virtual credits.
-
-Base wager steps: 10, 20, 50, 100, 250 virtual credits, bounded by available bankroll.
-
-Local storage key: `inmogames:cascade-vault:v1`.
-Cloud game slug: `cascade-vault`.
-
-Persist:
-- settled bankroll using exact centi-credit accounting,
-- selected base wager,
-- lifetime paid spins,
-- total wagered/won/net,
-- largest completed spin win,
-- highest cascade chain,
-- completed Vault Run count,
-- sound preference,
-- reduced-effects preference if explicitly selected,
-- last completed result summary.
-
-Do not persist an in-flight paid spin or partially resolved cascade. Vault Run may checkpoint only after a free spin fully resolves, including all cascades and awards. Reload restores the last fully settled feature checkpoint so a completed award cannot duplicate or disappear.
-
-If bankroll falls below the 10-credit minimum, expose **Restore 5,000 practice credits** while retaining statistics/preferences.
-
-Authenticated saves use `users/{uid}/games/cascade-vault`; external Firebase provisioning remains platform-level rather than game-local.
+- Initial bankroll: 5,000 displayed credits = 500,000 centi-credit units.
+- Base wager steps: 10, 20, 50, 100, 250 displayed credits, bounded by settled bankroll.
+- Local key: `inmogames:cascade-vault:v1`; cloud slug: `cascade-vault`.
+- Persist only settled state: bankroll, wager, paid/free spin counters, wagered/won/net totals, largest completed spin win, highest cascade chain, completed Vault Run count, sound/reduced-effects preferences, last completed result, and fully resolved post-free-spin feature checkpoint.
+- Never persist an in-flight paid spin, board animation state, unresolved cascade or partially settled free spin.
+- A completed Vault Run persists `feature: null`; only a feature with at least 1 remaining spin is durable.
+- Reload must neither duplicate nor lose a completed award.
+- If bankroll drops below the 10-credit minimum and no feature is active, expose **Restore 5,000 practice credits** while retaining statistics/preferences.
+- Authenticated saves use `users/{uid}/games/cascade-vault`; real configured-project verification remains external TASK-003.
 
 ## Architecture
 
 Game-local modules:
-
-- `engine.ts`: board generation, immutable ways evaluation, all-Wild interpretation deduplication, simultaneous removal, gravity/refill cascade loop, multiplier state, Scatter/feature transitions and corruption guards.
-- `symbols.ts`: symbol types, provisional source-controlled initial/refill weights and deterministic weighted draw adapter.
-- `paytable.ts`: exact centi-credit payout functions, supported wagers and multiplier/feature modifiers.
-- `simulation.ts`: deterministic reproducible probability/RTP simulation utilities used by tests/tooling, not runtime UI.
-- `storage.ts`: durable schema/decoder.
-- `persistence.ts`: shared-platform checkpoint definition.
+- `symbols.ts`: symbols, source-controlled weights, injected weighted draw adapter.
+- `paytable.ts`: centi-credit payout math and wager contract.
+- `engine.ts`: immutable ways evaluation, Wild dedup, simultaneous removal, gravity/refill, cascade/feature transitions and guard.
+- `simulation.ts`: deterministic audit tooling using the production engine, not a second gameplay model.
+- `storage.ts` / `persistence.ts`: defensive schema-v1 settled-state decoding and shared platform save definition.
 - `audio.ts`: opt-in procedural cues.
-- `CascadeVaultWorkspace.tsx`: accessible paid-spin/cascade/feature state machine and presentation. An unregistered governance-only placeholder may exist during early engine work; it is not the playable implementation.
-- `cascade-vault.css`: scoped responsive board/feature presentation.
-- `cascade-vault.meta.ts`: catalog metadata.
-- `PRD.md`, `TRACKER.md`, `todo.md`: game-local living governance.
+- `CascadeVaultWorkspace.tsx` / `cascade-vault.css`: accessible sequence presentation. The current unregistered placeholder is governance-only until browser RED.
+- `cascade-vault.meta.ts`, `PRD.md`, `TRACKER.md`, `todo.md`: metadata/living governance.
 
 No gameplay engine or presentation is shared with the other slot titles.
 
-## Interaction and visual design
+## Interaction, accessibility, responsive and motion contract
 
-Visual direction: contemporary vault/energy chamber rather than casino cabinet. Use dark mineral/metal surfaces, luminous but restrained symbol frames, strong grid readability, a visible cascade multiplier, and a progress-oriented Vault Run panel. Avoid Royal Fortune's traditional luxury-casino styling and Lucky Seven's mechanical framing.
+Primary hierarchy: bankroll/wager → 6×5 board → current cascade result/multiplier → Vault Run status/meter when active → wager/Spin controls → rules/paytable/preferences.
 
-Primary hierarchy:
-1. bankroll and base wager,
-2. 6×5 symbol board,
-3. current cascade result and multiplier,
-4. Vault Run status/meter when active,
-5. wager controls and large **Spin** action,
-6. rules/paytable/preferences.
-
-The board is never a drag target. All play is button-driven. Once a paid spin begins, the engine resolves the complete logical result; animation presents the ordered event sequence and cannot alter scoring. Users cannot interrupt a spin to change its payout path.
-
-## Accessibility and responsive contract
-
-- Native buttons for all actions; important targets at least 48×48 CSS px.
-- Board symbols expose concise accessible names and coordinates only when needed; decorative repetitions remain hidden to avoid flooding assistive output.
-- A polite live region announces aggregate cascade results—cascade number, payout, multiplier, remaining free spins—rather than every symbol movement.
-- Visual removal/fall/refill is never the sole explanation of a win; textual result summaries identify winning symbols and award.
+- Resolve the complete logical spin before presentation; animation may not alter scoring.
+- Native buttons for actions; important targets >=48×48 CSS px; visible `:focus-visible`; no required drag, hover, color-only state, sound or animation.
+- Aggregate polite live announcements describe cascade number, payout/multiplier and remaining feature spins rather than announcing every moving cell.
 - Rules/paytable/feature explanation is available before first spin.
-- Visible `:focus-visible` treatment.
-- No required drag, hover, color-only state, animation, or audio.
-- At 320 CSS px, the board remains fully within viewport width without page-level horizontal overflow. Cells may scale with CSS Grid/minmax/clamp while maintaining legible symbol labels and distinct boundaries.
-- At 200% text, controls/status reflow outside the board rather than overlaying cells.
-- No sticky action surface may cover board/status content.
-- On landscape/desktop, status and feature panel may sit beside the board; narrow layouts stack them in normal flow.
-- `prefers-reduced-motion: reduce` replaces falling/traveling symbols, multiplier zooms, and meter sweeps with immediate board replacement or short opacity changes while preserving sequence and final state.
-- Safe-area padding is honored.
+- 320 CSS px: board remains within viewport width with no page-level horizontal overflow.
+- 200% text: controls/status reflow in normal flow and do not overlay cells.
+- No sticky action surface may cover board/status content; safe-area padding is honored.
+- Desktop/landscape may place status beside board; narrow layouts stack.
+- `prefers-reduced-motion: reduce` and explicit reduced-effects preference replace travel/zoom/sweeps with immediate/minimal transitions while preserving sequence and final state.
+- Audio is opt-in and initialized only from user gesture; cues may cover spin/cascade/multiplier/feature/meter/completion, with silent continuation if unavailable.
 
-## Sound and motion
+## Error handling
 
-Audio is opt-in and user-gesture initialized. Procedural cues may cover spin start, cascade resolve, multiplier increase, Scatter/feature trigger, Vault meter upgrade, and feature completion. No background music or continuous attention loop is required.
-
-Normal mode may animate simultaneous winning-symbol fade, downward gravity, refill entry, finite multiplier emphasis, and short feature transitions. The engine exposes an ordered event sequence to presentation so animation cannot alter scoring. Reduced motion renders the same event sequence with minimal/no spatial movement.
-
-## Error and edge handling
-
-- Insufficient bankroll: Spin disabled with explanation.
-- Random-source failure before spin resolution: no wager deduction; durable state unchanged.
-- Engine corruption guard reached: abort unresolved spin, restore the pre-spin bankroll checkpoint, expose a technical failure status, and never fabricate a payout.
+- Insufficient bankroll: disable Spin with explanation.
+- Random-source failure before resolution: no wager deduction; durable state unchanged.
+- Corruption guard: abort unresolved settlement and restore pre-spin checkpoint.
 - Persistence failure: preserve settled local/in-memory state and surface nonblocking status.
-- Audio unavailable: silent continuation.
-- Repeated input during active resolution: ignored by phase guard.
-- Malformed saves: sanitize to defaults without inventing wins or feature state.
-- Multiple simultaneous ways wins are evaluated from one immutable board snapshot before removal.
-- Free-spin cap prevents unbounded feature extension.
+- Repeated input during resolution: phase-guarded.
+- Malformed saves: reject/sanitize to safe defaults without inventing wins/feature state.
 
 ## Quality gates
 
-Unit tests must cover ways counting, consecutive-reel qualification, Wild substitution, simultaneous multi-symbol wins, immutable-board evaluation, removal-set correctness, gravity, refill, cascade termination, 50-cascade guard, multiplier progression/caps/reset, Scatter triggers/retriggers, all three Vault meter upgrades, free-spin cap, bankroll accounting, deterministic random-source injection, storage decoding, and checkpoint semantics.
+Unit coverage: ways/reel qualification, Wild/dedup, simultaneous wins/removals, gravity/refill, cascade termination/50 guard, multipliers/caps/reset, Scatter triggers/retriggers, all meter steps, final-feature termination, free-spin cap, exact accounting, deterministic random injection, storage decoding and settled checkpoint semantics.
 
-Simulation tests must verify weighted source tables, deterministic reproducibility, absence of adaptive state inputs, feature-frequency reporting, and the 10,000,000-spin RTP confidence audit.
+Simulation coverage: source-weight integrity, seeded reproducibility, no adaptive inputs, correct streaming confidence statistics, feature/cascade metrics, and final >=10M acceptance audit.
 
-Browser tests must cover catalog routing, first paid spin, multi-cascade rendering, aggregate result announcements, wager changes, Vault Run entry/progression/exit, reload from a settled feature checkpoint, restore credits, keyboard/touch use, 320px layout, 200% text, reduced motion, audio opt-in, and horizontal-overflow absence.
+Browser coverage: route, first paid spin, deterministic multi-cascade sequence, aggregate announcements, wager changes/locking, Vault Run entry/progression/exit, settled reload/restore, keyboard/touch, 320px, 200% text, >=48px important targets, reduced motion, opt-in audio and no horizontal overflow.
 
-Production completion requires the same complete repository validation/deployment chain used by Royal Palace Blackjack and the other two slot titles.
-
-## Research basis
-
-Although Cascade Vault is free-play software, its design adopts conservative principles from current authoritative gambling-technology guidance: rules and likelihood information should be understandable before play, random outcomes should be demonstrably random/non-adaptive, and product mechanics should not push loss chasing, stake escalation, or continued play. Accessibility follows WCAG 2.2 resize/reflow/target principles and honors `prefers-reduced-motion`.
+Production completion requires exact dependency freshness, TypeScript, game/document governance, full unit/rules/shared browser/game browser coverage, both production builds, Pages artifact upload and successful GitHub Pages deployment on the exact functional revision.
 
 ## Implementation evidence
 
-- Task CV-001 RED: exact revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a`, GitHub Actions run `38122640264`. Dependency freshness and design lint passed; TypeScript then failed on the intentionally absent `symbols.ts`, `paytable.ts`, and `engine.ts`. The remaining implicit-any errors were downstream of those missing imports.
-- Engine implementation: exact revision `f71588d2ca0c96e685f54631c0afb6ded56ade84` introduced only the three pure modules plus synchronized governance; no playable route was registered and no GREEN claim was made.
-- Independent reproduction: repository-shaped strict TypeScript (`moduleResolution: bundler`, strict/noEmit/isolated modules) accepts the three engine modules. A no-framework behavior harness reproducing the focused assertions initially exposed one **fixture-only** mismatch: the deterministic fixture already contained Copper on reel 4, so the engine correctly produced a 4-reel second win (700 total) while the assertion intended a 3-reel second win (400 total). Replacing that unrelated fixture cell with Silver preserves every expected payout/multiplier/refill assertion, and the full reconstructed Task 1 harness passes. This is supporting evidence only; canonical repository GREEN is still required.
+- RED: `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; dependency/design gates passed, TypeScript failed because the three intended engine modules did not exist.
+- Engine implementation: `f71588d2ca0c96e685f54631c0afb6ded56ade84`.
+- Fixture correction: `ae5a7e3630964d13efb23bb06c57dc582dbb2455`. The original deterministic fixture had unrelated Copper on reel 4, legitimately extending the intended 3-reel second cascade to 4 reels (700 total). Replacing only that cell with Silver preserves the intended two-cascade, 400-unit contract. Independent strict TypeScript + reconstructed focused assertions then pass.
+- Terminal feature hardening adds a no-win final-free-spin regression requiring `nextVaultState === null` after remaining spins reach zero. Canonical repository GREEN remains required.
+
+## Research basis
+
+The free-play design follows conservative gambling-technology principles: understandable rules/likelihood information, demonstrably random non-adaptive outcomes, and no mechanics that encourage chasing losses or escalating stakes. Accessibility follows WCAG 2.2 resize/reflow/target principles and honors reduced-motion preferences.
 
 ## Completion contract
 
 **Completion state:** implementing  
-**Completion evidence:** Task CV-001 RED is evidenced by revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; pure engine modules are integrated and locally reproduced after the fixture-only correction. Whole-game completion remains open and canonical GREEN is still pending.
+**Completion evidence:** Task CV-001 RED is exact revision `a52d99774c9384ad6a0b4c0ccfbf1c5e7cb51e9a` / run `38122640264`; engine/fixture/terminal-feature hardening exists but canonical GREEN and all downstream gates remain open.
 
-- [ ] Exact ways/Wild/simultaneous-removal/gravity/refill/cascade/Vault Run engine passes focused tests.
-- [ ] Reproducible >=10,000,000-spin audit records RTP/SE/95% CI/feature frequency/cascade depth and the CI intersects 94%-97%.
-- [ ] Settled schema-v1 persistence, reload, feature checkpoint and restore behavior pass focused tests.
+- [ ] Exact ways/Wild/removal/gravity/refill/cascade/Vault Run/final-feature-termination engine passes focused/full tests.
+- [ ] Reproducible >=10,000,000-spin audit records RTP/SE/95% CI/feature frequency/cascade depth and the interval intersects 94%–97%.
+- [ ] Settled schema-v1 persistence, reload, feature termination/checkpoint and restore behavior pass focused tests.
 - [ ] Accessible playable board/Vault Run/audio browser contract passes deterministic gameplay, 320px, 200%-text, target-size, keyboard/touch and reduced-motion gates.
-- [ ] Catalog/workspace route and all living governance surfaces remain synchronized.
-- [ ] Exact dependency freshness, TypeScript, repository governance, unit/rules/shared browser and game-specific browser suites pass on the final functional revision.
-- [ ] Both production builds and Pages artifact upload succeed on that exact revision.
+- [ ] Catalog/workspace route and all living governance surfaces are synchronized.
+- [ ] Exact dependency freshness, TypeScript, governance, unit/rules/shared browser/game browser suites pass on the final functional revision.
+- [ ] Both production builds and Pages artifact upload succeed on that revision.
 - [ ] GitHub Pages deployment succeeds and tracker/PRD/todo/GAME_INDEX/.tasks close as verified; TASK-003 may remain externally blocked.

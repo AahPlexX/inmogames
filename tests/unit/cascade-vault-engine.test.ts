@@ -49,6 +49,15 @@ const singleQuartzBoard = () => board([
   ['vault_crown', 'copper', 'silver', 'gold', 'sapphire'],
 ]);
 
+const noWinBoard = () => board([
+  Array.from({ length: 5 }, () => 'quartz' as VaultSymbol),
+  Array.from({ length: 5 }, () => 'copper' as VaultSymbol),
+  Array.from({ length: 5 }, () => 'silver' as VaultSymbol),
+  Array.from({ length: 5 }, () => 'gold' as VaultSymbol),
+  Array.from({ length: 5 }, () => 'sapphire' as VaultSymbol),
+  Array.from({ length: 5 }, () => 'emerald' as VaultSymbol),
+]);
+
 describe('Cascade Vault engine', () => {
   it('counts adjacent-reel ways from reel 1 and preserves fractional paytable awards exactly', () => {
     const result = evaluateWays(board([
@@ -183,6 +192,19 @@ describe('Cascade Vault engine', () => {
 
     const capped = advanceVaultRunAfterSpin({ remainingSpins: 19, persistentMultiplier: 19, meterLevel: 3, stepThreeAwarded: true }, { winningCascades: 5, initialScatterCount: 4 });
     expect(capped).toEqual({ remainingSpins: 20, persistentMultiplier: 20, meterLevel: 3, stepThreeAwarded: true });
+  });
+
+  it('returns no active Vault Run state when the final free spin ends without a retrigger', () => {
+    const result = resolveSpin({
+      mode: 'vault',
+      wagerCredits: 10,
+      initialBoard: noWinBoard(),
+      random: queuedSource([]).source,
+      vaultState: { remainingSpins: 1, persistentMultiplier: 2, meterLevel: 0, stepThreeAwarded: false },
+    });
+
+    expect(result.cascades).toHaveLength(0);
+    expect(result.nextVaultState).toBeNull();
   });
 
   it('resolves ordered cascades with base multiplier progression and no Scatter generation in refills', () => {
