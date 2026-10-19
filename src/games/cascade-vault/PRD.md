@@ -20,7 +20,7 @@ Planned Functional Features Specification:
     - name: "Reproducible probability and balance audit"
       id: "CV-002"
       details: "Deterministic seeded audit reuses production createWeightedVaultRandomSource and resolveSpin. Each observation is one paid spin plus all value/cascades from its complete triggered Vault Run, with no extra free-spin wager denominator. Final >=10,000,000 paid spins report RTP, standard error, 95% CI, Vault Run entry frequency, defined average cascade depth and corruption-guard incidence. Current distributions and paytable are provisional for balance; the authoritative design permits rebalancing both, and the accepted interval must intersect 94%-97% with zero corruption-guard hits."
-      feature_development_status: "started — focused simulation TDD RED opening; balance remains provisional"
+      feature_development_status: "started — TDD RED recorded on 82b7bb2f / run 39297705487; GREEN implementation pending"
 
     - name: "Settled durable practice progression"
       id: "CV-003"
@@ -52,3 +52,5 @@ Planned Functional Features Specification:
 ## CV-001 verification and CV-002 opening — 2026-10-19
 
 CV-001 is verified on exact refreshed revision `08c3506773d17eee3fed7554f211531141856386`, run `39296638285`, which passed the full repository validation, both builds, artifact upload and Pages deployment. CV-002 now opens test-first: `tests/unit/cascade-vault-simulation.test.ts` is added before `simulation.ts` exists, so the expected RED is the missing simulation module after governance reaches TypeScript. No simulation/balance result is claimed from the RED commit.
+
+CV-002 RED evidence: exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487` fails only on the intentionally absent `simulation.ts` after dependency/design gates. The production module now being integrated must satisfy that unchanged contract.

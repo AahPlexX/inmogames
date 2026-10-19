@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Exact adjacent-ways / cascade engine | verified | CV-001 passed the exact refreshed full validation/deploy chain on revision `08c3506773d17eee3fed7554f211531141856386`, run `39296638285`: dependency freshness, TypeScript, history-aware governance, unit/rules/browser suites, both builds, artifact upload and Pages deployment all succeeded. |
 | Exact payout precision | verified | Integer centi-credit accounting (`CREDIT_SCALE = 100`), rational ×1.5 feature boost, fractional paytable awards and multiplier progression are covered by the CV-001 focused/full unit suite in run `39296638285`. Balance values remain provisional under CV-002, but accounting precision is verified. |
-| Reproducible 10M-spin probability audit | started | CV-002 opens with a focused TDD contract before `simulation.ts` exists. It requires deterministic seeded production-engine simulation, complete paid-spin + attached Vault Run aggregation, streaming RTP/SE/95% CI, Vault entry frequency, paid-spin cascade-depth reporting and zero corruption-guard hits in the accepted >=10M audit. |
+| Reproducible 10M-spin probability audit | started | CV-002 RED is exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487`: dependency freshness/design lint passed, then TypeScript failed only because `simulation.ts` was absent. GREEN implementation is now limited to the unchanged deterministic source, complete paid-spin+feature aggregation and streaming report contract. |
 | Settled durable checkpoints | planned | Schema-v1 settled state only; active Vault state requires 1-20 remaining spins and completed feature is null. Monetary state persists centi-credit integers; selected wager remains the engine denomination 10/20/50/100/250 credits. Restore 5,000 preserves history/preferences. |
 | Accessible board / Vault Run UI / audio | planned | Consolidated browser contract: deterministic cascade/feature presentation, aggregate live status, 320px/200%-text reflow, >=48px important targets, keyboard/touch, reduced motion, opt-in audio. |
 | Catalog / route / production release | planned | Governance-only metadata/workspace shell exists; playable catalog/lazy route remains intentionally unregistered until browser RED. Exact-revision full validation and Pages deployment are required. |
@@ -20,7 +20,7 @@
 **Last verified revision:** `08c3506773d17eee3fed7554f211531141856386` / GitHub Actions run `39296638285` — CV-001 exact engine/accounting scope plus full repository validation and Pages deployment  
 **Open game-local work:** CV-002 production-engine simulation/paytable+weight balance and >=10M audit; CV-003 settled persistence; CV-004 playable UI/audio/browser quality; CV-005 catalog/release closeout  
 **External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local implementation or verification  
-**Next action:** integrate the focused CV-002 unit contract while `simulation.ts` is absent, run the exact intended missing-module RED, then implement only the deterministic production-engine simulation/statistics surface required by that fixed contract.  
+**Next action:** validate the new `simulation.ts` implementation against the unchanged CV-002 focused contract and full repository unit chain; if GREEN, use the production-engine simulator to screen paytable+weight candidates before the >=10M acceptance audit.  
 
 ## Canonical verification recovery — 2026-10-19
 
@@ -30,6 +30,10 @@
 - Commit `af5a10b6ba4551a7b940382a5d36b67a2b9aaf75` restored the exact PRD/todo schemas. Maintenance run `39295604436` proved `game-check: 7 game(s) OK`, then history-aware `game-doc-sync` correctly rejected that commit because tracker changed without the authoritative spec in the same comparison range.
 - This integration updates spec and tracker together and carries the same dependency/governance and balance evidence. No gameplay source is changed by the recovery commits.
 - No package/lockfile bot commit has landed yet; the maintenance workflow must complete the full validator first.
+
+## CV-002 RED evidence
+
+Exact test-only revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e`, run `39297705487`: install/current dependency checks and design lint passed; TypeScript failed only at `tests/unit/cascade-vault-simulation.test.ts` import resolution because `simulation.ts` did not exist. No production simulation code was present in the RED revision.
 
 ## CV-001 canonical verification
 

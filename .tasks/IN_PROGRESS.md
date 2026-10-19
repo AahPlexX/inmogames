@@ -19,7 +19,7 @@ CV-002 opens test-first with a focused simulation contract before `simulation.ts
 
 The governance-only workspace shell remains non-playable; route registration waits for browser RED. TASK-003 remains the external real-Firebase blocker only.
 
-Next: record the intended CV-002 missing-module RED, implement the smallest production-engine simulation/statistics surface to GREEN, screen balance candidates, then run the required >=10M paid-spin acceptance audit before CV-003 integration claims.
+CV-002 RED is now recorded on exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487`; TypeScript failed only because `simulation.ts` was absent after dependency/design gates. Next: validate the minimal production-engine simulation/statistics implementation against that unchanged contract, then screen balance candidates and run the required >=10M paid-spin acceptance audit before CV-003 integration claims.
 
 ## GAME-MERGROVE-002: Progression expansion planning
 **Priority:** P1 | **Tags:** mergrove, campaign, levels, power-ups, progression, achievements | **Status:** design approved; implementation separately gated

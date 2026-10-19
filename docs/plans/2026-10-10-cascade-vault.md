@@ -63,6 +63,8 @@ Record the exact GREEN revision/run and then open Task 2.
 
 ### Task 2: Simulation/probability audit and balance gate
 
+**Current evidence:** TDD RED recorded on exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487`: dependency/design gates passed, then TypeScript failed only because `simulation.ts` was intentionally absent. GREEN implementation must satisfy the unchanged `tests/unit/cascade-vault-simulation.test.ts` contract and reuse the production engine/random-source adapter.
+
 **Files:**
 - Create: `src/games/cascade-vault/simulation.ts`
 - Test: `tests/unit/cascade-vault-simulation.test.ts`
