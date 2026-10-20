@@ -4,7 +4,7 @@ Planned Functional Features Specification:
   game_identity:
     name: "Cascade Vault"
     slug: "cascade-vault"
-    development_status: "Implementing — CV-001/CV-003 verified; CV-002 D6 acceptance calibration active; CV-004/CV-005 planned"
+    development_status: "Implementing — CV-001/CV-002/CV-003 verified; CV-004/CV-005 planned"
 
   technical_foundation:
     architecture_and_engine: Pure six-reel/five-row adjacent-ways cascade engine with immutable evaluation, exact centi-credit accounting, injected randomness, bounded base/Vault multipliers, explicit final-feature termination, reproducible production-engine simulation, settled persistence, React presentation and shared save platform.
@@ -20,7 +20,7 @@ Planned Functional Features Specification:
     - name: "Reproducible probability and balance audit"
       id: "CV-002"
       details: "Deterministic seeded audit reuses production createWeightedVaultRandomSource and resolveSpin. Each observation is one paid spin plus all value/cascades from its complete triggered Vault Run, with no extra free-spin wager denominator. Final >=10,000,000 paid spins report RTP, standard error, 95% CI, Vault Run entry frequency, defined average cascade depth and corruption-guard incidence. Current distributions and paytable are provisional for balance; the authoritative design permits rebalancing both, and the accepted interval must intersect 94%-97% with zero corruption-guard hits."
-      feature_development_status: "started — simulator GREEN on cf8f6e37 / run 39298014858; hardened evidence GREEN on fac39b07 / run 39299407841; 25k screen and >=10M acceptance audit outstanding"
+      feature_development_status: "verified — D6 f9893506 / Pages 39491636082 / 10M acceptance 39491663232"
 
     - name: "Settled durable practice progression"
       id: "CV-003"
@@ -90,3 +90,6 @@ D4 exact revision `84a18f92a77add9e058c58c030bf364b3f962003` passed the complete
 
 ### 2026-10-20 — CV-002 acceptance miss and paytable candidate D6
 D5 exact revision `2ef4203a2550accdc737f664eb09a973ba0cf3ba` passed the complete repository validation and Pages deployment chain in run `39490450975`. Its same-seed 25,000-paid-spin screen `39490491425` measured RTP `0.9567358` with zero guard hits, but the required 10,000,000-paid-spin acceptance run `39490755045` decisively rejected D5: RTP `0.87157806`, SE `0.00319013`, 95% CI `0.865325..0.877831`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, and zero corruption-guard hits. D6 keeps the proven distribution, engine, RNG, feature, persistence and audit paths unchanged and scales only paytable values by midpoint factor `0.955 / 0.87157806 ≈ 1.0957`, rounded to positive integer centi multipliers. Payout-contribution instrumentation is intentionally deferred because the current payout is linear in the paytable and a direct proportional correction is the smaller complete change; revisit diagnostics only if D6 fails the >=10M acceptance gate.
+
+### 2026-10-20 — CV-002 verified acceptance
+D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02` passed full validation and Pages deployment in run `39491636082`. Required 10,000,000-paid-spin acceptance run `39491663232` passed with seed `1592594996`, wager 10, RTP `0.950268466`, SE `0.00348531`, 95% CI `0.943437..0.957100`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, and zero corruption-guard hits. D6 distribution/paytable are frozen. CV-002 is verified; next game-local work is CV-004, then CV-005.

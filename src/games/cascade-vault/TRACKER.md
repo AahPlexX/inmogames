@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Exact adjacent-ways / cascade engine | verified | CV-001 passed the exact refreshed full validation/deploy chain on revision `08c3506773d17eee3fed7554f211531141856386`, run `39296638285`: dependency freshness, TypeScript, history-aware governance, unit/rules/browser suites, both builds, artifact upload and Pages deployment all succeeded. |
 | Exact payout precision | verified | Integer centi-credit accounting (`CREDIT_SCALE = 100`), rational ×1.5 feature boost, fractional paytable awards and multiplier progression are covered by the CV-001 focused/full unit suite in run `39296638285`. Balance values remain provisional under CV-002, but accounting precision is verified. |
-| Reproducible 10M-spin probability audit | started | RED `82b7bb2f…`; simulator GREEN `cf8f6e37…` / run `39298014858`; hardened simulation evidence GREEN `fac39b07…` / run `39299407841`. The opt-in audit test/runner/workflow now provide reproducible screening and >=10M acceptance execution without burdening routine unit validation. Current paytable/weights remain provisional pending screening. |
+| Reproducible 10M-spin probability audit | verified | D6 `f9893506…`; run `39491663232` passed 10M paid spins at RTP `0.950268466`, 95% CI `0.943437..0.957100`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, zero guard hits. |
 | Settled durable checkpoints | verified | CV-003 RED `40442255…` / run `39458077585`; exact GREEN revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` / run `39459146356` passed full validation and Pages deployment with schema-v1 settled state, exact centi-credit accounting, compact results, validated active/null Vault checkpoints and restore below 10 credits. |
 | Accessible board / Vault Run UI / audio | planned | Consolidated browser contract: deterministic cascade/feature presentation, aggregate live status, 320px/200%-text reflow, >=48px important targets, keyboard/touch, reduced motion, opt-in audio. |
 | Catalog / route / production release | planned | Governance-only metadata/workspace shell exists; playable catalog/lazy route remains intentionally unregistered until browser RED. Exact-revision full validation and Pages deployment are required. |
@@ -16,11 +16,11 @@
 
 ## Current handoff
 
-**Implementation state:** implementing — CV-001/CV-003 verified; CV-002 D6 acceptance calibration active; CV-004/CV-005 planned  
-**Last verified revision:** `2ef4203a2550accdc737f664eb09a973ba0cf3ba` / GitHub Actions run `39490450975` — D5 full repository validation and Pages deployment; 10M audit `39490755045` was guard-safe but failed RTP acceptance at `0.87157806`
-**Open game-local work:** CV-002 D6 >=10M acceptance audit; CV-004 playable UI/audio/browser quality; CV-005 catalog/release closeout
+**Implementation state:** implementing — CV-001/CV-002/CV-003 verified; CV-004/CV-005 planned
+**Last verified revision:** `f989350673c2166eea688836e73ce250bbff0d02` / Pages `39491636082` + 10M acceptance `39491663232`
+**Open game-local work:** CV-004 playable UI/audio/browser quality; CV-005 catalog/release closeout
 **External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local implementation or verification  
-**Next action:** validate D6 through the full repository chain, then run the required >=10,000,000-paid-spin acceptance audit with seed `1592594996`; if it misses 94–97%, add bounded payout-contribution diagnostics before another paytable change.
+**Next action:** open CV-004 with the consolidated direct-route browser RED, then implement the pre-resolved single-settlement responsive board/Vault/audio contract before CV-005 catalog integration.
 
 ## Canonical verification recovery — 2026-10-19
 
@@ -106,3 +106,6 @@ D4 exact revision `84a18f92a77add9e058c58c030bf364b3f962003` passed the complete
 
 ### 2026-10-20 — CV-002 acceptance miss and paytable candidate D6
 D5 exact revision `2ef4203a2550accdc737f664eb09a973ba0cf3ba` passed the complete repository validation and Pages deployment chain in run `39490450975`. Its same-seed 25,000-paid-spin screen `39490491425` measured RTP `0.9567358` with zero guard hits, but the required 10,000,000-paid-spin acceptance run `39490755045` decisively rejected D5: RTP `0.87157806`, SE `0.00319013`, 95% CI `0.865325..0.877831`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, and zero corruption-guard hits. D6 keeps the proven distribution, engine, RNG, feature, persistence and audit paths unchanged and scales only paytable values by midpoint factor `0.955 / 0.87157806 ≈ 1.0957`, rounded to positive integer centi multipliers. Payout-contribution instrumentation is intentionally deferred because the current payout is linear in the paytable and a direct proportional correction is the smaller complete change; revisit diagnostics only if D6 fails the >=10M acceptance gate.
+
+### 2026-10-20 — CV-002 verified acceptance
+D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02` passed full validation and Pages deployment in run `39491636082`. Required 10,000,000-paid-spin acceptance run `39491663232` passed with seed `1592594996`, wager 10, RTP `0.950268466`, SE `0.00348531`, 95% CI `0.943437..0.957100`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, and zero corruption-guard hits. D6 distribution/paytable are frozen. CV-002 is verified; next game-local work is CV-004, then CV-005.

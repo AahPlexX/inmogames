@@ -55,3 +55,5 @@
 - 2026-10-20 - Cascade Vault D4 `84a18f92…` passed full Pages run `39461928870`; audit `39461954213` was guard-safe but high at RTP `1.1440064`. Staged D5 as a paytable-only midpoint rescale; distribution remains frozen at blank 30.
 
 - 2026-10-20 - Cascade Vault D5 `2ef4203a…` passed full run `39490450975`; 10M audit `39490755045` was guard-safe but failed RTP acceptance at `0.87157806`. D6 applies only the evidence-derived ~1.0957 paytable scale; diagnostics are deferred unless D6 misses.
+
+- 2026-10-20 - Cascade Vault CV-002 verified: D6 `f9893506…` passed full validation/Pages (`39491636082`) and 10M acceptance (`39491663232`), RTP `0.950268466`, zero guard hits. Next: CV-004 browser RED.

@@ -9,7 +9,7 @@ Lucky Seven Classic is game-locally verified on exact functional revision `04ae0
 
 
 ## GAME-CASCADE-VAULT-001: Cascade Vault production implementation
-**Priority:** P1 | **Tags:** arcade, ways, cascades, probability, accessibility, persistence | **Status:** implementing — CV-001/CV-003 verified; CV-002 D6 acceptance calibration active; CV-004/CV-005 planned
+**Priority:** P1 | **Tags:** arcade, ways, cascades, probability, accessibility, persistence | **Status:** implementing — CV-001/CV-002/CV-003 verified; CV-004/CV-005 planned
 
 Authoritative design: `docs/specs/2026-10-10-cascade-vault-design.md`. Plan: `docs/plans/2026-10-10-cascade-vault.md`.
 
@@ -62,3 +62,6 @@ D4 `84a18f92…` passed full validation/Pages (`39461928870`) and same-seed 25k 
 
 ### CV-002 paytable candidate D6
 D5 full validation/Pages is green (`2ef4203a…`, run `39490450975`), but 10M acceptance `39490755045` rejected RTP `0.87157806` (95% CI `0.865325..0.877831`) with zero guard hits. D6 changes paytable only by midpoint scale ~1.0957; next gate is full validation then >=10M acceptance.
+
+### CV-002 verified acceptance
+D6 `f9893506…` passed Pages `39491636082` and 10M acceptance `39491663232` at RTP `0.950268466` with zero guard hits. Resume with CV-004 browser RED.
