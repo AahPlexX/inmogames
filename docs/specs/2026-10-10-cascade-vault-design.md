@@ -192,3 +192,6 @@ D5 exact revision `2ef4203a2550accdc737f664eb09a973ba0cf3ba` passed the complete
 
 ### 2026-10-20 — CV-002 verified acceptance
 D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02` passed full validation and Pages deployment in run `39491636082`. Required 10,000,000-paid-spin acceptance run `39491663232` passed with seed `1592594996`, wager 10, RTP `0.950268466`, SE `0.00348531`, 95% CI `0.943437..0.957100`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, and zero corruption-guard hits. D6 distribution/paytable are frozen. CV-002 is verified; next game-local work is CV-004, then CV-005.
+
+### 2026-10-20 — CV-004 browser RED opened
+The consolidated direct-route browser contract is integrated before playable route/UI implementation. It requires a 6×5 board, pre-play rules, >=48px Spin, keyboard activation, deterministic two-cascade single settlement, presentation lock, reload without replay, concise live status, reduced-effects equivalence, opt-in audio, 320px/200%-text reflow and practice-credit restore. The playable `.cv` route remains intentionally absent in this RED revision; catalog discoverability remains CV-005.

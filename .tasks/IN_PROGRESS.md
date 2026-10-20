@@ -65,3 +65,6 @@ D5 full validation/Pages is green (`2ef4203a…`, run `39490450975`), but 10M ac
 
 ### CV-002 verified acceptance
 D6 `f9893506…` passed Pages `39491636082` and 10M acceptance `39491663232` at RTP `0.950268466` with zero guard hits. Resume with CV-004 browser RED.
+
+### CV-004 browser RED candidate
+Consolidated `tests/browser/cascade-vault.mjs` is registered before playable workspace routing; expected first failure is missing `.cv`. After exact RED evidence, implement only the tested responsive/accessibility/audio contract.

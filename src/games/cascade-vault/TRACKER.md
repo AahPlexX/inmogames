@@ -10,7 +10,7 @@
 | Exact payout precision | verified | Integer centi-credit accounting (`CREDIT_SCALE = 100`), rational ×1.5 feature boost, fractional paytable awards and multiplier progression are covered by the CV-001 focused/full unit suite in run `39296638285`. Balance values remain provisional under CV-002, but accounting precision is verified. |
 | Reproducible 10M-spin probability audit | verified | D6 `f9893506…`; run `39491663232` passed 10M paid spins at RTP `0.950268466`, 95% CI `0.943437..0.957100`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, zero guard hits. |
 | Settled durable checkpoints | verified | CV-003 RED `40442255…` / run `39458077585`; exact GREEN revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` / run `39459146356` passed full validation and Pages deployment with schema-v1 settled state, exact centi-credit accounting, compact results, validated active/null Vault checkpoints and restore below 10 credits. |
-| Accessible board / Vault Run UI / audio | planned | Consolidated browser contract: deterministic cascade/feature presentation, aggregate live status, 320px/200%-text reflow, >=48px important targets, keyboard/touch, reduced motion, opt-in audio. |
+| Accessible board / Vault Run UI / audio | started | Consolidated browser contract: deterministic cascade/feature presentation, aggregate live status, 320px/200%-text reflow, >=48px important targets, keyboard/touch, reduced motion, opt-in audio. |
 | Catalog / route / production release | planned | Governance-only metadata/workspace shell exists; playable catalog/lazy route remains intentionally unregistered until browser RED. Exact-revision full validation and Pages deployment are required. |
 | Authenticated live-project persistence | blocked externally | Shared account-save architecture will be reused; real configured-project Firebase verification remains TASK-003. |
 
@@ -20,7 +20,7 @@
 **Last verified revision:** `f989350673c2166eea688836e73ce250bbff0d02` / Pages `39491636082` + 10M acceptance `39491663232`
 **Open game-local work:** CV-004 playable UI/audio/browser quality; CV-005 catalog/release closeout
 **External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local implementation or verification  
-**Next action:** open CV-004 with the consolidated direct-route browser RED, then implement the pre-resolved single-settlement responsive board/Vault/audio contract before CV-005 catalog integration.
+**Next action:** capture the intentional CV-004 browser RED on the absent playable `.cv` route, then implement the minimum workspace/random adapter/CSS/audio behavior against that unchanged contract.
 
 ## Canonical verification recovery — 2026-10-19
 
@@ -109,3 +109,6 @@ D5 exact revision `2ef4203a2550accdc737f664eb09a973ba0cf3ba` passed the complete
 
 ### 2026-10-20 — CV-002 verified acceptance
 D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02` passed full validation and Pages deployment in run `39491636082`. Required 10,000,000-paid-spin acceptance run `39491663232` passed with seed `1592594996`, wager 10, RTP `0.950268466`, SE `0.00348531`, 95% CI `0.943437..0.957100`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, and zero corruption-guard hits. D6 distribution/paytable are frozen. CV-002 is verified; next game-local work is CV-004, then CV-005.
+
+### 2026-10-20 — CV-004 browser RED opened
+The consolidated direct-route browser contract is integrated before playable route/UI implementation. It requires a 6×5 board, pre-play rules, >=48px Spin, keyboard activation, deterministic two-cascade single settlement, presentation lock, reload without replay, concise live status, reduced-effects equivalence, opt-in audio, 320px/200%-text reflow and practice-credit restore. The playable `.cv` route remains intentionally absent in this RED revision; catalog discoverability remains CV-005.
