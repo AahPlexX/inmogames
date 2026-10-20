@@ -1,6 +1,6 @@
 # Cascade Vault execution
 
-**Status:** Implementing — CV-001 verified; CV-002 simulation/balance TDD RED opening  
+**Status:** Implementing — CV-001 verified; CV-002 audit active; CV-003 GREEN candidate integrated  
 **Architecture / Engine:** Immutable 6×5 board → adjacent ways → simultaneous removal → gravity/refill → bounded base/Vault transitions → production-engine simulation → settled persistence → accessible React presentation.  
 **Dependencies Used:** React 19.3.1; React DOM 19.3.1; TypeScript 7.0.2; Vitest 5.0.5; Playwright 1.64.1; Firebase 13.0.0; Vite 8.3.4. Dependency refresh completed through maintenance run `39296252148`; refreshed exact revision `08c3506773d17eee3fed7554f211531141856386` passed Pages run `39296638285`.
 
@@ -50,8 +50,8 @@ Exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` passed the f
 **Inputs / Parameters:** centi-credit bankroll/totals; selected `CascadeVaultWager` denomination; paid/free counters; stats; preferences; last settled result; fully resolved Vault checkpoint or null.  
 **Dependencies Touched:** planned `storage.ts`, `persistence.ts`, shared `GameSaveDefinition`, `tests/unit/cascade-vault-persistence.test.ts`.  
 **Technical Notes & Edge Cases:** no board/animation/partial cascade; active feature requires >=1 remaining spin; completed feature is null; malformed/non-finite/negative/unsafe values reject; net invariant; restore 5000 only below 10-credit minimum and outside active feature while preserving stats/preferences.  
-**Implementation Details:** schema v1; slug `cascade-vault`; storage key `inmogames:cascade-vault:v1`. Controller ruling: engine denomination remains 10/20/50/100/250 credits while durable money fields use centi-credit integers. `largestSpinWin` is one resolved engine spin, and `highestCascadeChain` is `result.cascades.length`.  
-**Verification & State Sign-off:** open.
+**Implementation Details:** schema v1; slug `cascade-vault`; storage key `inmogames:cascade-vault:v1`. Controller ruling: engine denomination remains 10/20/50/100/250 credits while durable money fields use centi-credit integers. `largestSpinWin` is one resolved engine spin, and `highestCascadeChain` is `result.cascades.length`. RED `40442255…` / run `39458077585` failed only on missing production modules; current candidate adds `storage.ts` and `persistence.ts` only.  
+**Verification & State Sign-off:** GREEN candidate pending focused/full validation.
 
 - [ ] Persistence RED/GREEN recorded after CV-001 canonical GREEN.
 - [ ] Base settlement deducts exactly wager×100 units; free-spin settlement deducts zero wager.

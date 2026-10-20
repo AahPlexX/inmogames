@@ -1,7 +1,7 @@
 # Cascade Vault design
 
-**Status:** Implementing — CV-001 verified; CV-002 simulation/balance TDD RED opening  
-**Last synchronized:** 2026-10-19  
+**Status:** Implementing — CV-001 verified; CV-002 audit harness verified for routine validation; CV-003 GREEN candidate integrated  
+**Last synchronized:** 2026-10-20  
 **Proposed route:** `#/games/cascade-vault`
 
 ## Product intent
@@ -164,3 +164,5 @@ Audit workflow run `39300303052` on `7696b76668cd984a5a9e10ccbcc3c39250c37cff` p
 ### 2026-10-20 — CV-003 persistence TDD opened in parallel
 With the production simulator already GREEN and balance auditing isolated from save semantics, CV-003 opens independently with a test-only contract for schema-v1 settled persistence. The RED requires a 5,000-credit default represented as 500,000 centi-credit units, supported wager validation, malformed/non-finite/negative rejection, compact settled result summaries (no boards/animation frames), exact paid/free settlement accounting, validated active/null Vault checkpoints, one-time completed-run counting, insufficient-bankroll rejection, and practice-credit restore only below 10 credits with no active feature. Ruling: settlement helpers remain pure whole-state transforms and do not invent transaction IDs absent from the approved platform contract; duplicate invocation prevention belongs to the single-resolution workspace control path and will be browser-verified in CV-004. No persistence production module exists in this RED integration.
 
+### 2026-10-20 — CV-003 GREEN candidate
+RED `40442255b2bb143fa4afb4bc5b86a8c072476fcf` / run `39458077585` passed dependency/design gates and failed only on missing `storage.ts` / `persistence.ts`. The GREEN candidate adds those two settled-only modules without altering the fixed test contract. Audit-discovery revision `4808b129679b949293ec9b71193572a5d89a8706` passed full validation and Pages deployment in run `39457748530`. Persistence verification is pending.

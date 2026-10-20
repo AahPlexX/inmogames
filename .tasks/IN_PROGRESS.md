@@ -38,3 +38,6 @@ Run `39300303052` passed dependency/type/focused engine+simulation checks, then 
 **Status:** RED contract opened in parallel with CV-002 audit
 
 Schema-v1 tests require exact centi-credit accounting, validated post-spin Vault checkpoints, compact settled summaries, restore guards, and no partial cascade/animation persistence. Production `storage.ts` / `persistence.ts` remain intentionally absent until the missing-module RED is recorded.
+
+### CV-003 GREEN candidate
+RED `40442255…` / run `39458077585` isolated only missing persistence/storage modules. Candidate implements the unchanged settled-only contract; verification pending. Audit discovery fix `4808b129…` / run `39457748530` is fully green/deployed; 25k balance screen remains open.

@@ -4,7 +4,7 @@ Planned Functional Features Specification:
   game_identity:
     name: "Cascade Vault"
     slug: "cascade-vault"
-    development_status: "Implementing — CV-001 verified; CV-002 simulation/balance TDD RED opening"
+    development_status: "Implementing — CV-001 verified; CV-002 audit active; CV-003 persistence GREEN candidate integrated"
 
   technical_foundation:
     architecture_and_engine: Pure six-reel/five-row adjacent-ways cascade engine with immutable evaluation, exact centi-credit accounting, injected randomness, bounded base/Vault multipliers, explicit final-feature termination, reproducible production-engine simulation, settled persistence, React presentation and shared save platform.
@@ -20,12 +20,12 @@ Planned Functional Features Specification:
     - name: "Reproducible probability and balance audit"
       id: "CV-002"
       details: "Deterministic seeded audit reuses production createWeightedVaultRandomSource and resolveSpin. Each observation is one paid spin plus all value/cascades from its complete triggered Vault Run, with no extra free-spin wager denominator. Final >=10,000,000 paid spins report RTP, standard error, 95% CI, Vault Run entry frequency, defined average cascade depth and corruption-guard incidence. Current distributions and paytable are provisional for balance; the authoritative design permits rebalancing both, and the accepted interval must intersect 94%-97% with zero corruption-guard hits."
-      feature_development_status: "started — TDD RED recorded on 82b7bb2f / run 39297705487; GREEN implementation pending"
+      feature_development_status: "started — simulator GREEN on cf8f6e37 / run 39298014858; hardened evidence GREEN on fac39b07 / run 39299407841; 25k screen and >=10M acceptance audit outstanding"
 
     - name: "Settled durable practice progression"
       id: "CV-003"
       details: "Schema-v1 integer centi-credit bankroll/statistics/preferences plus post-free-spin Vault Run checkpoints only. Selected wager remains the engine denomination 10/20/50/100/250 credits. No board/partial cascade/in-flight spin state is durable. Active feature requires 1-20 remaining spins; completed feature is null; restore 5,000 preserves statistics/preferences."
-      feature_development_status: "planned"
+      feature_development_status: "started — RED 40442255 / run 39458077585; GREEN candidate verification pending"
 
     - name: "Accessible cascading board and feature presentation"
       id: "CV-004"
@@ -67,3 +67,4 @@ Audit workflow run `39300303052` on `7696b76668cd984a5a9e10ccbcc3c39250c37cff` p
 ### 2026-10-20 — CV-003 persistence TDD opened in parallel
 With the production simulator already GREEN and balance auditing isolated from save semantics, CV-003 opens independently with a test-only contract for schema-v1 settled persistence. The RED requires a 5,000-credit default represented as 500,000 centi-credit units, supported wager validation, malformed/non-finite/negative rejection, compact settled result summaries (no boards/animation frames), exact paid/free settlement accounting, validated active/null Vault checkpoints, one-time completed-run counting, insufficient-bankroll rejection, and practice-credit restore only below 10 credits with no active feature. Ruling: settlement helpers remain pure whole-state transforms and do not invent transaction IDs absent from the approved platform contract; duplicate invocation prevention belongs to the single-resolution workspace control path and will be browser-verified in CV-004. No persistence production module exists in this RED integration.
 
+CV-003 candidate note (2026-10-20): storage/persistence modules implement the unchanged RED contract only; no route/UI or live-Firebase completion claim is made.
