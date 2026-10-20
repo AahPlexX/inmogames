@@ -47,3 +47,6 @@ RED `40442255…` / run `39458077585` isolated only missing persistence/storage 
 
 ### CV-002 structural candidate D2
 D1 25k audit `39459715477` still hit the 50-cascade guard. D2 adds inert nonpaying `blank` weight 24 to initial/refill tables, with focused tests; paytable remains unchanged. Next gate: full validation + same-seed 25k audit.
+
+### CV-002 calibrated candidate D3
+D2 is chain-safe (25k run `39460203286`, zero guard hits) but RTP=13.214587. D3 sets blank=30 and a positive integer-centi paytable near 8.5% of D2, targeting ~0.955 by screening estimate. Full validation + same-seed 25k measurement are next; no acceptance claim yet.

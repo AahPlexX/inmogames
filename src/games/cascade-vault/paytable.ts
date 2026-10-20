@@ -7,14 +7,14 @@ export type WaysReelCount = 3 | 4 | 5 | 6;
 
 /** Paytable factors expressed in hundredths of one wager credit. */
 export const PAYTABLE_CENTI_MULTIPLIERS: Readonly<Record<PayingSymbol, Readonly<Record<WaysReelCount, number>>>> = {
-  quartz: { 3: 10, 4: 20, 5: 50, 6: 100 },
-  copper: { 3: 15, 4: 30, 5: 75, 6: 150 },
-  silver: { 3: 20, 4: 50, 5: 100, 6: 250 },
-  gold: { 3: 30, 4: 75, 5: 150, 6: 400 },
-  sapphire: { 3: 50, 4: 125, 5: 300, 6: 800 },
-  emerald: { 3: 75, 4: 200, 5: 500, 6: 1_200 },
-  ruby: { 3: 100, 4: 300, 5: 800, 6: 2_000 },
-  vault_crown: { 3: 150, 4: 500, 5: 1_500, 6: 4_000 },
+  quartz: { 3: 1, 4: 2, 5: 4, 6: 9 },
+  copper: { 3: 1, 4: 3, 5: 6, 6: 13 },
+  silver: { 3: 2, 4: 4, 5: 9, 6: 21 },
+  gold: { 3: 3, 4: 6, 5: 13, 6: 34 },
+  sapphire: { 3: 4, 4: 11, 5: 26, 6: 68 },
+  emerald: { 3: 6, 4: 17, 5: 43, 6: 102 },
+  ruby: { 3: 9, 4: 26, 5: 68, 6: 170 },
+  vault_crown: { 3: 13, 4: 43, 5: 128, 6: 340 },
 };
 
 export function isCascadeVaultWager(value: number): value is CascadeVaultWager {

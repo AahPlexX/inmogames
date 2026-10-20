@@ -71,16 +71,16 @@ describe('Cascade Vault engine', () => {
 
     expect(CREDIT_SCALE).toBe(100);
     expect(result.wins).toHaveLength(1);
-    expect(result.wins[0]).toMatchObject({ symbol: 'quartz', consecutiveReels: 3, ways: 4, awardUnits: 400 });
-    expect(result.totalAwardUnits).toBe(400);
+    expect(result.wins[0]).toMatchObject({ symbol: 'quartz', consecutiveReels: 3, ways: 4, awardUnits: 40 });
+    expect(result.totalAwardUnits).toBe(40);
     expect(new Set(result.removals.map(key))).toEqual(new Set(['0:0', '0:1', '1:0', '2:0', '2:1']));
   });
 
   it.each([
-    [3, 1_500],
-    [4, 5_000],
-    [5, 15_000],
-    [6, 40_000],
+    [3, 130],
+    [4, 430],
+    [5, 1_280],
+    [6, 3_400],
   ] as const)('applies the Vault Crown paytable for %i consecutive reels', (reelCount, expectedUnits) => {
     const reels = Array.from({ length: 6 }, (_, reelIndex) => (
       Array.from({ length: 5 }, (_, row) => reelIndex < reelCount && row === 0 ? 'vault_crown' : 'scatter') as VaultSymbol[]
@@ -101,7 +101,7 @@ describe('Cascade Vault engine', () => {
     ]), 10, { cascadeMultiplier: 1, featureBoost: false });
 
     expect(result.wins).toHaveLength(1);
-    expect(result.wins[0]).toMatchObject({ symbol: 'vault_crown', ways: 1, awardUnits: 1_500 });
+    expect(result.wins[0]).toMatchObject({ symbol: 'vault_crown', ways: 1, awardUnits: 130 });
     expect(new Set(result.removals.map(key))).toEqual(new Set(['0:0', '1:0', '2:0']));
   });
 
@@ -116,7 +116,7 @@ describe('Cascade Vault engine', () => {
     ]), 10, { cascadeMultiplier: 1, featureBoost: false });
 
     expect(result.wins.map((win) => win.symbol)).toEqual(['quartz', 'copper']);
-    expect(result.totalAwardUnits).toBe(250);
+    expect(result.totalAwardUnits).toBe(20);
     expect(new Set(result.removals.map(key))).toEqual(new Set(['0:0', '0:1', '1:0', '1:1', '2:0', '2:1']));
   });
 
@@ -130,8 +130,8 @@ describe('Cascade Vault engine', () => {
       [S, S, S, S, S],
     ]), 10, { cascadeMultiplier: 2, featureBoost: true });
 
-    expect(result.totalAwardUnits).toBe(450);
-    expect(result.wins[0].awardUnits).toBe(450);
+    expect(result.totalAwardUnits).toBe(30);
+    expect(result.wins[0].awardUnits).toBe(30);
   });
 
   it('applies gravity, refills only vacancies, and can inject exactly one feature Wild into the refill set', () => {
@@ -163,8 +163,8 @@ describe('Cascade Vault engine', () => {
     const result = evaluateWays(blankBoard, 10, { cascadeMultiplier: 1, featureBoost: false });
     expect(result.wins).toEqual([]);
     expect(result.removals).toEqual([]);
-    expect(INITIAL_SYMBOL_WEIGHTS.some((entry) => entry.symbol === 'blank' && entry.weight === 24)).toBe(true);
-    expect(REFILL_SYMBOL_WEIGHTS.some((entry) => entry.symbol === 'blank' && entry.weight === 24)).toBe(true);
+    expect(INITIAL_SYMBOL_WEIGHTS.some((entry) => entry.symbol === 'blank' && entry.weight === 30)).toBe(true);
+    expect(REFILL_SYMBOL_WEIGHTS.some((entry) => entry.symbol === 'blank' && entry.weight === 30)).toBe(true);
     expect(REFILL_SYMBOL_WEIGHTS.some((entry) => entry.symbol === 'scatter')).toBe(false);
   });
 
@@ -225,7 +225,7 @@ describe('Cascade Vault engine', () => {
     expect(result.cascades).toHaveLength(2);
     expect(result.cascades.map((cascade) => cascade.multiplier)).toEqual([1, 2]);
     expect(result.cascades.map((cascade) => cascade.evaluation.wins[0].symbol)).toEqual(['quartz', 'copper']);
-    expect(result.totalAwardUnits).toBe(400);
+    expect(result.totalAwardUnits).toBe(30);
     expect(contexts).toEqual(['refill', 'refill', 'refill', 'refill', 'refill', 'refill']);
   });
 

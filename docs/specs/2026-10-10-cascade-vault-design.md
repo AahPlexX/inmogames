@@ -12,6 +12,7 @@ Cascade Vault is the modern high-feature member of the slot family and is mechan
 
 - Board: 6 reels × 5 rows.
 - Initial and refill symbols come from source-controlled weighted distributions. Scatters may appear only on an initial paid/free-spin board, never on cascade refills.
+- `blank` is an inert nonpaying board symbol. It never forms a way, Wild never substitutes for it, and it is never removed by a win; it remains a normal survivor subject to gravity when other cells clear.
 - A normal symbol wins when it appears, directly or through Wild substitution, on at least 3 consecutive reels starting at reel 1. `ways = count(reel1) × ... × count(last qualifying reel)`.
 - Wild substitutes for normal paying symbols only; it never substitutes for Scatter and has no standalone paytable entry.
 - Each paying symbol is evaluated from one immutable board snapshot. A concrete all-Wild way that could represent multiple symbols is paid once using the highest valid award interpretation; it is never double-paid.
@@ -33,14 +34,14 @@ The following v1 multipliers are **provisional balance inputs**, not verified fi
 
 | Symbol | 3 reels | 4 reels | 5 reels | 6 reels |
 | --- | ---: | ---: | ---: | ---: |
-| Quartz | 0.10× | 0.20× | 0.50× | 1.00× |
-| Copper | 0.15× | 0.30× | 0.75× | 1.50× |
-| Silver | 0.20× | 0.50× | 1.00× | 2.50× |
-| Gold | 0.30× | 0.75× | 1.50× | 4.00× |
-| Sapphire | 0.50× | 1.25× | 3.00× | 8.00× |
-| Emerald | 0.75× | 2.00× | 5.00× | 12.00× |
-| Ruby | 1.00× | 3.00× | 8.00× | 20.00× |
-| Vault Crown | 1.50× | 5.00× | 15.00× | 40.00× |
+| Quartz | 0.01× | 0.02× | 0.04× | 0.09× |
+| Copper | 0.01× | 0.03× | 0.06× | 0.13× |
+| Silver | 0.02× | 0.04× | 0.09× | 0.21× |
+| Gold | 0.03× | 0.06× | 0.13× | 0.34× |
+| Sapphire | 0.04× | 0.11× | 0.26× | 0.68× |
+| Emerald | 0.06× | 0.17× | 0.43× | 1.02× |
+| Ruby | 0.09× | 0.26× | 0.68× | 1.70× |
+| Vault Crown | 0.13× | 0.43× | 1.28× | 3.40× |
 
 Scatter does not pay a separate credit prize in v1.
 
@@ -172,4 +173,7 @@ Production audit run `39459206136` on persistence-GREEN revision `343ca3fcaccd8e
 
 ### 2026-10-20 — CV-002 structural candidate D2: inert blank
 Distribution-only candidate D1 (`7d94703394ee570c76a44fafa98b3dd75032a5d1`) still hit the 50-cascade guard in 25k audit run `39459715477`, proving that flattening probabilities inside an all-paying 6×5 symbol set is insufficient. Ruling: add one explicit inert `blank` board symbol to initial/refill distributions at weight 24. Blank is not in `PAYING_SYMBOLS`, cannot be substituted by Wild, never wins or enters win removals, but otherwise occupies a board cell and follows normal survivor/gravity behavior. Existing D1 paying/Wild/Scatter weights are unchanged; Scatter stays initial-only. The hard 50-cascade guard remains a fault circuit breaker, never a normal truncation/settlement rule. Focused regression proves blank is nonpaying and refill still excludes Scatter. Paytable remains unchanged until D2 clears chain-risk screening.
+
+### 2026-10-20 — CV-002 calibrated candidate D3
+D2 exact revision `5c2062f876b267a8ef6751a49c1cb1c036680b27` passed the full repository chain and Pages deployment in run `39460176426`. Its same-seed 25,000-paid-spin audit `39460203286` completed with zero corruption-guard hits, proving the inert-blank structure materially stabilizes cascade tails, but measured RTP was `13.214587` (1321.4587%; 95% CI `11.514863..14.914311`). D3 therefore increases blank weight modestly from 24 to 30 and scales the paytable to approximately 8.5% of D2 using positive integer centi multipliers. Independent math review confirms the screening estimate `13.214587 × 0.85 × 0.085 ≈ 0.954754`; this is a hypothesis only, not acceptance evidence. D3 must pass the unchanged full validation and same-seed 25k audit before any confirmation run.
 

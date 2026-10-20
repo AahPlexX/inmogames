@@ -38,7 +38,7 @@ export const INITIAL_SYMBOL_WEIGHTS: readonly WeightedVaultSymbol[] = Object.fre
   { symbol: 'vault_crown', weight: 1 },
   { symbol: 'wild', weight: 1 },
   { symbol: 'scatter', weight: 4 },
-  { symbol: 'blank', weight: 24 },
+  { symbol: 'blank', weight: 30 },
 ]);
 
 export const REFILL_SYMBOL_WEIGHTS: readonly WeightedVaultSymbol[] = Object.freeze(
