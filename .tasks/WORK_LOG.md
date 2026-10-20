@@ -51,3 +51,5 @@
 - 2026-10-20 - D2 `5c2062f8…` passed full Pages run `39460176426`; 25k audit `39460203286` completed with zero guard hits but RTP 13.214587. Built D3 with blank 30 and calibrated integer-centi paytable after independent math check (~0.954754 screening estimate).
 - 2026-10-20 - D3 audit `39461070614` passed dependency/type and engine tests, then exposed one stale simulation fixture payout: 200 historical units became 20 under the calibrated paytable. Synchronized the test expectation only; production unchanged.
 - 2026-10-20 - D3 audit `39461462180` completed guard-safe at RTP 0.6285558. Froze distribution (blank 30) and staged D4 paytable-only uplift weighted toward longer/rarer ways after parallel quantitative review.
+
+- 2026-10-20 - Cascade Vault D4 `84a18f92…` passed full Pages run `39461928870`; audit `39461954213` was guard-safe but high at RTP `1.1440064`. Staged D5 as a paytable-only midpoint rescale; distribution remains frozen at blank 30.

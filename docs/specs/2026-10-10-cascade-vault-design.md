@@ -34,14 +34,14 @@ The following v1 multipliers are **provisional balance inputs**, not verified fi
 
 | Symbol | 3 reels | 4 reels | 5 reels | 6 reels |
 | --- | ---: | ---: | ---: | ---: |
-| Quartz | 0.01× | 0.02× | 0.07× | 0.18× |
-| Copper | 0.01× | 0.05× | 0.11× | 0.26× |
-| Silver | 0.03× | 0.07× | 0.16× | 0.42× |
-| Gold | 0.04× | 0.10× | 0.23× | 0.68× |
-| Sapphire | 0.05× | 0.18× | 0.47× | 1.36× |
-| Emerald | 0.08× | 0.28× | 0.77× | 2.04× |
-| Ruby | 0.12× | 0.42× | 1.22× | 3.40× |
-| Vault Crown | 0.17× | 0.69× | 2.30× | 6.80× |
+| Quartz | 0.01× | 0.02× | 0.06× | 0.15× |
+| Copper | 0.01× | 0.04× | 0.09× | 0.22× |
+| Silver | 0.03× | 0.06× | 0.13× | 0.35× |
+| Gold | 0.03× | 0.08× | 0.19× | 0.57× |
+| Sapphire | 0.04× | 0.15× | 0.39× | 1.14× |
+| Emerald | 0.07× | 0.23× | 0.64× | 1.70× |
+| Ruby | 0.10× | 0.35× | 1.02× | 2.84× |
+| Vault Crown | 0.14× | 0.58× | 1.92× | 5.68× |
 
 Scatter does not pay a separate credit prize in v1.
 
@@ -183,3 +183,6 @@ D3 audit run `39461070614` passed dependency freshness and TypeScript; the engin
 ### 2026-10-20 — CV-002 paytable candidate D4
 D3 exact revision `59e515f35cd234dd6f6bfb586eacb67c49d1d9f6` completed the same-seed 25,000-paid-spin audit in run `39461462180` with zero corruption-guard hits, RTP `0.6285558`, SE `0.04704613`, 95% CI `0.536345..0.720766`, Vault entry frequency `0.0186`, and average cascade depth `0.74636`. Distribution is now frozen at blank weight 30 because safety/evolution metrics are stable. D4 is paytable-only: common 3-reel Quartz/Copper remain at the minimum centi multiplier 1, while longer and rarer outcomes carry most of the required uplift. Two independent quantitative reviewers preferred one inexpensive screening run before adding attribution diagnostics; no RNG/distribution/engine changes are made.
 
+
+### 2026-10-20 — CV-002 paytable candidate D5
+D4 exact revision `84a18f92a77add9e058c58c030bf364b3f962003` passed the complete Pages validation/deployment chain in run `39461928870`. Same-seed 25,000-paid-spin audit `39461954213` completed with zero corruption-guard hits, RTP `1.1440064`, SE `0.09032353`, 95% CI `0.966972..1.321041`, Vault entry frequency `0.0186`, and average cascade depth `0.74636`. Because final acceptance requires >=10,000,000 paid spins, the observed 1.144 mean is treated as too high despite the small-screen interval touching the target band. Distribution stays frozen at blank weight 30. D5 changes only paytable centi multipliers using scale `0.955 / 1.1440064 = 0.8347855` rounded to positive integers; engine, RNG, feature rules, distribution, persistence, and audit logic are unchanged. Next gate: unchanged full validation plus the same-seed 25k screen; proceed to >=10M acceptance only if the measured mean is plausibly inside 0.94–0.97.

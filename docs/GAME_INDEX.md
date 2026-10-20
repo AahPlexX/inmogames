@@ -19,3 +19,5 @@ One row per game. Update when a game is added, changes status, or is removed.
 - Cascade Vault CV-002 D3 (2026-10-20): D2 is full-validation/Pages green (`5c2062f8…`, run `39460176426`) and 25k guard-safe (`39460203286`) but measured 1321.4587% RTP; D3 uses blank 30 plus calibrated integer-centi paytable for the next screen.
 - Cascade Vault D3 test sync (2026-10-20): run `39461070614` exposed one expected stale fixture payout (200→20 units after paytable calibration); test-only expectation synchronized, production unchanged.
 - Cascade Vault D4 (2026-10-20): D3 audit `39461462180` was guard-safe at 62.85558% RTP; distribution frozen, next screen changes paytable only with conservative uplift concentrated in longer/rarer ways.
+
+- Cascade Vault D5 (2026-10-20): D4 full validation/Pages is green in run `39461928870`; 25k audit `39461954213` was guard-safe at RTP `1.1440064`, so distribution remains frozen and D5 scales paytable only toward the 0.955 midpoint before the >=10M acceptance gate.

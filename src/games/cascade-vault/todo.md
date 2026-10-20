@@ -1,6 +1,6 @@
 # Cascade Vault execution
 
-**Status:** Implementing — CV-001 verified; CV-002 audit active; CV-003 GREEN candidate integrated  
+**Status:** Implementing — CV-001/CV-003 verified; CV-002 D5 calibration active; CV-004/CV-005 planned
 **Architecture / Engine:** Immutable 6×5 board → adjacent ways → simultaneous removal → gravity/refill → bounded base/Vault transitions → production-engine simulation → settled persistence → accessible React presentation.  
 **Dependencies Used:** React 19.3.1; React DOM 19.3.1; TypeScript 7.0.2; Vitest 5.0.5; Playwright 1.64.1; Firebase 13.0.0; Vite 8.3.4. Dependency refresh completed through maintenance run `39296252148`; refreshed exact revision `08c3506773d17eee3fed7554f211531141856386` passed Pages run `39296638285`.
 
@@ -118,3 +118,6 @@ D3 audit run `39461070614` passed dependency freshness and TypeScript; the engin
 ### 2026-10-20 — CV-002 paytable candidate D4
 D3 exact revision `59e515f35cd234dd6f6bfb586eacb67c49d1d9f6` completed the same-seed 25,000-paid-spin audit in run `39461462180` with zero corruption-guard hits, RTP `0.6285558`, SE `0.04704613`, 95% CI `0.536345..0.720766`, Vault entry frequency `0.0186`, and average cascade depth `0.74636`. Distribution is now frozen at blank weight 30 because safety/evolution metrics are stable. D4 is paytable-only: common 3-reel Quartz/Copper remain at the minimum centi multiplier 1, while longer and rarer outcomes carry most of the required uplift. Two independent quantitative reviewers preferred one inexpensive screening run before adding attribution diagnostics; no RNG/distribution/engine changes are made.
 
+
+### 2026-10-20 — CV-002 paytable candidate D5
+D4 exact revision `84a18f92a77add9e058c58c030bf364b3f962003` passed the complete Pages validation/deployment chain in run `39461928870`. Same-seed 25,000-paid-spin audit `39461954213` completed with zero corruption-guard hits, RTP `1.1440064`, SE `0.09032353`, 95% CI `0.966972..1.321041`, Vault entry frequency `0.0186`, and average cascade depth `0.74636`. Because final acceptance requires >=10,000,000 paid spins, the observed 1.144 mean is treated as too high despite the small-screen interval touching the target band. Distribution stays frozen at blank weight 30. D5 changes only paytable centi multipliers using scale `0.955 / 1.1440064 = 0.8347855` rounded to positive integers; engine, RNG, feature rules, distribution, persistence, and audit logic are unchanged. Next gate: unchanged full validation plus the same-seed 25k screen; proceed to >=10M acceptance only if the measured mean is plausibly inside 0.94–0.97.

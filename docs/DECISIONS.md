@@ -1,5 +1,9 @@
 # Decision log
 
+## D-020 Cascade Vault balance freezes board distribution before final paytable calibration (2026-10-20)
+
+Cascade Vault keeps the guard-safe D3 distribution with blank weight 30 fixed while CV-002 completes paytable-only calibration. D4 audit `39461954213` had zero corruption-guard hits and unchanged cascade/feature metrics but RTP `1.1440064`; D5 therefore changes only integer-centi paytable values toward the 0.955 midpoint. The 50-cascade limit remains a fault guard, not a normal settlement rule.
+
 ## D-001 Games-only sibling of InMo Tools (2026-10-03)
 
 InMo Games reuses the InMo Tools concept (static, local-first, GitHub Pages, spec plus tracker per item) but contains games only. Tools stay in `inmotools`.

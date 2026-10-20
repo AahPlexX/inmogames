@@ -16,11 +16,11 @@
 
 ## Current handoff
 
-**Implementation state:** implementing — CV-001 verified; CV-002 audit active; CV-003 GREEN candidate integrated  
-**Last verified revision:** `08c3506773d17eee3fed7554f211531141856386` / GitHub Actions run `39296638285` — CV-001 exact engine/accounting scope plus full repository validation and Pages deployment  
-**Open game-local work:** CV-002 production-engine simulation/paytable+weight balance and >=10M audit; CV-003 settled persistence; CV-004 playable UI/audio/browser quality; CV-005 catalog/release closeout  
+**Implementation state:** implementing — CV-001 verified; CV-002 D5 calibration active; CV-003 verified; CV-004/CV-005 planned  
+**Last verified revision:** `84a18f92a77add9e058c58c030bf364b3f962003` / GitHub Actions run `39461928870` — D4 full repository validation and Pages deployment; audit run `39461954213` was guard-safe but high at RTP `1.1440064`  
+**Open game-local work:** CV-002 D5 same-seed 25k calibration and >=10M acceptance audit; CV-004 playable UI/audio/browser quality; CV-005 catalog/release closeout  
 **External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local implementation or verification  
-**Next action:** verify the CV-003 persistence candidate on the unchanged RED contract; independently run the repaired 25,000-paid-spin audit screen before any balance tuning.  
+**Next action:** validate D5 with the unchanged full repository chain and same-seed 25,000-paid-spin audit; if the measured mean is plausibly inside 0.94–0.97, run the required >=10,000,000-paid-spin acceptance audit, otherwise add payout-contribution diagnostics before another paytable revision.  
 
 ## Canonical verification recovery — 2026-10-19
 
@@ -100,3 +100,6 @@ D3 audit run `39461070614` passed dependency freshness and TypeScript; the engin
 ### 2026-10-20 — CV-002 paytable candidate D4
 D3 exact revision `59e515f35cd234dd6f6bfb586eacb67c49d1d9f6` completed the same-seed 25,000-paid-spin audit in run `39461462180` with zero corruption-guard hits, RTP `0.6285558`, SE `0.04704613`, 95% CI `0.536345..0.720766`, Vault entry frequency `0.0186`, and average cascade depth `0.74636`. Distribution is now frozen at blank weight 30 because safety/evolution metrics are stable. D4 is paytable-only: common 3-reel Quartz/Copper remain at the minimum centi multiplier 1, while longer and rarer outcomes carry most of the required uplift. Two independent quantitative reviewers preferred one inexpensive screening run before adding attribution diagnostics; no RNG/distribution/engine changes are made.
 
+
+### 2026-10-20 — CV-002 paytable candidate D5
+D4 exact revision `84a18f92a77add9e058c58c030bf364b3f962003` passed the complete Pages validation/deployment chain in run `39461928870`. Same-seed 25,000-paid-spin audit `39461954213` completed with zero corruption-guard hits, RTP `1.1440064`, SE `0.09032353`, 95% CI `0.966972..1.321041`, Vault entry frequency `0.0186`, and average cascade depth `0.74636`. Because final acceptance requires >=10,000,000 paid spins, the observed 1.144 mean is treated as too high despite the small-screen interval touching the target band. Distribution stays frozen at blank weight 30. D5 changes only paytable centi multipliers using scale `0.955 / 1.1440064 = 0.8347855` rounded to positive integers; engine, RNG, feature rules, distribution, persistence, and audit logic are unchanged. Next gate: unchanged full validation plus the same-seed 25k screen; proceed to >=10M acceptance only if the measured mean is plausibly inside 0.94–0.97.
