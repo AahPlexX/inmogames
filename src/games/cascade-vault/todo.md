@@ -96,3 +96,7 @@ Exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` passed the f
 - [ ] Full canonical validation passes on the exact final functional revision.
 - [ ] GitHub Pages deployment succeeds for that exact revision.
 - [ ] Mark Complete / Verified only after every game-local gate is evidenced; TASK-003 may remain externally blocked.
+
+### 2026-10-20 — Audit runner discovery repair
+Audit workflow run `39300303052` on `7696b76668cd984a5a9e10ccbcc3c39250c37cff` passed dependency freshness, TypeScript, and all 25 focused engine/simulation tests, then failed before simulation because the repository Vitest configuration only discovered `tests/unit/**/*.test.ts`; `tests/audit/cascade-vault-audit.test.ts` was filtered out. The audit runner itself and production simulator were not implicated. `vite.config.ts` now conditionally includes `tests/audit/**/*.test.ts` only when `CASCADE_VAULT_AUDIT=1`, leaving routine `pnpm test:unit` discovery unchanged. Next evidence: routine full validation plus an explicit 25,000-paid-spin audit run on the repaired harness.
+

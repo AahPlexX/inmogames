@@ -60,3 +60,7 @@ CV-002 implementation evidence: `cf8f6e3723f483bc126b0f50b0f42161c14dff56` passe
 Evidence-hardening note: run `39299103907` failed only the new nonzero feature fixture because its first refill choice created a second Sapphire cascade. Production simulation stayed unchanged; the corrected refill triplet is `vault_crown/copper/copper`, independently checked to terminate after one 200-unit quartz cascade.
 
 CV-002 hardened simulation evidence is GREEN on `fac39b0744d2872ec05cab7b9e8f7c7aadb26cc6` / run `39299407841`. The next integration adds a deliberately non-routine audit command/workflow: ordinary unit validation skips the heavy audit; explicit screening/acceptance runs reuse the production simulator and emit one machine-readable JSON result.
+
+### 2026-10-20 — Audit runner discovery repair
+Audit workflow run `39300303052` on `7696b76668cd984a5a9e10ccbcc3c39250c37cff` passed dependency freshness, TypeScript, and all 25 focused engine/simulation tests, then failed before simulation because the repository Vitest configuration only discovered `tests/unit/**/*.test.ts`; `tests/audit/cascade-vault-audit.test.ts` was filtered out. The audit runner itself and production simulator were not implicated. `vite.config.ts` now conditionally includes `tests/audit/**/*.test.ts` only when `CASCADE_VAULT_AUDIT=1`, leaving routine `pnpm test:unit` discovery unchanged. Next evidence: routine full validation plus an explicit 25,000-paid-spin audit run on the repaired harness.
+

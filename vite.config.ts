@@ -7,6 +7,9 @@ export default defineConfig({
   build: { sourcemap: false },
   test: {
     environment: 'node',
-    include: ['tests/unit/**/*.test.ts'],
+    include: [
+      'tests/unit/**/*.test.ts',
+      ...(process.env.CASCADE_VAULT_AUDIT === '1' ? ['tests/audit/**/*.test.ts'] : []),
+    ],
   },
 });

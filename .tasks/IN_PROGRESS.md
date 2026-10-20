@@ -30,3 +30,6 @@ The approved v2 Mergrove scope remains documented and outside the active Cascade
 **Priority:** P0 | **Tags:** responsive, device-agnostic, viewport, accessibility, design-browser, quality | **Status:** design approved; separately gated
 
 Repository-wide quality direction remains governed by its own specification. Cascade Vault must ultimately meet the same 320px/200%-text/keyboard/touch/reduced-motion quality bar through game-local browser evidence.
+
+### Cascade Vault audit harness discovery repair
+Run `39300303052` passed dependency/type/focused engine+simulation checks, then failed because the repo Vitest include excluded `tests/audit/**`. The fix conditionally adds audit discovery only under `CASCADE_VAULT_AUDIT=1`; routine unit discovery remains unchanged. Validate full repo + 25k audit before balance tuning.
