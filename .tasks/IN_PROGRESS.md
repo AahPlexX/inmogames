@@ -50,3 +50,6 @@ D1 25k audit `39459715477` still hit the 50-cascade guard. D2 adds inert nonpayi
 
 ### CV-002 calibrated candidate D3
 D2 is chain-safe (25k run `39460203286`, zero guard hits) but RTP=13.214587. D3 sets blank=30 and a positive integer-centi paytable near 8.5% of D2, targeting ~0.955 by screening estimate. Full validation + same-seed 25k measurement are next; no acceptance claim yet.
+
+### D3 test synchronization
+Audit `39461070614` reached focused tests and failed only because the historical one-cascade feature fixture still expected 200 units; D3 correctly produces 20. Test-only expectation synchronized; production unchanged. Rerun full + 25k audit next.

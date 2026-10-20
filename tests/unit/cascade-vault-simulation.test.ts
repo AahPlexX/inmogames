@@ -95,7 +95,7 @@ describe('Cascade Vault probability simulation', () => {
     ]);
     const sample = simulateCascadeVaultPaidSpin(10, source);
     expect(sample).toEqual({
-      awardUnits: 200,
+      awardUnits: 20,
       engineSpins: 9,
       winningCascades: 1,
       vaultEntered: true,
