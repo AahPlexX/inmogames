@@ -33,3 +33,8 @@ Repository-wide quality direction remains governed by its own specification. Cas
 
 ### Cascade Vault audit harness discovery repair
 Run `39300303052` passed dependency/type/focused engine+simulation checks, then failed because the repo Vitest include excluded `tests/audit/**`. The fix conditionally adds audit discovery only under `CASCADE_VAULT_AUDIT=1`; routine unit discovery remains unchanged. Validate full repo + 25k audit before balance tuning.
+
+## GAME-CASCADE-VAULT-003: Settled persistence
+**Status:** RED contract opened in parallel with CV-002 audit
+
+Schema-v1 tests require exact centi-credit accounting, validated post-spin Vault checkpoints, compact settled summaries, restore guards, and no partial cascade/animation persistence. Production `storage.ts` / `persistence.ts` remain intentionally absent until the missing-module RED is recorded.
