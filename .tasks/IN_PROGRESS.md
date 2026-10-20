@@ -44,3 +44,6 @@ RED `40442255…` / run `39458077585` isolated only missing persistence/storage 
 
 ### CV-002 distribution candidate D1
 25k audit `39459206136` aborted on one corruption-guard hit, so provisional weights are rejected. D1 flattens common paying weights and reduces Wild to 1 while preserving initial Scatter 4; paytable remains unchanged to isolate board-evolution risk. CV-003 is fully GREEN/deployed on run `39459146356`.
+
+### CV-002 structural candidate D2
+D1 25k audit `39459715477` still hit the 50-cascade guard. D2 adds inert nonpaying `blank` weight 24 to initial/refill tables, with focused tests; paytable remains unchanged. Next gate: full validation + same-seed 25k audit.

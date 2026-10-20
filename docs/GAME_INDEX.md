@@ -15,3 +15,4 @@ One row per game. Update when a game is added, changes status, or is removed.
 - Cascade Vault CV-003 note (2026-10-20): settled persistence TDD opened test-first while CV-002 balance audit remains independent; persistence production modules are intentionally absent at RED.
 - Cascade Vault CV-003 candidate (2026-10-20): RED `40442255…` / run `39458077585` isolated the missing storage/persistence modules; minimum settled-only implementation is integrated in the current candidate, verification pending.
 - Cascade Vault CV-002 screen: run `39459206136` recorded a 50-cascade guard hit on the provisional distribution; candidate D1 flattens paying-symbol concentration/Wild frequency before the next screen.
+- Cascade Vault CV-002 D2 (2026-10-20): D1 still hit the guard in run `39459715477`; an inert nonpaying `blank` at weight 24 is added to initial/refill distributions before the next 25k screen.

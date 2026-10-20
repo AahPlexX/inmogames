@@ -10,7 +10,7 @@ export const PAYING_SYMBOLS = [
 ] as const;
 
 export type PayingSymbol = (typeof PAYING_SYMBOLS)[number];
-export type VaultSymbol = PayingSymbol | 'wild' | 'scatter';
+export type VaultSymbol = PayingSymbol | 'wild' | 'scatter' | 'blank';
 export type VaultDrawContext = 'initial' | 'refill';
 
 export interface VaultRandomSource {
@@ -38,6 +38,7 @@ export const INITIAL_SYMBOL_WEIGHTS: readonly WeightedVaultSymbol[] = Object.fre
   { symbol: 'vault_crown', weight: 1 },
   { symbol: 'wild', weight: 1 },
   { symbol: 'scatter', weight: 4 },
+  { symbol: 'blank', weight: 24 },
 ]);
 
 export const REFILL_SYMBOL_WEIGHTS: readonly WeightedVaultSymbol[] = Object.freeze(

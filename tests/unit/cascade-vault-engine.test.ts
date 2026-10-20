@@ -10,7 +10,7 @@ import {
   type VaultRunState,
 } from '../../src/games/cascade-vault/engine';
 import { CREDIT_SCALE } from '../../src/games/cascade-vault/paytable';
-import type { VaultRandomSource, VaultSymbol } from '../../src/games/cascade-vault/symbols';
+import { INITIAL_SYMBOL_WEIGHTS, REFILL_SYMBOL_WEIGHTS, type VaultRandomSource, type VaultSymbol } from '../../src/games/cascade-vault/symbols';
 
 const S: VaultSymbol = 'scatter';
 
@@ -155,6 +155,17 @@ describe('Cascade Vault engine', () => {
     expect(next[1].slice(1)).toEqual(['emerald', 'sapphire', 'ruby', 'gold']);
     expect(contexts).toEqual(['refill', 'refill', 'refill']);
     expect(next.flat().filter((symbol) => symbol === 'wild')).toHaveLength(1);
+  });
+
+
+  it('treats blank as an inert nonpaying board symbol and keeps Scatter out of refills', () => {
+    const blankBoard = board(Array.from({ length: 6 }, () => Array.from({ length: 5 }, () => 'blank' as VaultSymbol)));
+    const result = evaluateWays(blankBoard, 10, { cascadeMultiplier: 1, featureBoost: false });
+    expect(result.wins).toEqual([]);
+    expect(result.removals).toEqual([]);
+    expect(INITIAL_SYMBOL_WEIGHTS.some((entry) => entry.symbol === 'blank' && entry.weight === 24)).toBe(true);
+    expect(REFILL_SYMBOL_WEIGHTS.some((entry) => entry.symbol === 'blank' && entry.weight === 24)).toBe(true);
+    expect(REFILL_SYMBOL_WEIGHTS.some((entry) => entry.symbol === 'scatter')).toBe(false);
   });
 
   it('uses initial-only draws for the 6×5 starting board', () => {
