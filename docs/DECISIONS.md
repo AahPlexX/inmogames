@@ -1,5 +1,9 @@
 # Decision log
 
+## D-021 Cascade Vault uses one proportional D6 correction before payout-attribution instrumentation (2026-10-20)
+
+The D5 10,000,000-spin audit is the calibration authority and rejected RTP `0.87157806` with zero corruption-guard hits. D6 preserves the frozen distribution and changes only integer-centi paytable values by the midpoint ratio `0.955 / 0.87157806`. Bounded payout-contribution diagnostics are deferred unless D6 fails the >=10M acceptance gate, because the current award function is linear in paytable values and a direct proportional correction is the smaller complete change.
+
 ## D-020 Cascade Vault balance freezes board distribution before final paytable calibration (2026-10-20)
 
 Cascade Vault keeps the guard-safe D3 distribution with blank weight 30 fixed while CV-002 completes paytable-only calibration. D4 audit `39461954213` had zero corruption-guard hits and unchanged cascade/feature metrics but RTP `1.1440064`; D5 therefore changes only integer-centi paytable values toward the 0.955 midpoint. The 50-cascade limit remains a fault guard, not a normal settlement rule.

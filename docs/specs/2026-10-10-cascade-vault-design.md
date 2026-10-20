@@ -34,14 +34,14 @@ The following v1 multipliers are **provisional balance inputs**, not verified fi
 
 | Symbol | 3 reels | 4 reels | 5 reels | 6 reels |
 | --- | ---: | ---: | ---: | ---: |
-| Quartz | 0.01× | 0.02× | 0.06× | 0.15× |
-| Copper | 0.01× | 0.04× | 0.09× | 0.22× |
-| Silver | 0.03× | 0.06× | 0.13× | 0.35× |
-| Gold | 0.03× | 0.08× | 0.19× | 0.57× |
-| Sapphire | 0.04× | 0.15× | 0.39× | 1.14× |
-| Emerald | 0.07× | 0.23× | 0.64× | 1.70× |
-| Ruby | 0.10× | 0.35× | 1.02× | 2.84× |
-| Vault Crown | 0.14× | 0.58× | 1.92× | 5.68× |
+| Quartz | 0.01× | 0.02× | 0.07× | 0.16× |
+| Copper | 0.01× | 0.04× | 0.10× | 0.24× |
+| Silver | 0.03× | 0.07× | 0.14× | 0.38× |
+| Gold | 0.03× | 0.09× | 0.21× | 0.62× |
+| Sapphire | 0.04× | 0.16× | 0.43× | 1.25× |
+| Emerald | 0.08× | 0.25× | 0.70× | 1.86× |
+| Ruby | 0.11× | 0.38× | 1.12× | 3.11× |
+| Vault Crown | 0.15× | 0.64× | 2.10× | 6.23× |
 
 Scatter does not pay a separate credit prize in v1.
 
@@ -186,3 +186,6 @@ D3 exact revision `59e515f35cd234dd6f6bfb586eacb67c49d1d9f6` completed the same-
 
 ### 2026-10-20 — CV-002 paytable candidate D5
 D4 exact revision `84a18f92a77add9e058c58c030bf364b3f962003` passed the complete Pages validation/deployment chain in run `39461928870`. Same-seed 25,000-paid-spin audit `39461954213` completed with zero corruption-guard hits, RTP `1.1440064`, SE `0.09032353`, 95% CI `0.966972..1.321041`, Vault entry frequency `0.0186`, and average cascade depth `0.74636`. Because final acceptance requires >=10,000,000 paid spins, the observed 1.144 mean is treated as too high despite the small-screen interval touching the target band. Distribution stays frozen at blank weight 30. D5 changes only paytable centi multipliers using scale `0.955 / 1.1440064 = 0.8347855` rounded to positive integers; engine, RNG, feature rules, distribution, persistence, and audit logic are unchanged. Next gate: unchanged full validation plus the same-seed 25k screen; proceed to >=10M acceptance only if the measured mean is plausibly inside 0.94–0.97.
+
+### 2026-10-20 — CV-002 acceptance miss and paytable candidate D6
+D5 exact revision `2ef4203a2550accdc737f664eb09a973ba0cf3ba` passed the complete repository validation and Pages deployment chain in run `39490450975`. Its same-seed 25,000-paid-spin screen `39490491425` measured RTP `0.9567358` with zero guard hits, but the required 10,000,000-paid-spin acceptance run `39490755045` decisively rejected D5: RTP `0.87157806`, SE `0.00319013`, 95% CI `0.865325..0.877831`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, and zero corruption-guard hits. D6 keeps the proven distribution, engine, RNG, feature, persistence and audit paths unchanged and scales only paytable values by midpoint factor `0.955 / 0.87157806 ≈ 1.0957`, rounded to positive integer centi multipliers. Payout-contribution instrumentation is intentionally deferred because the current payout is linear in the paytable and a direct proportional correction is the smaller complete change; revisit diagnostics only if D6 fails the >=10M acceptance gate.

@@ -21,3 +21,5 @@ One row per game. Update when a game is added, changes status, or is removed.
 - Cascade Vault D4 (2026-10-20): D3 audit `39461462180` was guard-safe at 62.85558% RTP; distribution frozen, next screen changes paytable only with conservative uplift concentrated in longer/rarer ways.
 
 - Cascade Vault D5 (2026-10-20): D4 full validation/Pages is green in run `39461928870`; 25k audit `39461954213` was guard-safe at RTP `1.1440064`, so distribution remains frozen and D5 scales paytable only toward the 0.955 midpoint before the >=10M acceptance gate.
+
+- Cascade Vault D6 (2026-10-20): D5 revision `2ef4203a…` is fully validated/deployed (`39490450975`), but 10M acceptance `39490755045` rejected RTP `0.87157806` with zero guard hits. D6 is paytable-only; distribution remains frozen at blank 30.

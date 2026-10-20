@@ -53,3 +53,5 @@
 - 2026-10-20 - D3 audit `39461462180` completed guard-safe at RTP 0.6285558. Froze distribution (blank 30) and staged D4 paytable-only uplift weighted toward longer/rarer ways after parallel quantitative review.
 
 - 2026-10-20 - Cascade Vault D4 `84a18f92…` passed full Pages run `39461928870`; audit `39461954213` was guard-safe but high at RTP `1.1440064`. Staged D5 as a paytable-only midpoint rescale; distribution remains frozen at blank 30.
+
+- 2026-10-20 - Cascade Vault D5 `2ef4203a…` passed full run `39490450975`; 10M audit `39490755045` was guard-safe but failed RTP acceptance at `0.87157806`. D6 applies only the evidence-derived ~1.0957 paytable scale; diagnostics are deferred unless D6 misses.
