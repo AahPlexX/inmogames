@@ -166,3 +166,7 @@ With the production simulator already GREEN and balance auditing isolated from s
 
 ### 2026-10-20 — CV-003 GREEN candidate
 RED `40442255b2bb143fa4afb4bc5b86a8c072476fcf` / run `39458077585` passed dependency/design gates and failed only on missing `storage.ts` / `persistence.ts`. The GREEN candidate adds those two settled-only modules without altering the fixed test contract. Audit-discovery revision `4808b129679b949293ec9b71193572a5d89a8706` passed full validation and Pages deployment in run `39457748530`. Persistence verification is pending.
+
+### 2026-10-20 — CV-002 first distribution tuning candidate
+Production audit run `39459206136` on persistence-GREEN revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` passed dependency freshness, TypeScript and all focused engine/simulation tests, then the 25,000-paid-spin screen aborted with `corruptionGuardHits: 1` at the hard 50-cascade limit. This rejects the provisional distribution for acceptance and proves paytable-only scaling cannot solve the evolution risk. Candidate D1 therefore flattens paying-symbol concentration and reduces Wild weight: initial/refill paying weights `13/12/12/11/11/11/10/1` with Wild `1`; initial Scatter remains `4` and refill Scatter remains forbidden. Paytable is unchanged for this screen so the next audit isolates distribution effects. CV-003 persistence is verified independently on `343ca3fc…` / run `39459146356`.
+

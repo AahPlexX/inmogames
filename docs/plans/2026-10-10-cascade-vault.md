@@ -146,3 +146,7 @@ With the production simulator already GREEN and balance auditing isolated from s
 
 ### 2026-10-20 — CV-003 implementation checkpoint
 CV-003 RED `40442255…` / run `39458077585` is clean missing-module evidence. The current candidate implements only `storage.ts` and `persistence.ts`: schema-v1 settled checkpoints, compact result summaries, centi-credit accounting, engine-validated Vault transitions, affordability guard and restore below 10 credits. Focused/full GREEN remains pending.
+
+### 2026-10-20 — CV-002 first distribution tuning candidate
+Production audit run `39459206136` on persistence-GREEN revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` passed dependency freshness, TypeScript and all focused engine/simulation tests, then the 25,000-paid-spin screen aborted with `corruptionGuardHits: 1` at the hard 50-cascade limit. This rejects the provisional distribution for acceptance and proves paytable-only scaling cannot solve the evolution risk. Candidate D1 therefore flattens paying-symbol concentration and reduces Wild weight: initial/refill paying weights `13/12/12/11/11/11/10/1` with Wild `1`; initial Scatter remains `4` and refill Scatter remains forbidden. Paytable is unchanged for this screen so the next audit isolates distribution effects. CV-003 persistence is verified independently on `343ca3fc…` / run `39459146356`.
+

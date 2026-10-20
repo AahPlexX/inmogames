@@ -25,7 +25,7 @@ Planned Functional Features Specification:
     - name: "Settled durable practice progression"
       id: "CV-003"
       details: "Schema-v1 integer centi-credit bankroll/statistics/preferences plus post-free-spin Vault Run checkpoints only. Selected wager remains the engine denomination 10/20/50/100/250 credits. No board/partial cascade/in-flight spin state is durable. Active feature requires 1-20 remaining spins; completed feature is null; restore 5,000 preserves statistics/preferences."
-      feature_development_status: "started — RED 40442255 / run 39458077585; GREEN candidate verification pending"
+      feature_development_status: "verified — RED 40442255 / run 39458077585; GREEN 343ca3fc / run 39459146356"
 
     - name: "Accessible cascading board and feature presentation"
       id: "CV-004"
@@ -68,3 +68,7 @@ Audit workflow run `39300303052` on `7696b76668cd984a5a9e10ccbcc3c39250c37cff` p
 With the production simulator already GREEN and balance auditing isolated from save semantics, CV-003 opens independently with a test-only contract for schema-v1 settled persistence. The RED requires a 5,000-credit default represented as 500,000 centi-credit units, supported wager validation, malformed/non-finite/negative rejection, compact settled result summaries (no boards/animation frames), exact paid/free settlement accounting, validated active/null Vault checkpoints, one-time completed-run counting, insufficient-bankroll rejection, and practice-credit restore only below 10 credits with no active feature. Ruling: settlement helpers remain pure whole-state transforms and do not invent transaction IDs absent from the approved platform contract; duplicate invocation prevention belongs to the single-resolution workspace control path and will be browser-verified in CV-004. No persistence production module exists in this RED integration.
 
 CV-003 candidate note (2026-10-20): storage/persistence modules implement the unchanged RED contract only; no route/UI or live-Firebase completion claim is made.
+
+### 2026-10-20 — CV-002 first distribution tuning candidate
+Production audit run `39459206136` on persistence-GREEN revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` passed dependency freshness, TypeScript and all focused engine/simulation tests, then the 25,000-paid-spin screen aborted with `corruptionGuardHits: 1` at the hard 50-cascade limit. This rejects the provisional distribution for acceptance and proves paytable-only scaling cannot solve the evolution risk. Candidate D1 therefore flattens paying-symbol concentration and reduces Wild weight: initial/refill paying weights `13/12/12/11/11/11/10/1` with Wild `1`; initial Scatter remains `4` and refill Scatter remains forbidden. Paytable is unchanged for this screen so the next audit isolates distribution effects. CV-003 persistence is verified independently on `343ca3fc…` / run `39459146356`.
+

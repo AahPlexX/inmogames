@@ -28,15 +28,15 @@ export interface WeightedVaultSymbol {
  * these values must not be treated as verified until the 10M-spin audit passes.
  */
 export const INITIAL_SYMBOL_WEIGHTS: readonly WeightedVaultSymbol[] = Object.freeze([
-  { symbol: 'quartz', weight: 24 },
-  { symbol: 'copper', weight: 20 },
-  { symbol: 'silver', weight: 17 },
-  { symbol: 'gold', weight: 14 },
-  { symbol: 'sapphire', weight: 10 },
-  { symbol: 'emerald', weight: 7 },
-  { symbol: 'ruby', weight: 4 },
-  { symbol: 'vault_crown', weight: 2 },
-  { symbol: 'wild', weight: 2 },
+  { symbol: 'quartz', weight: 13 },
+  { symbol: 'copper', weight: 12 },
+  { symbol: 'silver', weight: 12 },
+  { symbol: 'gold', weight: 11 },
+  { symbol: 'sapphire', weight: 11 },
+  { symbol: 'emerald', weight: 11 },
+  { symbol: 'ruby', weight: 10 },
+  { symbol: 'vault_crown', weight: 1 },
+  { symbol: 'wild', weight: 1 },
   { symbol: 'scatter', weight: 4 },
 ]);
 
