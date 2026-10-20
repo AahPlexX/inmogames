@@ -53,3 +53,6 @@ D2 is chain-safe (25k run `39460203286`, zero guard hits) but RTP=13.214587. D3 
 
 ### D3 test synchronization
 Audit `39461070614` reached focused tests and failed only because the historical one-cascade feature fixture still expected 200 units; D3 correctly produces 20. Test-only expectation synchronized; production unchanged. Rerun full + 25k audit next.
+
+### CV-002 paytable candidate D4
+D3 audit `39461462180`: zero guard hits, RTP 0.6285558, SE .04704613, CI .536345-.720766. Distribution is frozen; D4 modifies only positive integer-centi paytable values, retaining minimum common 3-reel awards. Next: full validation + same-seed 25k screen.

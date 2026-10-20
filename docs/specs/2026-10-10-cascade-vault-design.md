@@ -34,14 +34,14 @@ The following v1 multipliers are **provisional balance inputs**, not verified fi
 
 | Symbol | 3 reels | 4 reels | 5 reels | 6 reels |
 | --- | ---: | ---: | ---: | ---: |
-| Quartz | 0.01× | 0.02× | 0.04× | 0.09× |
-| Copper | 0.01× | 0.03× | 0.06× | 0.13× |
-| Silver | 0.02× | 0.04× | 0.09× | 0.21× |
-| Gold | 0.03× | 0.06× | 0.13× | 0.34× |
-| Sapphire | 0.04× | 0.11× | 0.26× | 0.68× |
-| Emerald | 0.06× | 0.17× | 0.43× | 1.02× |
-| Ruby | 0.09× | 0.26× | 0.68× | 1.70× |
-| Vault Crown | 0.13× | 0.43× | 1.28× | 3.40× |
+| Quartz | 0.01× | 0.02× | 0.07× | 0.18× |
+| Copper | 0.01× | 0.05× | 0.11× | 0.26× |
+| Silver | 0.03× | 0.07× | 0.16× | 0.42× |
+| Gold | 0.04× | 0.10× | 0.23× | 0.68× |
+| Sapphire | 0.05× | 0.18× | 0.47× | 1.36× |
+| Emerald | 0.08× | 0.28× | 0.77× | 2.04× |
+| Ruby | 0.12× | 0.42× | 1.22× | 3.40× |
+| Vault Crown | 0.17× | 0.69× | 2.30× | 6.80× |
 
 Scatter does not pay a separate credit prize in v1.
 
@@ -179,4 +179,7 @@ D2 exact revision `5c2062f876b267a8ef6751a49c1cb1c036680b27` passed the full rep
 
 ### 2026-10-20 — D3 fixture expectation synchronization
 D3 audit run `39461070614` passed dependency freshness and TypeScript; the engine suite was GREEN, and the simulation suite failed exactly one historical economic assertion: the hardened one-cascade Vault fixture now returns `20` centi-credit units under D3 instead of the pre-D3 `200`, while `engineSpins: 9`, `winningCascades: 1`, and feature entry remain unchanged. This is the expected result of the paytable calibration, not a production simulation defect. The fixture monetary expectation is synchronized to 20; historical references to 200 remain valid for their earlier paytable revision. No production source changes are made in this repair.
+
+### 2026-10-20 — CV-002 paytable candidate D4
+D3 exact revision `59e515f35cd234dd6f6bfb586eacb67c49d1d9f6` completed the same-seed 25,000-paid-spin audit in run `39461462180` with zero corruption-guard hits, RTP `0.6285558`, SE `0.04704613`, 95% CI `0.536345..0.720766`, Vault entry frequency `0.0186`, and average cascade depth `0.74636`. Distribution is now frozen at blank weight 30 because safety/evolution metrics are stable. D4 is paytable-only: common 3-reel Quartz/Copper remain at the minimum centi multiplier 1, while longer and rarer outcomes carry most of the required uplift. Two independent quantitative reviewers preferred one inexpensive screening run before adding attribution diagnostics; no RNG/distribution/engine changes are made.
 

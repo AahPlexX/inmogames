@@ -77,10 +77,10 @@ describe('Cascade Vault engine', () => {
   });
 
   it.each([
-    [3, 130],
-    [4, 430],
-    [5, 1_280],
-    [6, 3_400],
+    [3, 170],
+    [4, 690],
+    [5, 2_300],
+    [6, 6_800],
   ] as const)('applies the Vault Crown paytable for %i consecutive reels', (reelCount, expectedUnits) => {
     const reels = Array.from({ length: 6 }, (_, reelIndex) => (
       Array.from({ length: 5 }, (_, row) => reelIndex < reelCount && row === 0 ? 'vault_crown' : 'scatter') as VaultSymbol[]
@@ -101,7 +101,7 @@ describe('Cascade Vault engine', () => {
     ]), 10, { cascadeMultiplier: 1, featureBoost: false });
 
     expect(result.wins).toHaveLength(1);
-    expect(result.wins[0]).toMatchObject({ symbol: 'vault_crown', ways: 1, awardUnits: 130 });
+    expect(result.wins[0]).toMatchObject({ symbol: 'vault_crown', ways: 1, awardUnits: 170 });
     expect(new Set(result.removals.map(key))).toEqual(new Set(['0:0', '1:0', '2:0']));
   });
 
