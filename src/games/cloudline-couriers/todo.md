@@ -7,9 +7,9 @@
 
 ## Resume here
 
-**Current state:** The first-session clarity/motion tranche is implemented as a GREEN candidate: plain purpose/current-job/help copy, stepwise perimeter flight including Windgate carry, user-skippable travel, consequence-specific landing copy, bounded event/resource/cargo/upgrade effects, and reduced-motion immediate resolution.  
-**Next action:** Validate the focused unit/browser contract on the integrated revision, record exact GREEN evidence if Cloudline passes, then continue Cloudline-only CLC-007 interaction/VFX quality before starting another game.  
-**Blockers:** Repository dependency pins are stale versus the researched 2026-10-22 target manifest; maintenance run `39822058558` applied the fresh targets and confirmed the Cloudline RED, but could not commit them because full validation stopped at that RED. The independent Cascade Vault CV-004 browser RED remains a later aggregate-suite blocker. The connected real-browser screenshot service returned a provider 404 during this tranche, so independent visual screenshot critique is not yet verified.
+**Current state:** The first-session clarity/turn-interaction tranche is Cloudline-locally GREEN. Production revision `a26c22f7c1a9b889f40f1779355f5aea87adb7f4`, validated from main head `dec94fe5205e0ce65f4c1fa52cc2c35af8b64c08` in maintenance run `39863962054`, passed all 151 unit tests and the Cloudline browser contract: purpose/help, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion without stale animation-only state, and guest reload persistence.  
+**Next action:** Continue Cloudline only. Extend CLC-007 interaction/VFX quality and CLC-011 first-win guidance from this verified baseline; do not start another game until Cloudline's active quality workstream is explicitly closed.  
+**Blockers:** Repository `package.json`/lockfile remain behind the researched 2026-10-22 target manifest because dependency maintenance commits only after the complete repository suite passes. Run `39863962054` reached and passed Cloudline, then stopped at the preserved unrelated Cascade Vault CV-004 RED waiting for `.cv`; that is not a Cloudline failure. TASK-003 still blocks live configured-project Firebase verification. The connected external browser service returned a provider 404, so independent human screenshot critique remains unverified even though repository Playwright rendered checks generated screenshots.
 
 ## Core Feature Execution Pipeline
 
@@ -21,7 +21,7 @@
 **Dependencies Touched:** engine/workspace/tests.  
 **Technical Notes & Edge Cases:** circuit crossing, route wrap, later junctions, no dead fuel state.  
 **Implementation Details:** base 16-stop loop plus finite stop-by-stop perimeter travel, Windgate carry visualization and a Skip flight control are implemented; later-route architecture remains open.  
-**Verification & State Sign-off:** [x] base engine; [x] stepwise turn interaction implemented; [ ] Cloudline browser GREEN; [ ] branch-ready design.
+**Verification & State Sign-off:** [x] base engine; [x] stepwise turn interaction implemented; [x] current-turn Cloudline browser GREEN (`39863962054`); [ ] branch-ready design.
 
 ### CLC-002 — Original Stop and Event Matrix
 **Purpose:** Make landings strategically distinct.  
@@ -44,15 +44,15 @@
 **Inputs:** credits, district, landmark stage.  
 **Dependencies Touched:** engine/UI/art/save.  
 **Technical Notes & Edge Cases:** four landmarks × four stages per district; every stage needs visible transformation.  
-**Implementation Details:** base progression persists; the current tranche adds bounded upgrade-state feedback but not final production transformations.  
-**Verification & State Sign-off:** [x] base logic/save; [x] bounded upgrade feedback implemented; [ ] production transformations; [ ] campaign-scale data.
+**Implementation Details:** base progression persists; bounded upgrade-state feedback is browser-verified in the current interaction tranche but final production transformations remain open.  
+**Verification & State Sign-off:** [x] base logic/save; [x] bounded upgrade feedback implemented and browser-verified; [ ] production transformations; [ ] campaign-scale data.
 
 ### CLC-005 — Cargo Cache Choice Encounters
 **Purpose:** Break repetition with short agency-rich decisions.  
 **Inputs:** seeded encounter table/choice.  
 **Dependencies Touched:** engine/UI/save/content.  
 **Technical Notes & Edge Cases:** deterministic, accessible, no paid randomness.  
-**Implementation Details:** base three-choice cache and bounded pod-selection feedback are implemented.  
+**Implementation Details:** base three-choice cache and bounded pod-selection feedback are implemented; the current browser contract verifies the surrounding turn/feedback surface, while region encounter depth remains open.  
 **Verification & State Sign-off:** [x] base implementation; [x] bounded pod-choice interaction implemented; [ ] region tables; [ ] complete focus/presentation evidence.
 
 ### CLC-006 — Delivery Streak, Shields, and Route Momentum
@@ -68,16 +68,16 @@
 **Inputs:** courier/tile/landmark/weather/reward/game state.  
 **Dependencies Touched:** art components/assets/CSS/browser tests.  
 **Technical Notes & Edge Cases:** prohibit emoji and placeholder-grade/crude primitive SVG art; layered stateful visuals; reduced-motion equivalents. Motion is finite and interaction-driven; no sustained courier oscillation.  
-**Implementation Details:** RED contract was observed in maintenance run `39822058558` with 149 existing tests passing and only the new Cloudline delivery-copy assertion failing. The current GREEN candidate adds stepwise transform-based travel, finite arrival/impact feedback, event-specific board effects, resource pulses, cargo selection and landmark upgrade feedback while retaining the existing repository-authored vector family.  
-**Verification & State Sign-off:** [x] RED test authored; [x] intended RED observed; [x] finite transform/opacity motion tranche implemented; [ ] Cloudline browser GREEN; [ ] art bible; [ ] production asset bank; [ ] campaign VFX/motion breadth; [ ] rendered quality review; [ ] final reduced-motion evidence.
+**Implementation Details:** first RED `39822058558` isolated generic landing copy. Revision `d7995308` added finite stepwise transform travel, event-specific board effects, resource pulses, cargo selection and landmark upgrade feedback. Follow-up RED `39863334636` isolated reduced-motion stale animation state. Fix revision `a26c22f7` commits reduced-motion gameplay/status state without creating animation-only feedback state. Maintenance run `39863962054` then passed all 151 unit tests and the Cloudline browser contract before the unrelated Cascade RED.  
+**Verification & State Sign-off:** [x] RED tests authored; [x] intended REDs observed; [x] finite transform/opacity motion tranche implemented; [x] current-tranche Cloudline browser GREEN (`39863962054`); [x] current-tranche reduced-motion GREEN; [ ] art bible; [ ] production asset bank; [ ] campaign VFX/motion breadth; [ ] independent rendered quality critique.
 
 ### CLC-008 — Responsive, Accessible, Device-Agnostic Play Surface
 **Purpose:** Preserve complete play quality on every supported form factor/input.  
 **Inputs:** viewport/zoom/input/accessibility preferences.  
 **Dependencies Touched:** React/CSS/browser tests.  
 **Technical Notes & Edge Cases:** >=44px important targets, 320px, 200% text, focus, non-color state, no drag-only/timing dependency.  
-**Implementation Details:** base responsive surface exists; reduced-motion resolves turns immediately and the browser contract now captures 390/1024/1440 viewport evidence when run.  
-**Verification & State Sign-off:** [x] base surface; [x] reduced-motion implementation; [ ] full device matrix; [ ] keyboard/touch/pointer; [ ] 320px/200% text; [ ] rendered reduced-motion GREEN.
+**Implementation Details:** base responsive surface exists. The current browser contract verifies no horizontal overflow at 390/1024/1440 and reduced-motion immediate resolution without stale animation-only DOM state.  
+**Verification & State Sign-off:** [x] base surface; [x] current-tranche reduced-motion implementation/browser GREEN; [x] 390/1024/1440 current-tranche reflow; [ ] full device matrix; [ ] keyboard/touch/pointer complete-game evidence; [ ] 320px/200% text complete-game evidence.
 
 ### CLC-009 — Durable Career Save and Recovery
 **Purpose:** Preserve earned career progress safely.  
@@ -100,8 +100,8 @@
 **Inputs:** first-run state/tutorial progress.  
 **Dependencies Touched:** engine/UI/save/help/tests.  
 **Technical Notes & Edge Cases:** optional/replayable; no instruction wall.  
-**Implementation Details:** direct purpose copy, a Current job prompt, first-flight cue and replayable How to play disclosure are implemented; guided reward → upgrade → contract progression remains open.  
-**Verification & State Sign-off:** [x] purpose/current-job/help implementation; [ ] contextual first-win sequence; [ ] first-session browser GREEN; [ ] playtest comprehension.
+**Implementation Details:** direct purpose copy, a Current job prompt, first-flight cue and replayable How to play disclosure are implemented and browser-verified; guided reward → upgrade → contract progression remains open.  
+**Verification & State Sign-off:** [x] purpose/current-job/help implementation; [x] current first-screen browser GREEN (`39863962054`); [ ] contextual first-win sequence; [ ] playtest comprehension.
 
 ### CLC-012 — Courier Rank and Experience Progression
 **Purpose:** Make cumulative effort permanently legible.  
@@ -220,16 +220,16 @@
 **Inputs:** active district/contracts/upgrades/recent history.  
 **Dependencies Touched:** HUD/help/save.  
 **Technical Notes & Edge Cases:** concise return recap; never require memorizing old session context.  
-**Implementation Details:** a Current job panel, district-stage progress, first-flight instruction and immediate next-action guidance are implemented; return recap/contracts remain open.  
-**Verification & State Sign-off:** [x] current-job panel; [ ] resume summary; [x] immediate next-action hints; [ ] clarity playtest.
+**Implementation Details:** a Current job panel, district-stage progress, first-flight instruction and immediate next-action guidance are implemented and browser-verified; return recap/contracts remain open.  
+**Verification & State Sign-off:** [x] current-job panel; [ ] resume summary; [x] immediate next-action hints; [x] current-tranche browser GREEN; [ ] clarity playtest.
 
 ### CLC-027 — Reward Presentation and Celebration Cadence
 **Purpose:** Make earned progress feel valuable without slowing routine play.  
 **Inputs:** reward significance/player motion preference.  
 **Dependencies Touched:** UI/art/VFX/audio.  
 **Technical Notes & Edge Cases:** proportional celebration; skippable/accelerable; reduced-motion equivalent.  
-**Implementation Details:** routine stop families now receive bounded event-specific board feedback, affected resource counters pulse, cargo and landmark actions have dedicated interaction feedback, flight can be skipped, and reduced-motion resolves without travel animation. Major milestone tiers remain open.  
-**Verification & State Sign-off:** [x] routine event feedback implementation; [x] skip/reduce implementation; [ ] major reward tiers; [ ] Cloudline browser GREEN; [ ] timing playtest.
+**Implementation Details:** routine stop families receive bounded event-specific board feedback, affected resource counters pulse, cargo and landmark actions have dedicated interaction feedback, flight can be skipped, and reduced-motion resolves without travel or retained animation-only state. Major milestone tiers remain open.  
+**Verification & State Sign-off:** [x] routine event feedback implementation; [x] skip/reduce implementation; [x] current-tranche Cloudline browser GREEN (`39863962054`); [ ] major reward tiers; [ ] timing playtest.
 
 ### CLC-028 — Audio, Music, and Multimodal Feedback
 **Purpose:** Add professional sonic identity and stronger action feedback.  

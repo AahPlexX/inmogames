@@ -1,5 +1,9 @@
 # Decision log
 
+## D-022 Game presentation quality proceeds one game at a time (2026-10-22)
+
+Animation, effects, interaction and first-session presentation quality work is serialized by game. Cloudline Couriers is the active game-quality workstream until its active tranche is explicitly closed; other game quality workstreams remain preserved but paused rather than being developed in parallel. This changes work sequencing only and does not reduce any game's existing PRD, verification or completion requirements.
+
 ## D-021 Cascade Vault uses one proportional D6 correction before payout-attribution instrumentation (2026-10-20)
 
 The D5 10,000,000-spin audit is the calibration authority and rejected RTP `0.87157806` with zero corruption-guard hits. D6 preserves the frozen distribution and changes only integer-centi paytable values by the midpoint ratio `0.955 / 0.87157806`. Bounded payout-contribution diagnostics are deferred unless D6 fails the >=10M acceptance gate, because the current award function is linear in paytable values and a direct proportional correction is the smaller complete change.
