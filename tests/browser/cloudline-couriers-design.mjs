@@ -113,11 +113,15 @@ try {
   await reduced.getByRole('button', { name: 'Fly route' }).click();
   await reduced.waitForFunction(before => document.querySelector('.cl-status')?.textContent !== before, beforeStatus);
   assert.equal(await reduced.locator('.cl-flight-courier').count(), 0, 'Reduced-motion play must resolve the turn without a traveling airship animation.');
+  assert.equal(await reduced.locator('.cl-effect').count(), 0, 'Reduced-motion play must not retain a hidden animation-only landing effect after the turn resolves.');
   assert.equal(await reduced.locator('.cl').getAttribute('data-flight-state'), 'idle', 'Reduced-motion play must not wait on an animation state.');
+  const reducedAerie = reduced.locator('.cl-landmark').filter({ hasText: 'Aerie Post' });
+  await reducedAerie.getByRole('button', { name: /Upgrade/ }).click();
+  assert.notEqual(await reducedAerie.getAttribute('data-upgraded'), 'true', 'Reduced-motion upgrades must not retain animation-only upgraded state after the synchronous action.');
   await reducedContext.close();
 
   assert.deepEqual(errors, []);
-  console.log('Cloudline design checks passed: first-screen purpose/help, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion and guest reload persistence.');
+  console.log('Cloudline design checks passed: first-screen purpose/help, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion without stale animation state, and guest reload persistence.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');
