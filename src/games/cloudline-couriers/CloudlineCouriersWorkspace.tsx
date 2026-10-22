@@ -77,6 +77,11 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     setRun(next);
     persist({ activeRun: next });
   };
+  const commitWithoutMotionFeedback = (next: CloudlineRun) => {
+    setFeedback(null);
+    setUpgradedLandmark(null);
+    commitRun(next);
+  };
   const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finishFlight = (current: Flight) => {
     setFlight(null);
@@ -122,8 +127,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     const eventPosition = (run.position + roll) % SKYWAY_STOPS;
     const eventKind = SKYWAY[eventPosition].kind;
     if (prefersReducedMotion()) {
-      commitRun(next);
-      showFeedback(eventKind, EFFECT_LABELS[eventKind]);
+      commitWithoutMotionFeedback(next);
       return;
     }
     setFeedback(null);
@@ -133,8 +137,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     const next = resolveCargo(run, index);
     const reward = next.credits - run.credits;
     if (prefersReducedMotion()) {
-      commitRun(next);
-      showFeedback('cargo', `+${reward} credits`);
+      commitWithoutMotionFeedback(next);
       return;
     }
     setCargoChoice({ index, next, reward });
@@ -148,6 +151,10 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
   };
   const upgrade = (index: number) => {
     const next = upgradeLandmark(run, index);
+    if (prefersReducedMotion()) {
+      commitWithoutMotionFeedback(next);
+      return;
+    }
     const districtComplete = next.district !== run.district;
     commitRun(next);
     setUpgradedLandmark(index);
