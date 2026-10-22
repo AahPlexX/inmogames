@@ -1,6 +1,6 @@
 # PRD: Cloudline Couriers (`cloudline-couriers`)
 
-**Last synchronized:** 2026-10-07  
+**Last synchronized:** 2026-10-22  
 **Status:** Implementing — scope deliberately reopened/expanded after teleological player-experience review  
 **Authoritative design:** `docs/specs/2026-10-06-cloudline-couriers-design.md`  
 **Execution checklist:** `src/games/cloudline-couriers/todo.md`  
@@ -40,6 +40,12 @@ These are **design/tuning targets, not verified playtime claims**. They must be 
 - FTC enforcement on Epic/HoYoverse and Apple loot-box rules: deceptive purchase flows and obscured randomized-purchase odds create material consumer-protection risk. Cloudline therefore keeps its engagement/progression non-predatory. https://www.ftc.gov/news-events/news/press-releases/2024/12/ftc-sends-refund-payments-consumers-impacted-epic-games-unlawful-billing-practices ; https://www.ftc.gov/news-events/news/press-releases/2025/01/genshin-impact-game-developer-will-be-banned-selling-lootboxes-teens-under-16-without-parental ; https://developer.apple.com/app-store/review/guidelines/
 - WHO ICD-11 gaming-disorder guidance recognizes impaired control and gaming taking precedence over daily activities as potential harm. The product goal is sustained enjoyment, not impaired control. https://www.who.int/standards/classifications/frequently-asked-questions/gaming-disorder
 
+## Motion/accessibility research update — 2026-10-22
+
+- Apple Human Interface Guidelines — Motion: custom game feedback motion should be purposeful, brief and precise; players should be able to cancel motion; sustained oscillation should be avoided. https://developer.apple.com/design/human-interface-guidelines/motion
+- MDN — CSS performance optimization and animation performance: prefer compositor-friendly `transform`/`opacity` animation and avoid unnecessary layout-triggering animation. https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Performance/CSS and https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Animation_performance_and_frame_rate
+- W3C WCAG 2.2 Understanding 2.3.3 and Technique C39: interaction-triggered nonessential motion must be suppressible; `prefers-reduced-motion` is a sufficient technique. https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions and https://www.w3.org/WAI/WCAG22/Techniques/css/C39.html
+
 ```yaml
 Planned Functional Features Specification:
   game_identity:
@@ -50,19 +56,19 @@ Planned Functional Features Specification:
   technical_foundation:
     architecture_and_engine: "Original long-form single-player skyway strategy/progression game in static React/Vite. Pure deterministic TypeScript rules engine; React presentation; shared versioned save platform; professional repository-owned visual/audio assets. Genre-level roll/move/event/earn/upgrade/progress inspiration only; no copied Monopoly/Monopoly GO names, art, board, economy, maps, events, UI, text, trade dress or proprietary content."
     dependencies_used:
-      - "react@19.3.0"
-      - "react-dom@19.3.0"
-      - "firebase@12.19.0 (shared optional account/save platform only)"
-      - "vite@8.3.3 (build/dev)"
+      - "react@19.3.1"
+      - "react-dom@19.3.1"
+      - "firebase@13.0.0 (shared optional account/save platform only)"
+      - "vite@8.3.4 (build/dev)"
       - "typescript@7.0.2 (development/type safety)"
-      - "vitest@5.0.3 (unit verification)"
-      - "playwright@1.63.0 (rendered browser verification)"
+      - "vitest@5.0.5 (unit verification)"
+      - "playwright@1.64.1 (rendered browser verification)"
 
   core_feature_specifications:
     - name: "Flight Turn and Skyway Board"
       id: "CLC-001"
       details: "Choose boost, roll, animate travel, resolve destination, communicate consequence and expose the next meaningful action. The base 16-stop loop remains the early-game foundation and later supports unlocked route branches."
-      feature_development_status: "Base implementation present; expanded campaign/browser verification pending"
+      feature_development_status: "Base deterministic engine and stepwise perimeter-travel presentation implemented; expanded campaign/browser verification pending"
     - name: "Original Stop and Event Matrix"
       id: "CLC-002"
       details: "Market, Workshop, Beacon, Storm, Windgate, Dispatch Dock and Cargo Cache each have readable risk/reward identities; later districts add authored variants/modifiers without proprietary imitation."
@@ -74,11 +80,11 @@ Planned Functional Features Specification:
     - name: "Landmark Upgrade Loop"
       id: "CLC-004"
       details: "Four landmarks per district visibly transform through four stages. Earned credits produce immediate visual world improvement; district completion changes the environment and advances the campaign."
-      feature_development_status: "Base engine/UI/persistence implemented; production art and campaign scale pending"
+      feature_development_status: "Base engine/UI/persistence implemented with bounded upgrade feedback; production art and campaign scale pending"
     - name: "Cargo Cache Choice Encounters"
       id: "CLC-005"
       details: "Short deterministic three-choice encounters create agency and anticipation with readable outcomes; no paid/randomized monetization. Later regions can introduce new authored cache tables and trade-offs."
-      feature_development_status: "Base encounter implemented; depth/presentation verification pending"
+      feature_development_status: "Base encounter and bounded pod-selection feedback implemented; region depth/presentation verification pending"
     - name: "Delivery Streak, Shields, and Route Momentum"
       id: "CLC-006"
       details: "Deliveries build momentum; Beacons protect it; Storms create bounded setbacks; skilled planning preserves value. Streaks reward active play but never punish time away from the game."
@@ -86,11 +92,11 @@ Planned Functional Features Specification:
     - name: "Professional Art, Sprite, VFX, and Motion System"
       id: "CLC-007"
       details: "Professional-quality cohesive airships, landmarks, stop scenes, weather, cargo, characters/crew, environmental layers, particles/VFX and UI iconography. Assets must have production-level silhouette, depth, material, lighting and state variation; emoji, crude primitive SVGs and placeholder-grade art are prohibited. Motion includes anticipation, travel, arrival, impact, reward, upgrade transformation and milestone celebration with reduced-motion equivalents."
-      feature_development_status: "TDD RED visual regression integrated; production art system pending"
+      feature_development_status: "First vector family plus finite turn/landing/cargo/upgrade motion tranche implemented; campaign-quality art/VFX/state breadth and rendered quality review pending"
     - name: "Responsive, Accessible, Device-Agnostic Play Surface"
       id: "CLC-008"
       details: "Equivalent complete play across phone/tablet/laptop/desktop/large displays, keyboard/touch/pointer, zoom and reduced-motion. Important targets >=44 CSS px, clear focus/non-color state, no drag-only action, objective clarity and accessible feedback."
-      feature_development_status: "Base surface implemented; complete rendered evidence pending"
+      feature_development_status: "Base responsive surface and reduced-motion turn resolution implemented; complete rendered evidence pending"
     - name: "Durable Career Save and Recovery"
       id: "CLC-009"
       details: "Schema-v1 deterministic career persistence, guest/account restoration, game-scoped reset and corruption rejection. Future campaign systems require versioned migration rather than save loss."
@@ -102,7 +108,7 @@ Planned Functional Features Specification:
     - name: "Playable Onboarding and First-Session Journey"
       id: "CLC-011"
       details: "Teach by doing. First roll, event, reward, upgrade and contract are introduced contextually; help is replayable and guidance can be skipped. Avoid front-loaded instruction walls."
-      feature_development_status: "Planned"
+      feature_development_status: "Started: direct purpose/current-job guidance and replayable help implemented; contextual reward→upgrade→contract sequence and comprehension evidence pending"
     - name: "Courier Rank and Experience Progression"
       id: "CLC-012"
       details: "Meaningful completed play grants transparent career XP. Ranks unlock mechanics, cosmetics, titles and options at a paced cadence; rank never exists solely as an arbitrary grind gate."
@@ -162,11 +168,11 @@ Planned Functional Features Specification:
     - name: "Session Goals, Objective Clarity, and Return Resume"
       id: "CLC-026"
       details: "At all times the player can answer: what am I doing, why, what will I earn, and what can I do next? Returning players get a concise recap of district, contract, upgrades and next recommended actions."
-      feature_development_status: "Planned"
+      feature_development_status: "Started: current job, district progress and immediate next-action guidance implemented; return recap/contracts remain pending"
     - name: "Reward Presentation and Celebration Cadence"
       id: "CLC-027"
       details: "Feedback scales with significance: routine rewards resolve quickly; streaks/upgrades receive stronger response; landmark/rank/district/region milestones get premium celebration. Animations can be accelerated/skipped and reduced-motion has equivalent clarity."
-      feature_development_status: "Planned"
+      feature_development_status: "Started: event-specific landing feedback, resource pulses, cargo/upgrade effects, skippable flight and reduced-motion equivalent implemented; milestone tiers/timing playtest pending"
     - name: "Audio, Music, and Multimodal Feedback"
       id: "CLC-028"
       details: "Original or license-safe music/SFX support roll, flight, landing, hazards, cargo, upgrades and milestones. Independent music/SFX mute/volume controls; no essential gameplay information is audio-only."

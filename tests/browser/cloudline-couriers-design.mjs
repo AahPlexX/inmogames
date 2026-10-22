@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { mkdir } from 'node:fs/promises';
 import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright';
 
@@ -30,8 +31,14 @@ async function waitForCloudlineSurface(page) {
   await page.locator('.cl-courier [data-cl-sprite="airship"]').waitFor();
 }
 
+async function assertNoHorizontalOverflow(page, label) {
+  const sizes = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
+  assert.ok(sizes.scrollWidth <= sizes.width + 1, `${label} must not horizontally overflow: ${sizes.scrollWidth}px > ${sizes.width}px.`);
+}
+
 try {
   await waitForServer();
+  await mkdir('test-results/cloudline-couriers', { recursive: true });
   browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || undefined });
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
@@ -39,6 +46,7 @@ try {
 
   await page.goto(base + '#/games/cloudline-couriers');
   await waitForCloudlineSurface(page);
+  await assertNoHorizontalOverflow(page, '390px Cloudline');
 
   await page.getByText('Deliver cargo. Earn credits. Rebuild the district.', { exact: true }).waitFor();
   assert.equal(await page.getByRole('heading', { name: 'Current job' }).count(), 1, 'The first screen must state the player’s current job.');
@@ -57,21 +65,42 @@ try {
 
   const fly = page.getByRole('button', { name: 'Fly route' });
   await fly.click();
-  await page.locator('.cl[data-flight-state="flying"]').waitFor();
+  const flying = page.locator('.cl[data-flight-state="flying"]');
+  await flying.waitFor();
+  const flightTotal = Number(await flying.getAttribute('data-flight-total'));
+  assert.ok(flightTotal >= 1, 'A flight must expose at least one traversed route step.');
+  await page.locator('.cl-flight-courier').waitFor();
+  await page.waitForFunction(() => Number(document.querySelector('.cl')?.getAttribute('data-flight-step') ?? 0) > 0);
+  assert.ok(Number(await flying.getAttribute('data-flight-step')) > 0, 'The courier must visibly advance through route steps instead of snapping directly to the destination.');
   await page.locator('.cl[data-flight-state="idle"]').waitFor();
+  await page.locator('.cl-effect').waitFor();
   assert.doesNotMatch(await page.locator('.cl-status').innerText(), /resolved\.$/i, 'Landing feedback must explain the consequence instead of saying only that a stop resolved.');
 
   const aerie = page.locator('.cl-landmark').filter({ hasText: 'Aerie Post' });
   assert.match(await aerie.innerText(), /Stage 0\/4/, 'A fresh Cloudline career should start Aerie Post at stage zero.');
   await aerie.getByRole('button', { name: /Upgrade/ }).click();
+  await aerie.locator('[data-stage="1"]').waitFor();
+  assert.equal(await aerie.getAttribute('data-upgraded'), 'true', 'A landmark upgrade must expose a dedicated visual-feedback state.');
   assert.match(await aerie.innerText(), /Stage 1\/4/, 'Upgrading Aerie Post should advance it to stage one.');
 
+  await page.screenshot({ path: 'test-results/cloudline-couriers/phone-390.png', fullPage: true });
   await page.reload();
   await waitForCloudlineSurface(page);
   await page.waitForFunction(() => [...document.querySelectorAll('.cl-landmark')].some(element => element.textContent?.includes('Aerie Post') && element.textContent?.includes('Stage 1/4')));
   const restoredAerie = page.locator('.cl-landmark').filter({ hasText: 'Aerie Post' });
   assert.match(await restoredAerie.innerText(), /Stage 1\/4/, 'Guest Cloudline career progress must survive a page reload.');
   await context.close();
+
+  for (const viewport of [{ width: 1024, height: 768, label: 'desktop-1024' }, { width: 1440, height: 900, label: 'desktop-1440' }]) {
+    const visualContext = await browser.newContext({ viewport });
+    const visualPage = await visualContext.newPage();
+    visualPage.on('pageerror', error => errors.push(error.message));
+    await visualPage.goto(base + '#/games/cloudline-couriers');
+    await waitForCloudlineSurface(visualPage);
+    await assertNoHorizontalOverflow(visualPage, `${viewport.width}px Cloudline`);
+    await visualPage.screenshot({ path: `test-results/cloudline-couriers/${viewport.label}.png`, fullPage: true });
+    await visualContext.close();
+  }
 
   const reducedContext = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
   const reduced = await reducedContext.newPage();
@@ -80,10 +109,15 @@ try {
   await waitForCloudlineSurface(reduced);
   const courierAnimation = await reduced.locator('.cl-courier').evaluate(element => getComputedStyle(element).animationName);
   assert.equal(courierAnimation, 'none', 'Courier arrival/travel motion must be disabled under prefers-reduced-motion.');
+  const beforeStatus = await reduced.locator('.cl-status').innerText();
+  await reduced.getByRole('button', { name: 'Fly route' }).click();
+  await reduced.waitForFunction(before => document.querySelector('.cl-status')?.textContent !== before, beforeStatus);
+  assert.equal(await reduced.locator('.cl-flight-courier').count(), 0, 'Reduced-motion play must resolve the turn without a traveling airship animation.');
+  assert.equal(await reduced.locator('.cl').getAttribute('data-flight-state'), 'idle', 'Reduced-motion play must not wait on an animation state.');
   await reducedContext.close();
 
   assert.deepEqual(errors, []);
-  console.log('Cloudline design checks passed: clear first-screen purpose/help, bounded flight motion, consequence feedback, authored vector family, reduced motion and guest reload persistence.');
+  console.log('Cloudline design checks passed: first-screen purpose/help, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion and guest reload persistence.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');

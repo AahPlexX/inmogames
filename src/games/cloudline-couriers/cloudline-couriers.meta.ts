@@ -1,2 +1,10 @@
 import type { GameMeta } from '../../game-meta';
-export const cloudlineCouriersMeta: GameMeta = { slug:'cloudline-couriers', name:'Cloudline Couriers', summary:'Roll the skyway, deliver cargo and rebuild floating districts with an original courier guild.', category:'strategy', players:'single', storage:'localStorage' };
+
+export const cloudlineCouriersMeta: GameMeta = {
+  slug: 'cloudline-couriers',
+  name: 'Cloudline Couriers',
+  summary: 'Deliver cargo around a floating district, earn credits, and rebuild its landmarks.',
+  category: 'strategy',
+  players: 'single',
+  storage: 'localStorage',
+};
