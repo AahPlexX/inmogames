@@ -1,8 +1,8 @@
 {
-  "requestedOn": "2026-10-19",
-  "requestRevision": 8,
+  "requestedOn": "2026-10-22",
+  "requestRevision": 9,
   "dependencies": {
-    "firebase": "13.0.0",
+    "firebase": "13.1.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
@@ -11,10 +11,10 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
-    "firebase-tools": "15.34.0",
+    "firebase-tools": "15.34.1",
     "playwright": "1.64.1",
     "typescript": "7.0.2",
-    "vite": "8.3.4",
+    "vite": "8.3.5",
     "vitest": "5.0.5"
   }
 }

@@ -1,6 +1,6 @@
 # Dependency policy and current audit
 
-**Last researched:** 2026-10-06  
+**Last researched:** 2026-10-22  
 **Machine-readable target set:** `.tasks/dependency-refresh-request.json`
 
 ## Integration rule
@@ -19,28 +19,28 @@ Prerelease channels such as `next`, `alpha`, `beta`, `rc`, canary and experiment
 
 ## Current direct-package audit
 
-| Package | Exact stable pin | Authoritative release evidence | npm corroboration |
+| Package | Exact stable target | Authoritative release evidence | npm corroboration |
 | --- | ---: | --- | --- |
-| firebase | 12.19.0 | Firebase JavaScript SDK release notes: https://firebase.google.com/support/release-notes/js | https://www.npmjs.com/package/firebase |
-| react | 19.3.0 | React 19.3 release: https://react.dev/blog/2026/09/09/react-19-3 | https://www.npmjs.com/package/react |
-| react-dom | 19.3.0 | React 19.3 release: https://react.dev/blog/2026/09/09/react-19-3 | https://www.npmjs.com/package/react-dom |
-| @firebase/rules-unit-testing | 5.0.2 | Firebase JS SDK package source: https://github.com/firebase/firebase-js-sdk/blob/main/packages/rules-unit-testing/package.json | https://www.npmjs.com/package/@firebase/rules-unit-testing |
+| firebase | 13.1.0 | Firebase release notes: https://firebase.google.com/support/releases | https://www.npmjs.com/package/firebase |
+| react | 19.3.1 | React releases: https://github.com/facebook/react/releases | https://www.npmjs.com/package/react |
+| react-dom | 19.3.1 | React releases: https://github.com/facebook/react/releases | https://www.npmjs.com/package/react-dom |
+| @firebase/rules-unit-testing | 6.0.0 | Firebase JS SDK package source: https://github.com/firebase/firebase-js-sdk/blob/main/packages/rules-unit-testing/package.json | https://www.npmjs.com/package/@firebase/rules-unit-testing |
 | @types/react | 19.3.0 | DefinitelyTyped React definitions: https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react | https://www.npmjs.com/package/@types/react |
 | @types/react-dom | 19.3.0 | DefinitelyTyped React DOM definitions: https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-dom | https://www.npmjs.com/package/@types/react-dom |
-| @vitejs/plugin-react | 6.1.2 | Vite React plugin official release `plugin-react@6.1.2`: https://github.com/vitejs/vite-plugin-react/releases/tag/plugin-react%406.1.2 | https://www.npmjs.com/package/@vitejs/plugin-react |
-| firebase-tools | 15.32.1 | Firebase CLI release: https://github.com/firebase/firebase-tools/releases/tag/v15.32.1 | https://www.npmjs.com/package/firebase-tools |
-| playwright | 1.63.0 | Playwright release notes: https://playwright.dev/docs/release-notes | https://www.npmjs.com/package/playwright |
-| typescript | 7.0.2 | TypeScript 7 stable announcement: https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/ | https://www.npmjs.com/package/typescript |
-| vite | 8.3.3 | Vite current stable line and official `release: v8.3.3` commit: https://vite.dev/releases and https://github.com/vitejs/vite/commit/fea5b21 | https://www.npmjs.com/package/vite |
-| vitest | 5.0.3 | Vitest 5 stable announcement/release: https://vitest.dev/blog/vitest-5 and https://github.com/vitest-dev/vitest/releases/tag/v5.0.3 | https://www.npmjs.com/package/vitest |
+| @vitejs/plugin-react | 6.1.2 | Vite React plugin releases: https://github.com/vitejs/vite-plugin-react/releases | https://www.npmjs.com/package/@vitejs/plugin-react |
+| firebase-tools | 15.34.1 | Firebase CLI release: https://github.com/firebase/firebase-tools/releases/tag/v15.34.1 | https://www.npmjs.com/package/firebase-tools |
+| playwright | 1.64.1 | Playwright release notes: https://playwright.dev/docs/release-notes | https://www.npmjs.com/package/playwright |
+| typescript | 7.0.2 | TypeScript releases: https://github.com/microsoft/TypeScript/releases | https://www.npmjs.com/package/typescript |
+| vite | 8.3.5 | Vite release: https://github.com/vitejs/vite/releases/tag/v8.3.5 | https://www.npmjs.com/package/vite |
+| vitest | 5.0.5 | Vitest releases: https://github.com/vitest-dev/vitest/releases | https://www.npmjs.com/package/vitest |
 
-The 2026-10-06 refresh was triggered by the live npm freshness gate observing Vite `8.3.3` after the repository had pinned `8.3.2`. Vite's official repository recorded `release: v8.3.3` on 2026-10-06, Vite's release policy identifies `vite@8.3` as the current regular-patch line, and npm corroborated `8.3.3` as the newly published stable package. No prerelease channel is used.
+The 2026-10-22 target refresh was triggered by the live `dependency:current` gate on revision `514c50d11daa9ad0074ef7e6326e26e773bf9e63`. That run verified the unchanged direct pins against npm `latest` and found three newer stable releases: Firebase JavaScript SDK 13.1.0, Firebase CLI 15.34.1 and Vite 8.3.5. Firebase's official release notes publish JavaScript SDK 13.1.0 on 2026-10-21; Vite's official repository marks v8.3.5 as its latest immutable release from 2026-10-21; Firebase CLI v15.34.1 is an official immutable non-prerelease GitHub release published 2026-10-22. The maintenance workflow must still regenerate and validate `package.json`/`pnpm-lock.yaml`; this target manifest does not itself claim that refresh has integrated.
 
-The prior 2026-10-05 refresh was triggered by the npm live `latest` tag moving `@vitejs/plugin-react` from 6.1.1 to 6.1.2. The official Vite plugin release is non-prerelease and was published 2026-10-05; the repository's live npm freshness gate independently observed 6.1.2 as `latest`.
+The 2026-10-19 refresh established the prior exact baseline: Firebase 13.0.0, React/React DOM 19.3.1, Firebase rules testing 6.0.0, React types 19.3.0, Vite React plugin 6.1.2, Firebase CLI 15.34.0, Playwright 1.64.1, TypeScript 7.0.2, Vite 8.3.4 and Vitest 5.0.5.
 
 ## Runtime/toolchain consequence
 
-`@firebase/rules-unit-testing@5.0.2` declares Node `>=24.12.0`. Repository validation therefore uses Node 24.12.0 or newer.
+`@firebase/rules-unit-testing@6.0.0` requires the repository's current Node 24.12+ validation toolchain. Repository workflows use Node 24.12.0.
 
 ## Refresh procedure
 
