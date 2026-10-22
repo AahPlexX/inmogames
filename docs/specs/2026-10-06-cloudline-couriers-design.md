@@ -1,7 +1,7 @@
 # Cloudline Couriers design
 
 **Status:** Implementing — expanded long-form scope  
-**Last synchronized:** 2026-10-08  
+**Last synchronized:** 2026-10-22  
 **Route:** `#/games/cloudline-couriers`
 
 ## Product documents
@@ -52,6 +52,10 @@ The next dependency-refresh run `37858522731` then reached the same regression a
 
 Fresh dependency-maintenance workflow `37859097164` subsequently passed the complete repository validation chain, including the corrected Cloudline rendered regression, and committed current exact stable dependencies at `853c87b0`. The selector/test edge is therefore closed. This is evidence-selector correctness, not a new CLC-007 completion claim: later campaign-quality art/VFX/state breadth and the expanded long-form systems remain open regardless.
 
+On 2026-10-22 owner playtesting identified a first-session usability failure: the purpose and controls were not understandable, landing copy was generic, and the perpetual courier animation degraded presentation. This maps to existing CLC-007, CLC-011 and CLC-026 scope rather than creating a new feature. Test-first acceptance now requires a direct first-screen purpose statement, visible current job, replayable `How to play` disclosure, bounded non-infinite courier motion, an observable user-triggered flight state, and consequence-specific landing feedback. Production behavior remains unchanged until the RED contract is observed.
+
+The repository-wide validation baseline at `cbf68ba364f968e948ce180bcc27a420da5e2522` passes dependency freshness, design lint, TypeScript, game documentation checks, unit tests, Firestore rules and account browser checks, then stops at the separately opened Cascade Vault CV-004 browser RED before the Cloudline browser script. That pre-existing failure is not Cloudline evidence and must not be weakened or attributed to this work.
+
 ## Development quality tooling
 Current repository gates already cover exact/latest dependency versions, TypeScript compilation, game documentation synchronization, Vitest unit tests, Firestore rules, Playwright browser/design regressions and both Firebase/Pages builds. A 2026-10-07 tooling review identified two non-duplicative gaps worth evaluating before broad progression implementation: static typed linting and unit-test coverage measurement. Official/current candidates are ESLint flat config with `@eslint/js` and `typescript-eslint`, React's official hooks ESLint plugin, Vite-oriented React Refresh linting, and Vitest's V8 coverage provider. Playwright itself already supplies ARIA snapshots and visual comparisons, so a separate browser snapshot/a11y assertion dependency is not justified solely to duplicate those capabilities. Any added package must remain an exact pin and pass `dependency:current` at the revision where it is introduced.
 
@@ -60,7 +64,7 @@ Authoritative sources reviewed 2026-10-07 include Apple game/onboarding/feedback
 
 ## Completion contract
 **Completion state:** implementing  
-**Completion evidence:** CLC-009 remains verified at `232102f4` / `37555538295`; CLC-007 RED is established on `b202378e`; the first cohesive visual implementation is integrated and its current rendered regression now passes full repository validation in `37859097164` after selector-only repairs `c7f7098b` and `6d1a356d`. This closes the temporary browser-evidence defect but does not satisfy the broader production-art or long-form completion contract. The 2026-10-07 teleological review expands release scope to CLC-001..CLC-030.
+**Completion evidence:** CLC-009 remains verified at `232102f4` / `37555538295`; CLC-007 RED is established on `b202378e`; the first cohesive visual implementation is integrated and its current rendered regression now passes full repository validation in `37859097164` after selector-only repairs `c7f7098b` and `6d1a356d`. The 2026-10-22 first-session clarity/motion regression is test-first and has no GREEN claim yet. The 2026-10-07 teleological review expands release scope to CLC-001..CLC-030.
 - [ ] All 30 PRD/todo feature IDs are implemented or explicitly excluded with evidence/rationale.
 - [ ] First-session onboarding is playable, optional/replayable and comprehension-tested.
 - [ ] Full five-region/twenty-district campaign target is authored and pacing/playtime measured; 20–40h target adjusted from evidence if needed.

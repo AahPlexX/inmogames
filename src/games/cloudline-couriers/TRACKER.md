@@ -1,33 +1,33 @@
 # Cloudline Couriers tracker
 
 **Spec:** `docs/specs/2026-10-06-cloudline-couriers-design.md`  
-**Last synchronized:** 2026-10-08
+**Last synchronized:** 2026-10-22
 
 | Capability | Status | Verification |
 | --- | --- | --- |
 | Teleological long-form player journey | started | PRD expanded 2026-10-07 from 10 prototype-level capabilities to 30 release-level systems; 5-region/20-district and 20–40h campaign are tuning targets requiring playtest evidence |
-| Deterministic flight/board/event/economy foundation | started | Base source + unit coverage integrated; expanded route/campaign/economy balance remains open |
+| Deterministic flight/board/event/economy foundation | started | Base source + unit coverage integrated; expanded route/campaign/economy balance remains open; 2026-10-22 RED adds consequence-specific first-delivery feedback before production copy changes |
 | Landmark/district progression | started | Base engine/UI/save integrated; production transformations and 20-district authored content remain open |
 | Cargo Cache + streak/shield strategy | started | Base engine/UI/save integrated; region depth/tuning/browser evidence pending |
 | Long-term rank/airship/campaign progression | planned | CLC-012 through CLC-014 binding; no implementation claim yet |
 | Contracts/milestones/collections/mastery | planned | CLC-015 through CLC-018 binding; no implementation claim yet |
 | Crew/blueprints/weather/branching routes | planned | CLC-019 through CLC-022 binding; no implementation claim yet |
 | Expeditions/region finales/post-campaign | planned | CLC-023 through CLC-025 binding; no implementation claim yet |
-| Objective clarity/reward cadence/audio/challenge options | planned | CLC-026 through CLC-029 binding; no implementation claim yet |
+| Objective clarity/reward cadence/audio/challenge options | planned | CLC-026 through CLC-029 binding; 2026-10-22 test-first clarity contract is opened but no implementation claim is made yet |
 | Ethical engagement guardrails | started | CLC-030 binding: progression derives engagement from mastery/progress/collection/fun; dark-pattern/punitive-absence/paid-random-reward mechanics excluded |
-| Professional art/sprite/VFX/motion system | started | CLC-007 RED was established on `b202378e`; first cohesive illustrated vector family, tile scenes, landmark art, cargo pods and reduced-motion-safe courier arrival are integrated. Dependency-refresh workflows `37857535143` and `37858522731` exposed rendered-test selector defects only; revisions `c7f7098b` and `6d1a356d` corrected lazy workspace synchronization and scoped courier/tile/landmark authored-sprite identity without changing game behavior. Full dependency-maintenance validation `37859097164` then passed these rendered checks and all repository gates. This closes the selector/test edge, but broader campaign-quality art/VFX/state breadth remains open and CLC-007 is not final production sign-off. |
+| Professional art/sprite/VFX/motion system | started | CLC-007 RED was established on `b202378e`; first cohesive illustrated vector family, tile scenes, landmark art, cargo pods and reduced-motion-safe courier arrival are integrated. Dependency-refresh workflows `37857535143` and `37858522731` exposed rendered-test selector defects only; revisions `c7f7098b` and `6d1a356d` corrected lazy workspace synchronization and scoped courier/tile/landmark authored-sprite identity without changing game behavior. Full dependency-maintenance validation `37859097164` then passed these rendered checks and all repository gates. Owner playtesting on 2026-10-22 identified the perpetual hover motion as a presentation defect; a bounded-motion RED contract is opened, with production correction pending. |
 | Responsive accessible game surface | started | Current visual tranche passes the repository's existing rendered checks including reduced motion; expanded full-game responsive/accessibility evidence remains open with long-form scope. |
 | Durable guest/account career save | verified | Revision `232102f4`, workflow `37555538295` verified schema-v1; expanded systems require versioned migrations. Live configured Firebase remains TASK-003. |
-| Catalog/governance/release integration | started | Canonical docs/routing and current repository validation are green; expanded game cannot be Complete until all 30 feature contracts and final release evidence close |
+| Catalog/governance/release integration | started | Canonical docs/routing and prior repository validation are integrated; expanded game cannot be Complete until all 30 feature contracts and final release evidence close |
 
 ## Current handoff
 
-**Implementation state:** implementing; product scope intentionally reopened/expanded after teleological UX review.  
-**Last verified revision:** `232102f4` verifies CLC-009 schema-v1 persistence. The current vector/browser-regression baseline additionally passed full repository validation in dependency-maintenance workflow `37859097164`, after selector-only repairs `c7f7098b` and `6d1a356d`; bot commit `853c87b0` refreshed the latest stable dependency baseline.  
-**Current main development edge:** the first cohesive CLC-007 vector/art tranche is integrated and its present browser regression is green. The prior failures were evidence-selector defects: shared-shell heading synchronization, unscoped duplicate airship identity, and a descendant tile selector that also counted the courier nested inside its current tile. Exact authored selectors now preserve the 16 tile + 4 landmark + 1 active-courier requirements and passed the full validation chain. No game rule, art or progression behavior changed during those repairs.  
-**Open game-local work:** CLC-007 still requires campaign-quality art/VFX/state breadth before final production sign-off. Then implement CLC-011 onboarding and CLC-012–CLC-016 progression architecture before multiplying content.  
-**External blockers:** TASK-003 blocks real configured-project Firebase verification only.  
-**Next action:** continue the Cloudline long-form implementation from CLC-011/CLC-012 only when that game is the active workstream; the temporary dependency/selector blocker is resolved and should not be rediscovered by a future agent.
+**Implementation state:** implementing; 2026-10-22 first-session clarity/motion triage is in test-first RED before production changes.  
+**Last verified revision:** `232102f4` verifies CLC-009 schema-v1 persistence. The prior vector/browser-regression baseline additionally passed full repository validation in dependency-maintenance workflow `37859097164`. Current repository baseline `cbf68ba364f968e948ce180bcc27a420da5e2522` passes through account-browser verification and then intentionally fails at the unrelated Cascade Vault CV-004 browser RED before Cloudline's browser script.  
+**Current main development edge:** owner playtesting found that a first-time player cannot readily determine the purpose/controls, landing feedback is generic, and courier motion loops indefinitely. Existing CLC-007/011/026 already require bounded meaningful motion, teach-by-doing onboarding, and objective clarity. The staged RED requires direct purpose copy, a visible current job, optional replayable help, an observable user-triggered flight state, no infinite courier animation, and consequence-specific delivery feedback.  
+**Open game-local work:** confirm the new Cloudline RED through the focused unit failure; then implement the smallest dispatch-brief/flight-feedback/motion correction without changing save schema. CLC-011 remains broader than this first-session tranche, and CLC-007 still requires campaign-quality art/VFX/state breadth before final production sign-off.  
+**External blockers:** TASK-003 blocks real configured-project Firebase verification only. Repository-wide aggregate design validation is separately blocked by the intentional Cascade Vault CV-004 RED and is not a Cloudline defect.  
+**Next action:** observe the Cloudline delivery-copy RED, then implement the first-session clarity/motion tranche and rerun all repository checks that can reach completion without weakening the independent Cascade Vault RED.
 
 ## Development-tooling review (2026-10-07)
 

@@ -40,11 +40,26 @@ try {
   await page.goto(base + '#/games/cloudline-couriers');
   await waitForCloudlineSurface(page);
 
+  await page.getByText('Deliver cargo. Earn credits. Rebuild the district.', { exact: true }).waitFor();
+  assert.equal(await page.getByRole('heading', { name: 'Current job' }).count(), 1, 'The first screen must state the player’s current job.');
+  const help = page.getByText('How to play', { exact: true });
+  await help.click();
+  assert.match(await page.locator('.cl-help').innerText(), /Choose a boost.*Fly route.*Spend credits/is, 'Replayable help must explain the core boost → fly → rebuild loop in plain language.');
+
   const spriteCount = await page.locator('[data-cl-sprite]').count();
   assert.ok(spriteCount >= 21, `Cloudline must render its repository-authored vector sprite family across board, courier and landmarks; found ${spriteCount}.`);
   assert.equal(await page.locator('.cl-courier [data-cl-sprite="airship"]').count(), 1, 'The active courier must use exactly one original airship vector sprite instead of a typographic placeholder.');
   assert.equal(await page.locator('.cl-tile > [data-cl-sprite^="tile-"]').count(), 16, 'Every skyway stop must have a vector event identity.');
   assert.equal(await page.locator('.cl-landmark [data-cl-sprite^="landmark-"]').count(), 4, 'Every landmark must have an original vector identity.');
+
+  const courierIterations = await page.locator('.cl-courier').evaluate(element => getComputedStyle(element).animationIterationCount);
+  assert.ok(!courierIterations.split(',').some(value => value.trim() === 'infinite'), 'Courier motion must not bob forever after arrival.');
+
+  const fly = page.getByRole('button', { name: 'Fly route' });
+  await fly.click();
+  await page.locator('.cl[data-flight-state="flying"]').waitFor();
+  await page.locator('.cl[data-flight-state="idle"]').waitFor();
+  assert.doesNotMatch(await page.locator('.cl-status').innerText(), /resolved\.$/i, 'Landing feedback must explain the consequence instead of saying only that a stop resolved.');
 
   const aerie = page.locator('.cl-landmark').filter({ hasText: 'Aerie Post' });
   assert.match(await aerie.innerText(), /Stage 0\/4/, 'A fresh Cloudline career should start Aerie Post at stage zero.');
@@ -64,11 +79,11 @@ try {
   await reduced.goto(base + '#/games/cloudline-couriers');
   await waitForCloudlineSurface(reduced);
   const courierAnimation = await reduced.locator('.cl-courier').evaluate(element => getComputedStyle(element).animationName);
-  assert.equal(courierAnimation, 'none', 'Courier arrival/bobbing motion must be disabled under prefers-reduced-motion.');
+  assert.equal(courierAnimation, 'none', 'Courier arrival/travel motion must be disabled under prefers-reduced-motion.');
   await reducedContext.close();
 
   assert.deepEqual(errors, []);
-  console.log('Cloudline design checks passed: authored vector family, reduced motion and guest reload persistence.');
+  console.log('Cloudline design checks passed: clear first-screen purpose/help, bounded flight motion, consequence feedback, authored vector family, reduced motion and guest reload persistence.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');
