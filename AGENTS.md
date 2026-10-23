@@ -85,6 +85,18 @@ Older chat messages, summaries or provider memory never override the current per
 - `pnpm design:check` is a mandatory integration gate and uses the pinned Google Labs DESIGN.md validator.
 - Material UI changes must also pass `pnpm test:design-browser`. That rendered Chromium gate checks catalog recomposition, keyboard skip/focus behavior, 320 CSS-px and 200% text reflow, non-color selection state, game touch targets and reduced-motion behavior. Do not replace it with source inspection alone.
 
+## Game presentation quality
+
+`docs/GAME_PRESENTATION_QUALITY.md` is binding for every current and future game. Every game must receive an explicit audit of animation, interactions, micro-interactions, effects/VFX, meaningful state transitions, outcome/reward/hazard feedback, responsive behavior and reduced-motion equivalents.
+
+- Missing or materially weak presentation behavior is implementation work, not optional polish.
+- Presentation implementation is serialized one game at a time. Do not develop presentation changes for multiple games in parallel.
+- Use the standard's current audit queue and source baseline for sequencing, but re-read the active game's current spec/PRD/todo/tracker before changing it.
+- If an audit finds a concrete gap in a verified game, reopen that game to `implementing` before or with its first game-local implementation/test change and synchronize spec, tracker, PRD, todo, index/task state as required by governance.
+- Durable gameplay, payouts, persistence and action readiness must not depend on cosmetic animation callbacks. Where lifecycle coupling is possible, add a regression proving animation suppression cannot duplicate, omit or strand game state.
+- Normal-motion and reduced-motion paths both need rendered evidence for significant new effect families. Human-only visual/comprehension gates remain explicitly awaiting human testing until performed.
+- A source-only audit is reconnaissance, not final quality approval.
+
 ## Code standards
 
 - Keep game rules in pure engine modules (no React, DOM, Firebase, storage or audio) so they can be unit tested.
