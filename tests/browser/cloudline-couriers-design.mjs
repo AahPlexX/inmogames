@@ -5,6 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright';
 
 const port = 4187;
+const cloudlineStorageKey = 'inmogames:cloudline-couriers:v1';
 const blankFirebase = {
   VITE_FIREBASE_API_KEY: '',
   VITE_FIREBASE_AUTH_DOMAIN: '',
@@ -34,6 +35,37 @@ async function waitForCloudlineSurface(page) {
 async function assertNoHorizontalOverflow(page, label) {
   const sizes = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
   assert.ok(sizes.scrollWidth <= sizes.width + 1, `${label} must not horizontally overflow: ${sizes.scrollWidth}px > ${sizes.width}px.`);
+}
+
+async function readSeededCurrentJob(browserInstance, overrides) {
+  const context = await browserInstance.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  page.on('pageerror', error => errors.push(error.message));
+  const run = {
+    seed: 1,
+    rngState: 1,
+    position: 0,
+    credits: 450,
+    fuel: 18,
+    district: 1,
+    landmarks: [0, 0, 0, 0],
+    shield: false,
+    streak: 0,
+    circuits: 0,
+    deliveries: 0,
+    pendingCargo: null,
+    lastRoll: null,
+    message: 'Ready at Dispatch Dock. Choose a boost, then fly.',
+    ...overrides,
+  };
+  await page.addInitScript(({ key, activeRun }) => {
+    localStorage.setItem(key, JSON.stringify({ schemaVersion: 1, state: { activeRun } }));
+  }, { key: cloudlineStorageKey, activeRun: run });
+  await page.goto(base + '#/games/cloudline-couriers');
+  await waitForCloudlineSurface(page);
+  const currentJob = (await page.locator('.cl-brief > div > p').first().innerText()).trim();
+  await context.close();
+  return currentJob;
 }
 
 try {
@@ -83,6 +115,36 @@ try {
   assert.equal(await aerie.getAttribute('data-upgraded'), 'true', 'A landmark upgrade must expose a dedicated visual-feedback state.');
   assert.match(await aerie.innerText(), /Stage 1\/4/, 'Upgrading Aerie Post should advance it to stage one.');
 
+  const firstSessionJobs = [
+    await readSeededCurrentJob(browser, {
+      position: 2,
+      lastRoll: 2,
+      message: 'Refueled at Cloudsmith Works. Fuel is now 18/30.',
+    }),
+    await readSeededCurrentJob(browser, {
+      position: 1,
+      credits: 495,
+      streak: 1,
+      deliveries: 1,
+      lastRoll: 1,
+      message: 'Delivered at Sunspoke Market. +45 credits.',
+    }),
+    await readSeededCurrentJob(browser, {
+      position: 1,
+      credits: 375,
+      landmarks: [1, 0, 0, 0],
+      streak: 1,
+      deliveries: 1,
+      lastRoll: 1,
+      message: 'Aerie Post upgraded to stage 1.',
+    }),
+  ];
+  assert.deepEqual(firstSessionJobs, [
+    'Keep flying until you complete your first delivery.',
+    'First delivery complete. Upgrade Aerie Post for 120 credits.',
+    'Starter contract: complete 4 deliveries. Progress 1/4. The fourth delivery pays 120 × boost credits.',
+  ], 'CLC-011/CLC-015 first-session guidance must preserve the delivery → upgrade → starter-contract teaching sequence.');
+
   await page.screenshot({ path: 'test-results/cloudline-couriers/phone-390.png', fullPage: true });
   await page.reload();
   await waitForCloudlineSurface(page);
@@ -121,7 +183,7 @@ try {
   await reducedContext.close();
 
   assert.deepEqual(errors, []);
-  console.log('Cloudline design checks passed: first-screen purpose/help, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion without stale animation state, and guest reload persistence.');
+  console.log('Cloudline design checks passed: first-screen purpose/help, first-session delivery→upgrade→starter-contract guidance, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion without stale animation state, and guest reload persistence.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');

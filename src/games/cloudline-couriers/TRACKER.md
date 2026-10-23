@@ -1,7 +1,7 @@
 # Cloudline Couriers tracker
 
 **Spec:** `docs/specs/2026-10-06-cloudline-couriers-design.md`  
-**Last synchronized:** 2026-10-22
+**Last synchronized:** 2026-10-23
 
 | Capability | Status | Verification |
 | --- | --- | --- |
@@ -10,10 +10,10 @@
 | Landmark/district progression | started | Base engine/UI/save plus bounded upgrade feedback passed the Cloudline browser contract in `39863962054`; production transformations and 20-district authored content remain open |
 | Cargo Cache + streak/shield strategy | started | Base engine/UI/save plus bounded cargo-pod interaction feedback are integrated; region depth/tuning and broader campaign evidence remain pending |
 | Long-term rank/airship/campaign progression | planned | CLC-012 through CLC-014 binding; no implementation claim yet |
-| Contracts/milestones/collections/mastery | planned | CLC-015 through CLC-018 binding; no implementation claim yet |
+| Contracts/milestones/collections/mastery | started | CLC-015 starter-contract acceptance is now under test using the already-existing four-delivery route-bonus mechanic; broader contract generation plus CLC-016 through CLC-018 remain planned |
 | Crew/blueprints/weather/branching routes | planned | CLC-019 through CLC-022 binding; fixed 16-stop UI coordinates are an intentional introductory-board limit until CLC-022 supplies route-graph coordinates |
 | Expeditions/region finales/post-campaign | planned | CLC-023 through CLC-025 binding; no implementation claim yet |
-| Objective clarity/reward cadence/audio/challenge options | started | CLC-026 current-job/district-progress/next-action guidance and CLC-027 routine event/cargo/upgrade feedback passed the Cloudline browser contract in `39863962054`; return recap, milestone celebration tiers, audio and challenge options remain open |
+| Objective clarity/reward cadence/audio/challenge options | started | CLC-026 current-job/district-progress/next-action guidance and CLC-027 routine event/cargo/upgrade feedback passed the Cloudline browser contract in `39863962054`; 2026-10-23 first-session acceptance now requires non-delivery → first delivery → first upgrade → starter-contract guidance without skipping ahead based only on starting credits |
 | Ethical engagement guardrails | started | CLC-030 binding: progression derives engagement from mastery/progress/collection/fun; dark-pattern/punitive-absence/paid-random-reward mechanics excluded |
 | Professional art/sprite/VFX/motion system | started | Original CLC-007 vector family remains integrated. RED `39822058558` isolated generic consequence copy; revision `d7995308` then passed its first Cloudline browser contract in `39862639992`. Focused reduced-motion RED `39863334636` proved the hidden `.cl-effect` lifecycle defect. Fix revision `a26c22f7` makes reduced-motion flight/cargo/upgrade actions commit durable state/status without creating animation-only feedback; maintenance run `39863962054` passed all 151 units and the Cloudline browser contract including no stale reduced-motion state. Normal-motion finite travel/impact/resource/cargo/upgrade effects remain intact. Broader campaign-quality VFX/art state breadth remains open. |
 | Responsive accessible game surface | started | Run `39863962054` passed no-overflow/rendered checks at 390/1024/1440, stepwise flight, reduced-motion immediate resolution with no stale animation state, and guest reload persistence. 320px/200% text and complete input matrix remain open for the expanded game. |
@@ -22,14 +22,14 @@
 
 ## Current handoff
 
-**Implementation state:** implementing; Cloudline's current first-session/turn interaction and reduced-motion lifecycle tranche is GREEN. Broader CLC-007/011/026/027 release scope remains open.  
+**Implementation state:** implementing; Cloudline's prior first-session/turn interaction and reduced-motion lifecycle tranche is GREEN. A new CLC-011/CLC-015 first-win guidance acceptance test is being opened before production changes.  
 **Last verified revision:** production revision `a26c22f7c1a9b889f40f1779355f5aea87adb7f4`, validated from main head `dec94fe5205e0ce65f4c1fa52cc2c35af8b64c08` in maintenance run `39863962054`. That run passed the researched dependency-current checks, design/type/document gates, all 151 unit tests, Firestore rules, account-browser checks and the Cloudline browser contract. It then failed only after Cloudline at the separate Cascade Vault CV-004 RED waiting for `.cv`; this is Cloudline-local GREEN evidence, not full-repository/deployment GREEN.  
-**Current main development edge:** purpose/current-job/replayable help, consequence-specific engine messages, deterministic stepwise perimeter travel including Windgate carry, finite event/resource/cargo/upgrade effects, Skip flight and reduced-motion immediate resolution without stale animation-only state are integrated without save-schema or game-local dependency changes.  
-**Open game-local work:** continue Cloudline only. Raise CLC-007 VFX/interaction quality beyond the verified routine-turn tranche and complete CLC-011's contextual first-win reward → upgrade → contract guidance before starting another game. CLC-007 campaign-quality art/VFX breadth and independent human rendered critique remain open.  
+**Current main development edge:** purpose/current-job/replayable help, consequence-specific engine messages, deterministic stepwise perimeter travel including Windgate carry, finite event/resource/cargo/upgrade effects, Skip flight and reduced-motion immediate resolution without stale animation-only state are integrated without save-schema or game-local dependency changes. The next acceptance contract must keep first-delivery guidance active after a non-delivery, point the first successful delivery to the first landmark upgrade, then introduce a starter contract backed by the existing four-delivery route bonus.  
+**Open game-local work:** continue Cloudline only. Observe the new rendered first-win guidance RED, implement the smallest derived-state fix without a save-schema change, then continue CLC-007 production VFX/art breadth. CLC-007 campaign-quality art/VFX breadth and independent human rendered critique remain open.  
 **External blockers:** TASK-003 blocks real configured-project Firebase verification. Current `package.json`/lockfile are stale versus the researched 2026-10-22 dependency targets because maintenance commits dependency refreshes only after the complete suite passes. The independent Cascade Vault CV-004 browser RED remains a later aggregate-suite blocker. The connected external browser service returned a provider-side 404, so independent screenshot critique is not yet verified.  
-**Next action:** continue the Cloudline-only quality workstream from the verified `a26c22f7` interaction baseline; preserve the existing unit/browser assertions while adding the next test-first CLC-007/CLC-011 behavior.
+**Next action:** run the new Cloudline first-win browser acceptance on `main`; verify it fails only because the current job skips the intended delivery → upgrade → starter-contract sequence, then implement the minimal guidance logic while preserving all prior Cloudline assertions.
 
-**Resume here:** Cloudline Couriers is the only active game-quality workstream. Do not start another game. Preserve the verified `39863962054` turn/reduced-motion contract, and do not weaken the dependency or Cascade RED gates while extending Cloudline's remaining presentation/onboarding scope.
+**Resume here:** Cloudline Couriers is the only active game-quality workstream. Do not start another game. Preserve the verified `39863962054` turn/reduced-motion contract, keep the new first-win acceptance test authoritative, and do not weaken the dependency or Cascade RED gates.
 
 ## Development-tooling review (2026-10-07)
 

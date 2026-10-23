@@ -1,7 +1,7 @@
 # Cloudline Couriers design
 
 **Status:** Implementing — expanded long-form scope  
-**Last synchronized:** 2026-10-22  
+**Last synchronized:** 2026-10-23  
 **Route:** `#/games/cloudline-couriers`
 
 ## Product documents
@@ -55,6 +55,8 @@ The next dependency-refresh run `37858522731` then reached the same regression a
 Fresh dependency-maintenance workflow `37859097164` subsequently passed the complete repository validation chain, including the corrected Cloudline rendered regression, and committed current exact stable dependencies at `853c87b0`. The selector/test edge is therefore closed. This is evidence-selector correctness, not a new CLC-007 completion claim: later campaign-quality art/VFX/state breadth and the expanded long-form systems remain open regardless.
 
 On 2026-10-22 owner playtesting identified a first-session usability failure: the purpose and controls were not understandable, landing copy was generic, and the perpetual courier animation degraded presentation. This maps to existing CLC-007, CLC-011 and CLC-026 scope rather than creating a new feature. The test-first acceptance contract requires a direct first-screen purpose statement, visible current job, replayable `How to play` disclosure, bounded non-infinite courier motion, an observable user-triggered flight state, and consequence-specific landing feedback.
+
+The next CLC-011/CLC-015 acceptance slice is intentionally derived from the existing schema-v1 run state and existing route-bonus rule. After a non-delivery, the Current job must continue to ask for the first successful delivery rather than jumping to an upgrade solely because starting credits are sufficient. After the first successful delivery with no landmark stage earned, it must point to the first landmark upgrade with its exact current cost. After the first landmark upgrade, it must introduce a starter contract to reach four total deliveries and preview the existing fourth-delivery route bonus as `120 × boost` credits in district 1. This slice must not add a new persisted tutorial flag, duplicate reward state, or a speculative contract subsystem.
 
 Dependency-maintenance run `39822058558` applied the researched current dependency targets in its isolated runner and passed exact/latest dependency checks, design lint, TypeScript and game-document checks before executing unit tests. It recorded the intended Cloudline RED cleanly: 149 existing tests passed and only `describes a delivery result instead of reporting a generic resolution` failed because production returned `Sunspoke Market resolved.` instead of `Delivered at Sunspoke Market. +45 credits.`.
 
