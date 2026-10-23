@@ -39,6 +39,7 @@ async function signIn(page, email, password, register = false) {
 function aerie(page) { return page.locator('.cl-landmark').filter({ hasText: 'Aerie Post' }); }
 async function resetCareer(page) {
   await page.getByText('Route options', { exact: true }).click();
+  page.once('dialog', dialog => dialog.accept());
   await page.getByRole('button', { name: 'Reset saved career', exact: true }).click();
 }
 
@@ -62,7 +63,18 @@ try {
   const second = await secondContext.newPage();
   second.on('pageerror', error => errors.push(error.message));
   await second.goto(base + '#/games/cloudline-couriers');
+  let releaseLoad;
+  const loadGate = new Promise(resolve => { releaseLoad = resolve; });
+  await second.route('**/v1/projects/**', async route => {
+    await loadGate;
+    await route.continue();
+  });
   await signIn(second, email, password);
+  await second.locator('.save-status').filter({ hasText: 'Loading account progress' }).waitFor();
+  assert.equal(await second.locator('.cl-load-warning').count(), 1, 'CLC-009-A3 initial account hydration must explain cloud precedence before cached play.');
+  assert.match(await second.locator('.cl-load-warning').innerText(), /account save will replace.*when loading finishes/i);
+  assert.equal(await second.getByRole('button', { name: 'Fly route', exact: true }).isEnabled(), true, 'Cached play must remain available while the account loads.');
+  releaseLoad();
   await accountReady(second);
   assert.match(await aerie(second).innerText(), /Stage 1\/4/, 'Account Cloudline career must follow the player across browser contexts.');
 

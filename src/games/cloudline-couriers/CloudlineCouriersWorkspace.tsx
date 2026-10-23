@@ -5,6 +5,7 @@ import {
   buildFlightPath,
   createCloudlineRun,
   LANDMARK_NAMES,
+  MAX_FUEL,
   landmarkCost,
   resolveCargo,
   rollFlight,
@@ -39,11 +40,16 @@ const EFFECT_LABELS: Record<TileKind, string> = {
 type FeedbackKind = TileKind | 'upgrade' | 'district';
 type Feedback = { id: number; kind: FeedbackKind; label: string };
 type Flight = { next: CloudlineRun; path: number[]; step: number; eventKind: TileKind };
-type CargoChoice = { index: number; next: CloudlineRun; reward: number };
+type CargoChoice = { index: number; reward: number };
 
 export default function CloudlineCouriersWorkspace() {
   const progress = useGameSave(cloudlineCouriersSaveDefinition);
-  return <><SaveStatus {...progress} /><CloudlineGame key={`${progress.scope}:${progress.ready}:${progress.revision}`} initial={progress.state} persist={progress.save} reset={progress.reset} /></>;
+  return <>
+    <SaveStatus {...progress} />
+    {progress.scope !== 'guest' && !progress.ready && <p className="cl-load-warning inline-alert" role="status">Account progress is loading. You can play using this browser’s progress; the account save will replace it when loading finishes.</p>}
+    <CloudlineGame key={`${progress.scope}:${progress.ready}:${progress.revision}`} initial={progress.state} persist={progress.save} reset={progress.reset} />
+  </>;
+
 }
 
 function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; persist(state: CloudlineSave): void; reset(): void }) {
@@ -55,7 +61,6 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
   const [upgradedLandmark, setUpgradedLandmark] = useState<number | null>(null);
   const feedbackSequence = useRef(0);
   const isFlying = flight !== null;
-  const isBusy = isFlying || cargoChoice !== null;
   const completedStages = run.landmarks.reduce((sum, stage) => sum + stage, 0);
   const canUpgrade = LANDMARK_NAMES.some((_, index) => {
     const cost = landmarkCost(run, index);
@@ -68,10 +73,10 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
       ? run.lastRoll === null
         ? 'Make your first delivery: choose a boost, then select Fly route.'
         : 'Keep flying until you complete your first delivery.'
-      : run.district === 1 && completedStages === 0 && firstLandmarkCost !== null
+      : run.district === 1 && completedStages === 0 && firstLandmarkCost !== null && run.credits >= firstLandmarkCost
         ? `First delivery complete. Upgrade ${LANDMARK_NAMES[0]} for ${firstLandmarkCost} credits.`
-        : run.district === 1 && completedStages > 0 && run.deliveries < 4
-          ? `Starter contract: complete 4 deliveries. Progress ${run.deliveries}/4. The fourth delivery pays 120 × boost credits.`
+        : run.district === 1 && completedStages > 0
+          ? `Delivery bonus: complete 4 deliveries without an unshielded storm. Current streak ${run.streak}/4. The fourth delivery pays an extra ${120 * boost} credits at ${boost}×.`
           : canUpgrade
             ? 'Upgrade a landmark, or fly again to earn more credits.'
             : 'Fly the route to earn credits for your next landmark upgrade.';
@@ -82,6 +87,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
   };
   const commitRun = (next: CloudlineRun) => {
     setRun(next);
+    setBoost(current => Math.min(current, next.fuel) as 1 | 2 | 3);
     persist({ activeRun: next });
   };
   const commitWithoutMotionFeedback = (next: CloudlineRun) => {
@@ -97,20 +103,41 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
   };
 
   useEffect(() => {
-    if (!flight) return;
-    const atDestination = flight.step >= flight.path.length;
-    const delay = atDestination ? 120 : flight.step === 0 ? 70 : 165;
-    const timer = window.setTimeout(() => {
-      if (atDestination) {
-        finishFlight(flight);
-        return;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const reduceMotion = () => {
+      if (!motion.matches) return;
+      setFeedback(null);
+      setUpgradedLandmark(null);
+      if (flight) {
+        setFlight(null);
+        commitRun(flight.next);
       }
-      setFlight(current => current ? { ...current, step: current.step + 1 } : null);
-    }, delay);
-    return () => window.clearTimeout(timer);
+    };
+    motion.addEventListener('change', reduceMotion);
+    let timer: number | undefined;
+    if (flight) {
+      if (motion.matches) {
+        reduceMotion();
+      } else {
+        const atDestination = flight.step >= flight.path.length;
+        const delay = atDestination ? 120 : flight.step === 0 ? 70 : 165;
+        timer = window.setTimeout(() => {
+          if (atDestination) {
+            finishFlight(flight);
+            return;
+          }
+          setFlight(current => current ? { ...current, step: current.step + 1 } : null);
+        }, delay);
+      }
+    }
+    return () => {
+      window.clearTimeout(timer);
+      motion.removeEventListener('change', reduceMotion);
+    };
   }, [flight]);
 
   const startFreshRoute = () => {
+    if (!window.confirm('Start a fresh route? This replaces all saved Cloudline Couriers progress, including landmark upgrades.')) return;
     setFlight(null);
     setCargoChoice(null);
     setFeedback(null);
@@ -119,6 +146,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     setBoost(1);
   };
   const resetCareer = () => {
+    if (!window.confirm('Reset saved career? This removes all Cloudline Couriers progress, including landmark upgrades.')) return;
     setFlight(null);
     setCargoChoice(null);
     setFeedback(null);
@@ -128,6 +156,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     setBoost(1);
   };
   const flyRoute = () => {
+    setCargoChoice(null);
     const next = rollFlight(run, boost);
     const roll = next.lastRoll;
     if (roll === null) return;
@@ -143,18 +172,15 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
   const chooseCargo = (index: number) => {
     const next = resolveCargo(run, index);
     const reward = next.credits - run.credits;
+    // Reward settlement must not depend on animationend: reduced motion can change during an action.
+    commitRun(next);
+    setCargoChoice({ index, reward });
     if (prefersReducedMotion()) {
-      commitWithoutMotionFeedback(next);
-      return;
+      setFeedback(null);
+      setUpgradedLandmark(null);
+    } else {
+      showFeedback('cargo', `+${reward} credits`);
     }
-    setCargoChoice({ index, next, reward });
-  };
-  const finishCargoChoice = (index: number) => {
-    if (!cargoChoice || cargoChoice.index !== index) return;
-    const current = cargoChoice;
-    setCargoChoice(null);
-    commitRun(current.next);
-    showFeedback('cargo', `+${current.reward} credits`);
   };
   const upgrade = (index: number) => {
     const next = upgradeLandmark(run, index);
@@ -187,17 +213,10 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     data-flight-step={flight?.step ?? 0}
     data-flight-total={flight?.path.length ?? 0}
   >
-    <header className="cl-hero">
-      <div>
-        <h2 id="cl-title">Cloudline Couriers</h2>
-        <p className="cl-purpose">Deliver cargo. Earn credits. Rebuild the district.</p>
-        <p>Choose a boost, fly clockwise around the route, and use delivery credits to upgrade all four landmarks.</p>
-      </div>
-      <div className="cl-hero-ship" aria-hidden="true"><AirshipSprite /></div>
-    </header>
-
     <section className="cl-brief" aria-labelledby="cl-job-title">
       <div>
+        <h2 id="cl-title">Rebuild district {run.district}</h2>
+        <p className="cl-purpose">Deliver cargo. Earn credits. Rebuild the district.</p>
         <h3 id="cl-job-title">Current job</h3>
         <p>{currentJob}</p>
         <p className="cl-progress">Landmark work: {completedStages} of 16 stages complete in district {run.district}.</p>
@@ -205,10 +224,10 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
       <details className="cl-help">
         <summary>How to play</summary>
         <ol>
-          <li><strong>Choose a boost.</strong> 1× uses 1 fuel. 2× and 3× use more fuel and multiply delivery credits.</li>
-          <li><strong>Select Fly route.</strong> The die moves your airship clockwise to a stop.</li>
-          <li><strong>Read the landing result.</strong> Markets pay credits, Workshops restore fuel, Beacons block one storm, and Cargo Caches ask you to choose a pod.</li>
-          <li><strong>Spend credits on landmark upgrades.</strong> Raise all four landmarks to stage 4 to rebuild the district and move on.</li>
+          <li><strong>Choose a boost.</strong> 1× uses 1 fuel. 2× uses 2 fuel and doubles delivery credits; 3× uses 3 fuel and triples them. Boost does not change the die or cargo-pod rewards.</li>
+          <li><strong>Select Fly route.</strong> The die moves your airship 1–6 stops clockwise. Completing a circuit pays 100 × district × boost credits.</li>
+          <li><strong>Read the landing result.</strong> Markets and Dispatch pay credits. Workshops restore fuel. Beacons block one storm. An unshielded storm costs credits and resets the delivery streak. Windgates carry you 2 more stops without triggering another event. Cargo Caches ask you to choose one pod for credits.</li>
+          <li><strong>Spend credits on landmark upgrades.</strong> Raise all four landmarks to stage 4 to rebuild the district and move on. Every fourth delivery in a streak pays a bonus; storms only reset it when you have no shield. If fuel reaches zero, 3 reserve fuel lets you keep flying.</li>
         </ol>
       </details>
     </section>
@@ -224,11 +243,14 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
       <div className="cl-board" aria-label="Sixteen-stop skyway" data-impact={boardImpact}>
         {SKYWAY.map((tile, index) => <div
           className={`cl-tile cl-tile-${index}`}
+          role="img"
+          aria-label={`Stop ${index + 1}: ${tile.name}, ${tile.kind}${!isFlying && run.position === index ? ' — courier here' : ''}`}
           data-kind={tile.kind}
           data-active={!isFlying && run.position === index}
           data-flight-active={isFlying && flightPosition === index}
           key={tile.name + index}
         >
+          <span className="cl-stop-number" aria-hidden="true">{index + 1}</span>
           <TileSprite kind={tile.kind} />
           <div className="cl-tile-copy"><strong>{tile.name}</strong><span>{tile.kind}</span></div>
           {!isFlying && run.position === index && <div className="cl-courier" aria-label="Courier position"><AirshipSprite /></div>}
@@ -254,32 +276,32 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
           }}
         ><span>{feedback.label}</span></div>}
 
-        <div className="cl-center">
-          <span className="cl-center-label">Last flight</span>
-          <strong className={isFlying ? 'cl-roll-number' : undefined}>{flight?.next.lastRoll ?? run.lastRoll ?? '—'}</strong>
-          <span>{flight?.next.lastRoll || run.lastRoll ? 'spaces rolled' : 'No flight yet'}</span>
-          <div className="cl-boost" role="group" aria-label="Flight boost">{([1, 2, 3] as const).map(value => <button type="button" key={value} disabled={isBusy} aria-pressed={boost === value} onClick={() => setBoost(value)}>{value}×</button>)}</div>
-          <button type="button" className="cl-fly" disabled={isBusy || Boolean(run.pendingCargo) || run.fuel < boost} onClick={flyRoute}>Fly route</button>
-          {flight && <button type="button" className="cl-skip-flight" onClick={() => finishFlight(flight)}>Skip flight</button>}
-          <small>{run.pendingCargo ? 'Choose a cargo pod before the next flight.' : isFlying ? `Flying stop ${Math.min(flight.step, flight.path.length)} of ${flight.path.length}.` : `Boost ${boost}× uses ${boost} fuel. Delivery streak ${run.streak}/4.`}</small>
+        <div className="cl-center" aria-hidden="true">
+          <div className="cl-district-art">{LANDMARK_NAMES.map((name, index) => <LandmarkSprite key={name} index={index} stage={run.landmarks[index]} />)}</div>
         </div>
+      </div>
+
+      <div className="cl-controls">
+        <p className="cl-flight-result">{isFlying ? `Flying to ${SKYWAY[flightPosition].name}…` : `At ${SKYWAY[run.position].name}. ${run.lastRoll ? `Last flight: ${run.lastRoll} stops.` : 'No flight yet.'}`}</p>
+        <span id="cl-boost-label">Choose a boost</span>
+        <div className="cl-boost" aria-describedby="cl-boost-cost" role="group" aria-labelledby="cl-boost-label">{([1, 2, 3] as const).map(value => <button type="button" key={value} disabled={isFlying || run.fuel < value} title={`${value}× uses ${value} fuel`} aria-pressed={boost === value} onClick={() => setBoost(value)}>{value}×</button>)}</div>
+        <button type="button" className="cl-fly" disabled={isFlying || Boolean(run.pendingCargo) || run.fuel < boost} onClick={flyRoute}>Fly route</button>
+        {flight && <button type="button" className="cl-skip-flight" onClick={() => finishFlight(flight)}>Skip flight</button>}
+        <small id="cl-boost-cost">{run.pendingCargo ? 'Choose a cargo pod before the next flight.' : isFlying ? `Flying stop ${Math.min(flight.step, flight.path.length)} of ${flight.path.length}.` : `Boost ${boost}× uses ${boost} fuel. Fuel remaining: ${run.fuel}/${MAX_FUEL}.`}</small>
       </div>
 
       <p className="cl-status" role="status" aria-live="polite">{isFlying ? flight.step >= flight.path.length ? 'Landing…' : `Flying ${flight.next.lastRoll ?? ''} spaces…` : run.message}</p>
 
-      {run.pendingCargo && <div className="cl-cache" aria-labelledby="cl-cache-title">
-        <div><h3 id="cl-cache-title">Cargo cache</h3><p>Choose one sealed pod to finish this stop. Each pod pays credits.</p></div>
-        <div className="cl-pods">{run.pendingCargo.options.map((_, index) => <button
+      {(run.pendingCargo || cargoChoice) && <div className="cl-cache" aria-labelledby="cl-cache-title">
+        <div><h3 id="cl-cache-title">Cargo cache</h3><p>{cargoChoice ? `Pod ${cargoChoice.index + 1} delivered. +${cargoChoice.reward} credits. Fly the route to continue.` : 'Choose one sealed pod to finish this stop. Each pod pays credits; boost does not multiply this reward.'}</p></div>
+        <div className="cl-pods">{[0, 1, 2].map(index => <button
           type="button"
           key={index}
-          disabled={isFlying || cargoChoice !== null}
+          disabled={isFlying || !run.pendingCargo}
           data-selected={cargoChoice?.index === index}
           data-muted={cargoChoice !== null && cargoChoice.index !== index}
           onClick={() => chooseCargo(index)}
-          onAnimationEnd={(event: AnimationEvent<HTMLButtonElement>) => {
-            if (event.target === event.currentTarget && event.animationName === 'cl-pod-select') finishCargoChoice(index);
-          }}
-        ><CargoPodSprite index={index} /><span>Choose pod {index + 1}</span></button>)}</div>
+        ><CargoPodSprite index={index} /><span>{cargoChoice?.index === index ? `Delivered +${cargoChoice.reward}` : `Choose pod ${index + 1}`}</span></button>)}</div>
       </div>}
     </div><aside>
       <div className="cl-aside-head"><h3>Rebuild the district</h3><p>Upgrade each landmark to stage 4. Finishing all four unlocks the next district.</p></div>
@@ -288,11 +310,11 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
         return <div className="cl-landmark" key={name} data-upgraded={upgradedLandmark === index}>
           <LandmarkSprite index={index} stage={run.landmarks[index]} />
           <div><strong>{name}</strong><span>Stage {run.landmarks[index]}/4</span></div>
-          <button type="button" disabled={isBusy || cost === null || run.credits < (cost ?? 0)} onClick={() => upgrade(index)}>{cost === null ? 'Complete' : `Upgrade for ${cost} credits`}</button>
+          <button type="button" disabled={isFlying || Boolean(run.pendingCargo) || cost === null || run.credits < (cost ?? 0)} onClick={() => upgrade(index)}>{cost === null ? 'Complete' : `Upgrade for ${cost} credits`}</button>
         </div>;
       })}
       <p className="cl-route-meta">Delivery streak <strong>{run.streak}/4</strong>. Completed circuits <strong>{run.circuits}</strong>.</p>
-      <details><summary>Route options</summary><div className="cl-route-actions"><button type="button" disabled={isBusy} onClick={startFreshRoute}>Start fresh route</button><button type="button" disabled={isBusy} onClick={resetCareer}>Reset saved career</button></div></details>
+      <details><summary>Route options</summary><div className="cl-route-actions"><button type="button" disabled={isFlying} onClick={startFreshRoute}>Start fresh route</button><button type="button" disabled={isFlying} onClick={resetCareer}>Reset saved career</button></div></details>
     </aside></div>
   </section>;
 }

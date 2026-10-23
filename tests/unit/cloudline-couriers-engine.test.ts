@@ -50,6 +50,16 @@ describe('Cloudline Couriers engine', () => {
     expect(run.landmarks).toEqual([0, 0, 0, 0]);
   });
 
+  it('requires pending cargo to settle before a district upgrade can reprice it', () => {
+    const run = { ...createCloudlineRun(9), credits: 10000, landmarks: [4, 4, 4, 3] as [number, number, number, number], pendingCargo: { options: [40, 60, 100] as [number, number, number] } };
+    expect(() => upgradeLandmark(run, 3)).toThrow(/cargo pod/i);
+    const delivered = resolveCargo(run, 1);
+    expect(delivered.credits).toBe(10060);
+    const rebuilt = upgradeLandmark(delivered, 3);
+    expect(rebuilt.district).toBe(2);
+    expect(rebuilt.credits).toBe(9830);
+  });
+
   it('rejects unaffordable boosts and upgrades', () => {
     expect(() => rollFlight({ ...createCloudlineRun(2), fuel: 1 }, 3)).toThrow(/fuel/);
     expect(() => upgradeLandmark({ ...createCloudlineRun(2), credits: 0 }, 0)).toThrow(/credits/);

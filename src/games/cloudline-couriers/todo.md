@@ -7,9 +7,9 @@
 
 ## Resume here
 
-**Current state:** Cloudline's first-session clarity, turn-interaction, reduced-motion lifecycle, and contextual first-win guidance tranches are locally GREEN. Production first-win revision `8e74431747cff945021b0c42689b64dbc086d99e`, validated from main head `397fc2d33b33e12cb61a7070b0752228ab328fd8` in maintenance run `39960131577`, passed dependency-current checks, design/type/document gates, all 151 unit tests, Firestore rules, account-browser checks, and the Cloudline browser contract including delivery → upgrade → starter-contract guidance, prior motion/reflow/reduced-motion assertions, and guest reload persistence.  
-**Next action:** Continue Cloudline only. Extend CLC-007 campaign-quality interaction/VFX/art breadth and obtain remaining CLC-011 comprehension evidence; do not start another game until Cloudline's active quality workstream is explicitly closed.  
-**Blockers:** Repository `package.json`/lockfile remain behind the researched 2026-10-23 target manifest because dependency maintenance commits only after the complete repository suite passes. Run `39960131577` reached and passed Cloudline, then stopped at the preserved unrelated Cascade Vault CV-004 RED waiting for `.cv`; that is not a Cloudline failure. TASK-003 still blocks live configured-project Firebase verification. The connected external browser service returned a provider 404, so independent human screenshot critique remains unverified even though repository Playwright rendered checks generated screenshots.
+**Current state:** implementing; client-triage acceptance is locally GREEN as recorded with the candidate digest in the authoritative spec. No full-suite, origin/main integration or deployment claim is made.
+**Next action:** resolve dependency corroboration, then perform the documented exact-pin/full-validation/main integration sequence.
+**Blockers:** npmjs.com package-page corroboration is unavailable and official-registry substitution remains an owner question. Stale Firebase/CLI/Vite pins and the preserved Cascade Vault browser RED block aggregate release checks. TASK-003 blocks live Firebase; human comprehension and production-art sign-off remain open.
 
 ## Core Feature Execution Pipeline
 
@@ -36,8 +36,8 @@
 **Inputs:** credits/fuel/boost/progression tier.  
 **Dependencies Touched:** engine/tuning/tests.  
 **Technical Notes & Edge Cases:** transparent scaling, emergency reserve, no purchase pressure.  
-**Implementation Details:** base economy exists.  
-**Verification & State Sign-off:** [x] base logic; [ ] long-form economy model; [ ] playtest balance evidence.
+**Implementation Details:** base economy exists. The local client-triage contract checks that spending fuel on a 3× flight from four fuel selects affordable 1× and keeps the next flight available.
+**Verification & State Sign-off:** [x] base logic; [x] local affordable-boost recovery browser acceptance; [ ] long-form economy model; [ ] playtest balance evidence.
 
 ### CLC-004 — Landmark Upgrade Loop
 **Purpose:** Turn earned resources into visible world improvement.  
@@ -51,9 +51,9 @@
 **Purpose:** Break repetition with short agency-rich decisions.  
 **Inputs:** seeded encounter table/choice.  
 **Dependencies Touched:** engine/UI/save/content.  
-**Technical Notes & Edge Cases:** deterministic, accessible, no paid randomness.  
-**Implementation Details:** base three-choice cache and bounded pod-selection feedback are implemented; the current browser contract verifies the surrounding turn/feedback surface, while region encounter depth remains open.  
-**Verification & State Sign-off:** [x] base implementation; [x] bounded pod-choice interaction implemented; [ ] region tables; [ ] complete focus/presentation evidence.
+**Technical Notes & Edge Cases:** deterministic, accessible, no paid randomness. Pending cargo must resolve before a landmark upgrade can complete the district and change the next-district reward multiplier.
+**Implementation Details:** base three-choice cache and bounded pod-selection feedback are implemented; the local client-triage browser contract verifies CLC-005-A1: reward settles once with CSS animation disabled, the next flight remains enabled, and the reward survives reload. CLC-005-A2 blocks pending-cargo upgrades in engine/UI and passes the district-one cargo/rebuild accounting regression.
+**Verification & State Sign-off:** [x] base implementation; [x] bounded pod-choice interaction implemented; [x] local CLC-005-A1 acceptance; [x] CLC-005-A2 local engine/browser acceptance; [ ] region tables; [ ] complete focus/presentation evidence.
 
 ### CLC-006 — Delivery Streak, Shields, and Route Momentum
 **Purpose:** Reward skillful momentum without punishing absence.  
@@ -76,16 +76,16 @@
 **Inputs:** viewport/zoom/input/accessibility preferences.  
 **Dependencies Touched:** React/CSS/browser tests.  
 **Technical Notes & Edge Cases:** >=44px important targets, 320px, 200% text, focus, non-color state, no drag-only/timing dependency.  
-**Implementation Details:** base responsive surface exists. The current browser contract verifies no horizontal overflow at 390/1024/1440 and reduced-motion immediate resolution without stale animation-only DOM state.  
+**Implementation Details:** base responsive surface exists. The prior browser contract verifies 390/1024/1440 and reduced-motion resolution. The current local client-triage contract additionally passes 320 CSS px at 100% and 200% text, with flight controls outside the route tiles, >=44px targets and no horizontal overflow.
 **Verification & State Sign-off:** [x] base surface; [x] current-tranche reduced-motion implementation/browser GREEN; [x] 390/1024/1440 current-tranche reflow; [ ] full device matrix; [ ] keyboard/touch/pointer complete-game evidence; [ ] 320px/200% text complete-game evidence.
 
 ### CLC-009 — Durable Career Save and Recovery
 **Purpose:** Preserve earned career progress safely.  
 **Inputs:** complete deterministic career state.  
 **Dependencies Touched:** shared save platform/tests.  
-**Technical Notes & Edge Cases:** migrations required as expanded systems land; corruption must not silently destroy progress.  
-**Implementation Details:** schema-v1 verified in `232102f4` / `37555538295`. The first-win guidance derives from existing schema-v1 state and adds no persisted tutorial or contract flag.  
-**Verification & State Sign-off:** [x] v1 guest/account emulator; [ ] migration coverage for expanded schema; [ ] live Firebase TASK-003.
+**Technical Notes & Edge Cases:** migrations required as expanded systems land; corruption must not silently destroy progress. Initial account reads retain playable browser-cache fallback and disclose cloud precedence before play; see `docs/FIREBASE_ARCHITECTURE.md`.
+**Implementation Details:** schema-v1 verified in `232102f4` / `37555538295`. The first-win guidance derives from existing schema-v1 state and adds no persisted tutorial or contract flag. The local candidate confirms both reset dialogs; dismissing either preserves progress, while targeted account-emulator reset accepts confirmation. CLC-009-A2 blocking is excluded by the shared contract; CLC-009-A3 upfront warning passes delayed account-read browser acceptance.
+**Verification & State Sign-off:** [x] v1 guest/account emulator; [x] reset confirmation/cancel browser acceptance and targeted emulator reset; [x] CLC-009-A2 excluded under the shared contract; [x] CLC-009-A3 local delayed-read warning acceptance; [ ] migration coverage for expanded schema; [ ] live Firebase TASK-003.
 
 ### CLC-010 — Catalog, Governance, Verification, and Release Integration
 **Purpose:** Ship as a maintainable first-class game.  
@@ -228,7 +228,7 @@
 **Inputs:** reward significance/player motion preference.  
 **Dependencies Touched:** UI/art/VFX/audio.  
 **Technical Notes & Edge Cases:** proportional celebration; skippable/accelerable; reduced-motion equivalent.  
-**Implementation Details:** routine stop families receive bounded event-specific board feedback, affected resource counters pulse, cargo and landmark actions have dedicated interaction feedback, flight can be skipped, and reduced-motion resolves without travel or retained animation-only state. Major milestone tiers remain open.  
+**Implementation Details:** routine stop families receive bounded event-specific board feedback, affected resource counters pulse, cargo and landmark actions have dedicated interaction feedback, flight can be skipped, and reduced-motion resolves without travel or retained animation-only state. The current local client-triage check changes the preference during flight and confirms immediate resolution. Major milestone tiers remain open.
 **Verification & State Sign-off:** [x] routine event feedback implementation; [x] skip/reduce implementation; [x] current-tranche Cloudline browser GREEN (`39960131577`); [ ] major reward tiers; [ ] timing playtest.
 
 ### CLC-028 — Audio, Music, and Multimodal Feedback

@@ -62,7 +62,7 @@ async function openSeededCloudline(browserInstance, overrides) {
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(({ key, activeRun }) => {
-    localStorage.setItem(key, JSON.stringify({ schemaVersion: 1, state: { activeRun } }));
+    if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify({ schemaVersion: 1, state: { activeRun } }));
   }, { key: cloudlineStorageKey, activeRun: seededRun(overrides) });
   await page.goto(base + '#/games/cloudline-couriers');
   await waitForCloudlineSurface(page);
@@ -71,7 +71,7 @@ async function openSeededCloudline(browserInstance, overrides) {
 
 async function readSeededCurrentJob(browserInstance, overrides) {
   const { context, page } = await openSeededCloudline(browserInstance, overrides);
-  const currentJob = (await page.locator('.cl-brief > div > p').first().innerText()).trim();
+  const currentJob = (await page.locator('#cl-job-title + p').innerText()).trim();
   await context.close();
   return currentJob;
 }
@@ -89,10 +89,100 @@ async function readSeededLandmarkStageLayers(browserInstance) {
   return layerCounts;
 }
 
+async function checkClientTriage(browserInstance) {
+  const failures = [];
+  const check = (condition, message) => { if (!condition) failures.push(message); };
+  const small = await openSeededCloudline(browserInstance, {});
+  await small.page.setViewportSize({ width: 320, height: 900 });
+  for (const fontSize of ['100%', '200%']) {
+    await small.page.evaluate(size => { document.documentElement.style.fontSize = size; }, fontSize);
+    const geometry = await small.page.evaluate(() => {
+      const board = document.querySelector('.cl-board').getBoundingClientRect();
+      const controls = [...document.querySelectorAll('.cl-boost button, .cl-fly')].map(element => element.getBoundingClientRect().toJSON());
+      return { board: board.toJSON(), controls, width: innerWidth, scrollWidth: document.documentElement.scrollWidth };
+    });
+    check(geometry.controls.every(box => box.top >= geometry.board.bottom && box.height >= 44 && box.width >= 44), `CLC-008-A1 controls overlap route or miss 44px targets at 320px/${fontSize}`);
+    check(geometry.scrollWidth <= geometry.width + 1, `CLC-008-A1 overflow at 320px/${fontSize}`);
+    await small.page.screenshot({ path: `test-results/cloudline-couriers/phone-320-${fontSize.replace('%', '')}.png`, fullPage: true });
+  }
+  await small.context.close();
+
+  const job = await readSeededCurrentJob(browserInstance, { deliveries: 3, streak: 0, landmarks: [1,0,0,0] });
+  check(/0\/4/.test(job) && /storm/i.test(job), 'CLC-015-A1 starter guidance must use streak zero after a storm, not lifetime deliveries');
+
+  const cargo = await openSeededCloudline(browserInstance, { pendingCargo: { options: [40,60,100] }, position: 7 });
+  await cargo.page.addStyleTag({ content: '.cl * { animation: none !important; }' });
+  await cargo.page.getByRole('button', { name: 'Choose pod 2', exact: true }).click();
+  await cargo.page.emulateMedia({ reducedMotion: 'reduce' });
+  check(/510/.test(await cargo.page.locator('.cl-stats').innerText()), 'CLC-005-A1 cargo reward must settle without animationend');
+  check(await cargo.page.getByRole('button', { name: 'Fly route', exact: true }).isEnabled(), 'CLC-005-A1 cargo must not lock flight when animation is disabled');
+  await cargo.page.reload();
+  await waitForCloudlineSurface(cargo.page);
+  check(/510/.test(await cargo.page.locator('.cl-stats').innerText()), 'CLC-005-A1 cargo reward must persist before animation ends');
+  await cargo.context.close();
+
+  const districtCargo = await openSeededCloudline(browserInstance, {
+    pendingCargo: { options: [40,60,100] }, credits: 10000, landmarks: [4,4,4,3], district: 1,
+  });
+  await districtCargo.page.emulateMedia({ reducedMotion: 'reduce' });
+  const finalLandmark = districtCargo.page.locator('.cl-landmark').filter({ hasText: 'Skyforge Hangar' });
+  const finalUpgrade = finalLandmark.getByRole('button', { name: 'Upgrade for 480 credits', exact: true });
+  check(await finalUpgrade.isDisabled(), 'CLC-005-A2 the final district upgrade must wait until pending cargo is chosen');
+  await districtCargo.page.getByRole('button', { name: 'Choose pod 2', exact: true }).click();
+  check(/Credits\s+10060/.test(await districtCargo.page.locator('.cl-stats').innerText()) && /District\s+1/.test(await districtCargo.page.locator('.cl-stats').innerText()), 'CLC-005-A2 pod rewards must retain their district-one value before rebuilding');
+  await finalUpgrade.click();
+  check(/Credits\s+9830/.test(await districtCargo.page.locator('.cl-stats').innerText()) && /District\s+2/.test(await districtCargo.page.locator('.cl-stats').innerText()), 'CLC-005-A2 choosing cargo before the final upgrade must preserve its district-one reward through district rebuild');
+  await districtCargo.context.close();
+
+  const fuel = await openSeededCloudline(browserInstance, { fuel: 4 });
+  await fuel.page.emulateMedia({ reducedMotion: 'reduce' });
+  await fuel.page.getByRole('button', { name: '3×', exact: true }).click();
+  await fuel.page.getByRole('button', { name: 'Fly route', exact: true }).click();
+  check(await fuel.page.getByRole('button', { name: '1×', exact: true }).getAttribute('aria-pressed') === 'true', 'CLC-003-A1 select an affordable boost after spending fuel');
+  check(await fuel.page.getByRole('button', { name: 'Fly route', exact: true }).isEnabled(), 'CLC-003-A1 low fuel must leave a usable next flight');
+  for (const [boost, cost] of [['2×', '2 fuel'], ['3×', '3 fuel']]) {
+    const button = fuel.page.getByRole('button', { name: boost, exact: true });
+    check(await button.isDisabled() && (await button.getAttribute('title'))?.includes(cost), `CLC-003-A1 ${boost} must be disabled with its fuel cost explained`);
+  }
+  check(/Fuel remaining: 1\/30/.test(await fuel.page.locator('#cl-boost-cost').innerText()), 'CLC-003-A1 boost guidance must state the remaining fuel');
+  await fuel.page.getByText('Route options', { exact: true }).click();
+  let confirmations = 0;
+  fuel.page.on('dialog', async dialog => { confirmations += 1; await dialog.dismiss(); });
+  const before = await fuel.page.locator('.cl-stats').innerText();
+  await fuel.page.getByRole('button', { name: 'Start fresh route', exact: true }).click();
+  await fuel.page.getByRole('button', { name: 'Reset saved career', exact: true }).click();
+  check(confirmations === 2 && before === await fuel.page.locator('.cl-stats').innerText(), 'CLC-009-A1 canceling either destructive action must preserve progress');
+  await fuel.context.close();
+  const skipped = await openSeededCloudline(browserInstance, { rngState: 1 });
+  await skipped.page.getByRole('button', { name: 'Fly route', exact: true }).click();
+  await skipped.page.locator('.cl[data-flight-state="flying"]').waitFor();
+  await skipped.page.getByRole('button', { name: 'Skip flight', exact: true }).click();
+  await skipped.page.locator('.cl[data-flight-state="idle"]').waitFor();
+  // Let the original one-stop flight timer expire; skipping must not settle twice.
+  await delay(450);
+  check(/Credits\s+495/.test(await skipped.page.locator('.cl-stats').innerText()) && /Fuel\s+17/.test(await skipped.page.locator('.cl-stats').innerText()) && /At Sunspoke Market/.test(await skipped.page.locator('.cl-flight-result').innerText()), 'CLC-001 skipping roll 1 must settle its market reward, fuel cost, and destination exactly once');
+  await skipped.page.reload();
+  await waitForCloudlineSurface(skipped.page);
+  check(/Credits\s+495/.test(await skipped.page.locator('.cl-stats').innerText()) && /Fuel\s+17/.test(await skipped.page.locator('.cl-stats').innerText()) && /At Sunspoke Market/.test(await skipped.page.locator('.cl-flight-result').innerText()), 'CLC-001 skipped-flight settlement must persist after reload');
+  await skipped.context.close();
+  const motion = await openSeededCloudline(browserInstance, { rngState: 123456789 });
+  await motion.page.getByRole('button', { name: 'Fly route', exact: true }).focus();
+  await motion.page.keyboard.press('Space');
+  await motion.page.locator('.cl[data-flight-state="flying"]').waitFor();
+  await motion.page.emulateMedia({ reducedMotion: 'reduce' });
+  try {
+    await motion.page.locator('.cl[data-flight-state="idle"]').waitFor({ timeout: 250 });
+  } catch { failures.push('CLC-027-A1 changing reduced motion during flight must resolve immediately'); }
+  check(await motion.page.locator('.cl-effect').count() === 0, 'CLC-027-A1 motion change must not retain decorative feedback');
+  await motion.context.close();
+  assert.deepEqual(failures, [], 'Client triage acceptance failures');
+}
+
 try {
   await waitForServer();
   await mkdir('test-results/cloudline-couriers', { recursive: true });
   browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || undefined });
+  await checkClientTriage(browser);
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.message));
@@ -105,7 +195,10 @@ try {
   assert.equal(await page.getByRole('heading', { name: 'Current job' }).count(), 1, 'The first screen must state the player’s current job.');
   const help = page.getByText('How to play', { exact: true });
   await help.click();
-  assert.match(await page.locator('.cl-help').innerText(), /Choose a boost.*Fly route.*Spend credits/is, 'Replayable help must explain the core boost → fly → rebuild loop in plain language.');
+  const helpCopy = await page.locator('.cl-help').innerText();
+  assert.match(helpCopy, /Choose a boost.*Fly route.*Spend credits/is, 'Replayable help must explain the core boost → fly → rebuild loop in plain language.');
+  assert.match(helpCopy, /Windgates carry you 2 more stops without triggering another event/i, 'Help must explain that a Windgate’s extra movement does not trigger a recursive landing event.');
+  assert.match(helpCopy, /3 reserve fuel lets you keep flying/i, 'Help must explain how the emergency fuel reserve prevents a dead end.');
 
   const spriteCount = await page.locator('[data-cl-sprite]').count();
   assert.ok(spriteCount >= 21, `Cloudline must render its repository-authored vector sprite family across board, courier and landmarks; found ${spriteCount}.`);
@@ -163,7 +256,7 @@ try {
   assert.deepEqual(firstSessionJobs, [
     'Keep flying until you complete your first delivery.',
     'First delivery complete. Upgrade Aerie Post for 120 credits.',
-    'Starter contract: complete 4 deliveries. Progress 1/4. The fourth delivery pays 120 × boost credits.',
+    'Delivery bonus: complete 4 deliveries without an unshielded storm. Current streak 1/4. The fourth delivery pays an extra 120 credits at 1×.',
   ], 'CLC-011/CLC-015 first-session guidance must preserve the delivery → upgrade → starter-contract teaching sequence.');
 
   assert.deepEqual(
@@ -210,7 +303,7 @@ try {
   await reducedContext.close();
 
   assert.deepEqual(errors, []);
-  console.log('Cloudline design checks passed: first-screen purpose/help, first-session delivery→upgrade→starter-contract guidance, visible landmark stage transformations, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion without stale animation state, and guest reload persistence.');
+  console.log('Cloudline design checks passed: purpose/help and first-win guidance; streak-correct bonus; visible landmark stages; stepwise/skippable flight; live reduced-motion changes; animation-independent cargo settlement/reload; affordable boost recovery; reset cancellation; 320px/200%-text and 390/1024/1440 reflow; guest persistence.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');

@@ -1,5 +1,17 @@
 # Decision log
 
+## D-024 Open dependency corroboration question (2026-10-23)
+
+Open owner question: may official npm registry metadata substitute for npmjs.com package-page corroboration while the required pages return HTTP 403 (`docs/DEPENDENCY_POLICY.md`)?
+The target manifest matches current official registry metadata; no corroboration exception is authorized and no dependency refresh is integrated (`.tasks/dependency-refresh-request.json`, local 2026-10-23 metadata check).
+
+## D-023 Cloudline discloses account precedence before cached play (2026-10-23)
+
+Cloudline shows an account-precedence warning during initial reads and keeps cached play available (`src/games/cloudline-couriers/CloudlineCouriersWorkspace.tsx`, `docs/FIREBASE_ARCHITECTURE.md`).
+CLC-009-A2 initial-hydration blocking is excluded under the existing nonblocking platform contract; CLC-009-A3 owns the warning acceptance.
+The route-atlas layout replaces the duplicate title hero and keeps flight controls below the map (`src/games/cloudline-couriers/cloudline-couriers.css`).
+The attempted map-center text/control layout is excluded at 320px/200% text because it overlaps route tiles (`tests/browser/cloudline-couriers-design.mjs`).
+
 ## D-022 Game presentation quality proceeds one game at a time (2026-10-22)
 
 Animation, effects, interaction and first-session presentation quality work is serialized by game. Cloudline Couriers is the active game-quality workstream until its active tranche is explicitly closed; other game quality workstreams remain preserved but paused rather than being developed in parallel. This changes work sequencing only and does not reduce any game's existing PRD, verification or completion requirements.

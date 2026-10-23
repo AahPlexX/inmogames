@@ -171,6 +171,7 @@ export function landmarkCost(run: CloudlineRun, index: number) {
 
 export function upgradeLandmark(run: CloudlineRun, index: number): CloudlineRun {
   const cost = landmarkCost(run, index);
+  if (run.pendingCargo) throw new Error('Choose a cargo pod before upgrading a landmark.');
   if (cost === null) throw new Error('Landmark is already complete.');
   if (run.credits < cost) throw new Error('Not enough credits.');
   const landmarks = [...run.landmarks] as [number, number, number, number];

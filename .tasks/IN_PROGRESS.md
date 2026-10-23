@@ -12,6 +12,14 @@ Lucky Seven Classic is game-locally verified on exact functional revision `04ae0
 
 Authoritative design: `docs/specs/2026-10-06-cloudline-couriers-design.md`. Product requirements: `src/games/cloudline-couriers/PRD.md`. Execution/resume state: `src/games/cloudline-couriers/todo.md` and `TRACKER.md`.
 
+### Current client-triage handoff — 2026-10-23
+
+**Current state:** implementing; local acceptance and the runtime/test/config digest are recorded in the Cloudline spec's Active client-triage acceptance section.
+**Next action:** resolve dependency corroboration and apply the documented exact-pin/full-validation integration sequence. Origin/main remains `8012fccd77c5f1fbfa8f99762167a24dc62caa64`; no push/deployment of this candidate is claimed.
+**Blockers:** npmjs.com package pages return 403; official registry metadata independently matches the target manifest but substitution remains an owner question under `docs/DEPENDENCY_POLICY.md`. Existing stale pins stop `pnpm validate`; the preserved Cascade Vault CV-004 missing `.cv` stops aggregate browser checks after Cloudline. D-022 keeps other game quality work paused. Live Firebase remains TASK-003.
+
+### Historical evidence
+
 Owner playtesting on 2026-10-22 identified unclear purpose/controls, generic landing copy and low-quality/perpetual motion. The first clarity/turn-interaction RED was isolated in `39822058558`; implementation revision `d7995308` passed its first Cloudline browser contract in `39862639992`. A follow-up reduced-motion stale-animation-state RED was isolated in `39863334636`; fix revision `a26c22f7c1a9b889f40f1779355f5aea87adb7f4` passed in `39863962054`.
 
 The next CLC-011/CLC-015 RED was isolated in `39959280821`: non-delivery, first-delivery and first-upgrade states all collapsed to generic upgrade guidance because starting credits already permitted upgrades. Production revision `8e74431747cff945021b0c42689b64dbc086d99e`, validated from main head `397fc2d33b33e12cb61a7070b0752228ab328fd8` in run `39960131577`, passed dependency-current/design/type/document gates, all 151 unit tests, Firestore rules, account-browser checks, and the expanded Cloudline browser contract: first-screen purpose/help, contextual delivery → upgrade → starter-contract guidance, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion without stale animation-only state, and guest reload persistence. The guidance derives from existing run state and adds no save-schema field.
@@ -20,7 +28,7 @@ Cloudline remains implementing. CLC-007 still needs broader campaign-quality VFX
 
 Repository package/lock dependency refresh remains blocked from committing because maintenance run `39960131577` reached and passed Cloudline, then hit the preserved unrelated Cascade Vault CV-004 RED waiting for `.cv`. TASK-003 remains the external live-Firebase blocker only.
 
-**Resume here:** Cloudline is the active game-quality workstream. Continue from the GREEN `39960131577` first-session/turn contract into the next CLC-007 production VFX/art/interaction slice while preserving CLC-011 guidance behavior; do not start another game.
+**Resume here:** use the Current client-triage handoff above and Cloudline tracker; the earlier run evidence is historical. Resolve the named integration blockers before claiming deployment or full validation.
 
 ## GAME-CASCADE-VAULT-001: Cascade Vault production implementation
 **Priority:** P1 | **Tags:** arcade, ways, cascades, probability, accessibility, persistence | **Status:** paused — preserved CV-004 browser RED; Cloudline is the active game workstream

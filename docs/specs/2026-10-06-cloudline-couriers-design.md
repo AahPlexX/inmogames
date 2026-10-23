@@ -15,6 +15,31 @@ The player begins as a modest courier and repeatedly sees evidence that effort c
 
 Engagement is not impaired control. No paid loot boxes, real-money gambling, deceptive scarcity, forced login streak loss, punitive absence, hidden rubber-banding, disguised costs or monetized frustration. Long-term motivation comes from mastery, visible improvement, strategic choice, collection, discovery, authored content and proportional celebration.
 
+## Active client-triage acceptance (2026-10-23)
+
+Expected load: one local player, sixteen route stops and four landmarks (`src/games/cloudline-couriers/engine.ts`).
+
+| Requirement | Status | Observable behavior and acceptance |
+| --- | --- | --- |
+| CLC-008-A1 | verified | At 320px/200% text, flight controls remain outside the route, every flight target is >=44px, and the page has no horizontal overflow (`tests/browser/cloudline-couriers-design.mjs`). |
+| CLC-005-A1 | verified | Pod 2 from `[40,60,100]` settles 60 credits immediately with CSS animation disabled, permits another flight and restores 510 credits on reload (design browser). |
+| CLC-005-A2 | verified | Pending cargo blocks landmark upgrades in engine and UI. Selecting pod 2 in district 1 pays 60 before the final 480-credit upgrade and 250-credit district reward; final credits are 9830 from 10000 (`tests/unit/cloudline-couriers-engine.test.ts`, design browser). |
+| CLC-015-A1 | verified | Three lifetime deliveries with a storm-reset streak display `0/4`, the unshielded-storm reset condition and the current boost's bonus (design browser). |
+| CLC-003-A1 | verified | A 3× flight starting with four fuel leaves one fuel, selects 1×, disables 2×/3× with cost descriptions and keeps Fly route enabled (design browser). |
+| CLC-027-A1 | verified | A keyboard-started four-stop flight resolves within 250ms after reduced motion is enabled, with no decorative feedback retained (design browser). |
+| CLC-009-A1 | verified | Both destructive actions require confirmation; cancel preserves progress. Accepting account reset restores stage zero across contexts (`tests/browser/cloudline-couriers-account-persistence.mjs`, design browser). |
+| CLC-009-A2 | excluded | Blocking cached play during initial account hydration is prohibited by the nonblocking account-save contract in `docs/FIREBASE_ARCHITECTURE.md`; superseded by CLC-009-A3. |
+| CLC-009-A3 | verified | A delayed account-emulator read displays the account-precedence warning before cached play, leaves Fly route enabled, then restores the authoritative account's stage-one landmark when released (account browser). |
+| CLC-011-A1 | verified | Replayable help covers the seven stop families, circuit reward, streak reset, boost costs, nonrecursive Windgate carry and emergency reserve. The repeated title/decorative hero is removed (design browser). |
+
+Local evidence as of 2026-10-23: Node 24.19.0, pnpm 10.0.0, Java 21.0.12.1, Chromium 154.0.8037.57. Runtime/test/config candidate SHA-256: `ce5dddfe838476f49663c7923660e0134fbf8ab8a26c0b01e71f8e32204e0a80` (sorted tracked non-Markdown files excluding `.tasks/` except the dependency request, each path and bytes delimited by NUL). Baseline `8012fcc` passed 151 unit tests and the prior Cloudline browser contract. New browser checks reproduced control overlap, incorrect streak guidance, animation-dependent cargo, unaffordable boost selection and unconfirmed resets; separate REDs reproduced live-motion delay, pending-cargo upgrades and missing pre-play account-precedence warning. The attempted initial-hydration control lock was excluded under CLC-009-A2 before integration.
+
+Fresh local GREEN: typecheck; 152 unit tests; expanded Cloudline design browser acceptance, including earlier `[1,2,3,4]` landmark structure; delayed-load/cross-context/reset Cloudline account-emulator checks. Four Firestore rules tests and the shared account browser suite passed with their source/config/dependencies unchanged. Both host builds pass on the final runtime; design lint and game-document checks pass with unchanged validation entrypoints. These are scoped local results, not full-suite/deployment GREEN. Human comprehension and production-art sign-off remain awaiting human testing.
+
+Integration blockers: `pnpm validate` stops at package/request mismatches for Firebase, Firebase CLI and Vite (`package.json`, `.tasks/dependency-refresh-request.json`). Official release sources and npm metadata confirm the requested targets; required npmjs.com package pages return HTTP 403, Firecrawl is out of credits and the remote browser connector returns HTTP 404. Registry substitution remains an owner question under `docs/DEPENDENCY_POLICY.md`. The aggregate design-browser chain passes through Cloudline then fails at Cascade Vault CV-004's absent `.cv`; later Mergrove/Hollowshift scripts are not reached. D-022 preserves other game-quality workstreams as paused. TASK-003 still blocks real Firebase verification. No new deployment or origin/main integration is claimed.
+
+The candidate adds an engine guard against upgrading before cargo settles, changes no payout/cost formula or save schema, and preserves shared cache/cloud precedence. The layout reuses landmark art in the map center and places controls/results below it. Source: `src/games/cloudline-couriers/CloudlineCouriersWorkspace.tsx`, `src/games/cloudline-couriers/cloudline-couriers.css`, `src/games/cloudline-couriers/engine.ts` and the named regression tests. Full CLC-001..CLC-030 campaign scope remains implementing.
+
 ## Base rules already implemented
 A deterministic d6 moves the courier around 16 introductory stops. A selected 1×/2×/3× boost consumes fuel and multiplies eligible earnings. Dispatch crossing grants a circuit reward. Markets/Dispatch progress deliveries; every fourth qualifying delivery pays a route bonus. Workshops restore fuel, Beacons grant shield, Storms consume shield or apply bounded setback, Windgates advance without recursive event resolution, and Cargo Cache pauses flight for one of three seeded choices. Zero fuel triggers emergency reserve.
 
@@ -86,7 +111,7 @@ Motion-specific sources rechecked 2026-10-22: Apple HIG Motion requires purposef
 
 ## Completion contract
 **Completion state:** implementing  
-**Completion evidence:** CLC-009 remains verified at `232102f4` / `37555538295`; the prior vector presentation baseline passed full repository validation in `37859097164`; the 2026-10-22 clarity/motion RED is observed in `39822058558`; revision `d7995308` passed its first Cloudline-targeted unit/browser gates in `39862639992`; reduced-motion stale-animation-state RED is observed in `39863334636`; fix revision `a26c22f7` passed all Cloudline-targeted unit/browser gates in `39863962054`; CLC-011/CLC-015 first-win guidance RED is observed in `39959280821`; production revision `8e744317` passed the expanded Cloudline browser contract in `39960131577`; CLC-004/CLC-007 visible landmark-stage RED is observed in `39961820090`, and its production candidate awaits fresh GREEN. The aggregate repository suite remains red only after Cloudline at the separate preserved Cascade Vault CV-004 browser RED when Cloudline itself passes, so no full-repository/deployment completion claim is made. The expanded release contract remains CLC-001..CLC-030.
+**Completion evidence:** Schema-v1 baseline is `232102f4` / `37555538295`; prior first-win browser evidence is `39960131577`; the local 2026-10-23 client-triage evidence and candidate digest are recorded in Active client-triage acceptance above. The current expanded contract passes locally, including visible landmark stages, but stale dependency pins and the preserved Cascade Vault browser RED block full validation/deployment. No completed expanded-game claim is made.
 - [ ] All 30 PRD/todo feature IDs are implemented or explicitly excluded with evidence/rationale.
 - [ ] First-session onboarding is playable, optional/replayable and comprehension-tested.
 - [ ] Full five-region/twenty-district campaign target is authored and pacing/playtime measured; 20–40h target adjusted from evidence if needed.

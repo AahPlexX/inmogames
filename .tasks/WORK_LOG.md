@@ -59,3 +59,5 @@
 - 2026-10-20 - Cascade Vault CV-002 verified: D6 `f9893506…` passed full validation/Pages (`39491636082`) and 10M acceptance (`39491663232`), RTP `0.950268466`, zero guard hits. Next: CV-004 browser RED.
 
 - 2026-10-20 - Opened Cascade Vault CV-004 test-first with consolidated browser contract; route/workspace intentionally remains absent until the RED is evidenced.
+
+- 2026-10-23 - Cloudline client-triage local acceptance covers responsive controls, truthful bonus guidance, animation-independent cargo, fuel recovery, confirmed resets, live reduced motion, pending-cargo upgrade validation and upfront account-precedence disclosure. Evidence and integration blockers: `docs/specs/2026-10-06-cloudline-couriers-design.md`; full validation/deployment remain blocked.
