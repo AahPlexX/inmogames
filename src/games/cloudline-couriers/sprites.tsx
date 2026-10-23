@@ -48,9 +48,37 @@ const landmarkArt = [
   <><path d="M20 58h58M27 58V35l18 7V28l24 10v20" fill="#7f9aa9" stroke="#263f53" strokeWidth="2"/><path d="M35 51h9v7M55 48h8v10" stroke="#ffd475" strokeWidth="4"/><path d="M34 27c2-8 9-12 15-7 5-7 15-5 17 3" fill="none" stroke="#edf7fa" strokeWidth="5" strokeLinecap="round"/></>,
 ] as const;
 
+const landmarkStageArt = [
+  [
+    <><path d="M24 50h8v8h-8Z" fill="#ffe078" stroke="#28445d" strokeWidth="1.5"/><path d="M28 50v-6" stroke="#28445d" strokeWidth="1.5"/><circle cx="28" cy="42" r="2.5" fill="#9de8ff" stroke="#28445d" strokeWidth="1.2"/></>,
+    <><path d="M68 44h13l5 5-5 5H68Z" fill="#d8943d" stroke="#28445d" strokeWidth="1.5"/><path d="M72 44v-7h7v7" fill="none" stroke="#28445d" strokeWidth="1.5"/></>,
+    <><path d="M34 25V13h5" fill="none" stroke="#28445d" strokeWidth="1.8"/><path d="M39 13l9 4-9 4Z" fill="#d76d45" stroke="#28445d" strokeWidth="1.3"/></>,
+    <><path d="M35 10h27M39 10v6M58 10v7" fill="none" stroke="#d8943d" strokeWidth="2.5" strokeLinecap="round"/><circle cx="35" cy="10" r="2" fill="#ffe078"/><circle cx="62" cy="10" r="2" fill="#ffe078"/></>,
+  ],
+  [
+    <><path d="M28 57v-8h12v8M56 57v-8h12v8" fill="#d8b468" stroke="#355c48" strokeWidth="1.5"/><path d="M30 49c2-4 6-5 8-1M58 49c2-4 6-5 8-1" fill="none" stroke="#5aa66f" strokeWidth="2" strokeLinecap="round"/></>,
+    <><path d="M25 37c-8-8-14 3-6 7-7 3-2 12 6 7M71 37c8-8 14 3 6 7 7 3 2 12-6 7" fill="#90d99a" stroke="#355c48" strokeWidth="1.5"/></>,
+    <><path d="M31 26h34M34 26v8M62 26v8" fill="none" stroke="#6da5b8" strokeWidth="1.8"/><path d="M36 34l-2 4M48 34v5M60 34l2 4" stroke="#7dd8ee" strokeWidth="2" strokeLinecap="round"/></>,
+    <><path d="M25 30c5-13 17-19 23-19s18 6 23 19" fill="none" stroke="#f7e6b5" strokeWidth="3"/><path d="M31 28c5-8 11-12 17-12s12 4 17 12" fill="none" stroke="#ffffff" strokeOpacity=".75" strokeWidth="2"/></>,
+  ],
+  [
+    <><path d="M34 47h29l-3 5H37Z" fill="#d8943d" stroke="#29445b" strokeWidth="1.5"/><path d="M39 52v7M58 52v7" stroke="#29445b" strokeWidth="1.5"/></>,
+    <><path d="M38 31l-10-5 9-3M58 31l10-5-9-3" fill="none" stroke="#29445b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></>,
+    <><circle cx="34" cy="37" r="3" fill="#79d7e8" stroke="#29445b" strokeWidth="1.3"/><circle cx="62" cy="37" r="3" fill="#79d7e8" stroke="#29445b" strokeWidth="1.3"/><path d="M37 37h5M54 37h5" stroke="#29445b" strokeWidth="1.5"/></>,
+    <><path d="M48 8V2M43 5h10M45 3l6 4M51 3l-6 4" stroke="#d8943d" strokeWidth="2" strokeLinecap="round"/><circle cx="48" cy="2" r="2" fill="#ffe078"/></>,
+  ],
+  [
+    <><path d="M30 52h11v6H30ZM54 52h11v6H54Z" fill="#ffe078" stroke="#263f53" strokeWidth="1.4"/><path d="M33 54h5M57 54h5" stroke="#d76d45" strokeWidth="1.5"/></>,
+    <><path d="M67 36h11v4h-8v12" fill="none" stroke="#d8943d" strokeWidth="2.5" strokeLinecap="round"/><circle cx="70" cy="53" r="2" fill="#ffe078" stroke="#263f53" strokeWidth="1"/></>,
+    <><path d="M20 51h8M68 51h10M23 51v7M75 51v7" stroke="#d8943d" strokeWidth="2.5" strokeLinecap="round"/><path d="M19 47h10M67 47h12" stroke="#263f53" strokeWidth="1.4"/></>,
+    <><path d="M31 31V17h8M61 34V18h7" fill="none" stroke="#263f53" strokeWidth="2"/><path d="M39 17h17l5 5H39Z" fill="#d8943d" stroke="#263f53" strokeWidth="1.5"/><circle cx="35" cy="17" r="2.2" fill="#79d7e8"/><circle cx="68" cy="18" r="2.2" fill="#79d7e8"/></>,
+  ],
+] as const;
+
 export function LandmarkSprite({ index, stage }: { index: number; stage: number }) {
   const safe = Math.max(0, Math.min(3, index));
-  return <div className="cl-landmark-art" data-stage={stage}><Frame kind={`landmark-${safe}`} title={`Landmark stage ${stage}`}>{landmarkArt[safe]}</Frame><span className="cl-stage-pips" aria-hidden="true">{[1,2,3,4].map(n => <i key={n} data-filled={n <= stage}/>)}</span></div>;
+  const visibleStage = Math.max(0, Math.min(4, stage));
+  return <div className="cl-landmark-art" data-stage={stage}><Frame kind={`landmark-${safe}`} title={`Landmark stage ${stage}`}>{landmarkArt[safe]}{landmarkStageArt[safe].slice(0, visibleStage).map((layer, layerIndex) => <g key={layerIndex} data-cl-stage-layer={layerIndex + 1}>{layer}</g>)}</Frame><span className="cl-stage-pips" aria-hidden="true">{[1,2,3,4].map(n => <i key={n} data-filled={n <= stage}/>)}</span></div>;
 }
 
 export function CargoPodSprite({ index }: { index: number }) {
