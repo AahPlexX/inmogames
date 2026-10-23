@@ -61,13 +61,20 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     const cost = landmarkCost(run, index);
     return cost !== null && run.credits >= cost;
   });
+  const firstLandmarkCost = landmarkCost(run, 0);
   const currentJob = run.pendingCargo
     ? 'Choose a cargo pod to finish this stop.'
-    : run.lastRoll === null
-      ? 'Make your first delivery: choose a boost, then select Fly route.'
-      : canUpgrade
-        ? 'Upgrade a landmark, or fly again to earn more credits.'
-        : 'Fly the route to earn credits for your next landmark upgrade.';
+    : run.deliveries === 0
+      ? run.lastRoll === null
+        ? 'Make your first delivery: choose a boost, then select Fly route.'
+        : 'Keep flying until you complete your first delivery.'
+      : run.district === 1 && completedStages === 0 && firstLandmarkCost !== null
+        ? `First delivery complete. Upgrade ${LANDMARK_NAMES[0]} for ${firstLandmarkCost} credits.`
+        : run.district === 1 && completedStages > 0 && run.deliveries < 4
+          ? `Starter contract: complete 4 deliveries. Progress ${run.deliveries}/4. The fourth delivery pays 120 × boost credits.`
+          : canUpgrade
+            ? 'Upgrade a landmark, or fly again to earn more credits.'
+            : 'Fly the route to earn credits for your next landmark upgrade.';
 
   const showFeedback = (kind: FeedbackKind, label: string) => {
     feedbackSequence.current += 1;
