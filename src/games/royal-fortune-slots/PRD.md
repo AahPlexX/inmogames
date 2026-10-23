@@ -8,7 +8,7 @@ Planned Functional Features Specification:
 
   technical_foundation:
     architecture_and_engine: "React/TypeScript presentation over pure five-reel payline engine, explicit source-controlled reel strips/paytable, exact analytical probability audit, versioned shared save repository, procedural Web Audio, responsive game-scoped CSS."
-    dependencies_used: ["react 19.3.0", "react-dom 19.3.0", "firebase 13.0.0", "vitest 5.0.3", "playwright 1.64.0"]
+    dependencies_used: ["react 19.3.1", "react-dom 19.3.1", "firebase 13.1.0", "vitest 5.0.5", "playwright 1.64.1", "vite 8.3.5"]
 
   core_feature_specifications:
     - name: "Fixed five-reel slot engine"

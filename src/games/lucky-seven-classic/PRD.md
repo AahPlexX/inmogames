@@ -8,7 +8,7 @@ Planned Functional Features Specification:
 
   technical_foundation:
     architecture_and_engine: Pure three-reel center-line engine with source-controlled 32-stop strips, exhaustive probability audit, schema-v1 settled persistence, React mechanical-cabinet presentation, procedural Web Audio, shared versioned save platform, scoped responsive CSS, and production-valid Vite builds.
-    dependencies_used: ["React 19.3.0", "TypeScript 7.0.2", "Vitest 5.0.3", "Playwright 1.64.0", "Firebase 13.0.0", "Vite 8.3.4"]
+    dependencies_used: ["React 19.3.1", "TypeScript 7.0.2", "Vitest 5.0.5", "Playwright 1.64.1", "Firebase 13.1.0", "Vite 8.3.5"]
 
   core_feature_specifications:
     - name: "Exact classic reel engine"

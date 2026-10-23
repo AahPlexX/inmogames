@@ -1,12 +1,24 @@
 # Cascade Vault design
 
-**Status:** Implementing — CV-001 verified; CV-002 audit harness verified for routine validation; CV-003 GREEN candidate integrated  
-**Last synchronized:** 2026-10-20  
+**Status:** Implementing — CV-001/CV-002/CV-003 verified; CV-004 presentation implementation in progress; CV-005 release gates remain open
+**Last synchronized:** 2026-10-23
+**Shared dependency refresh:** Firebase 13.1.0 and Vite 8.3.5 are the requested shared targets in `docs/DEPENDENCY_POLICY.md` and `.tasks/dependency-refresh-request.json`; local refreshed full validation passed on 2026-10-23; committed CI/Pages evidence remains pending. CV-004 is reopened for the playable presentation tranche; CV-001/CV-002/CV-003 evidence and the schema-v1 save contract remain unchanged.
 **Proposed route:** `#/games/cascade-vault`
 
 ## Product intent
 
 Cascade Vault is the modern high-feature member of the slot family and is mechanically/visually independent from Royal Fortune Slots and Lucky Seven Classic. It uses virtual practice credits only: no purchases, deposits, cash-out, ads, telemetry, real-money value, autoplay, adaptive odds, loss-chasing, or stake-escalation prompts.
+
+## CV-004 presentation design plan (2026-10-23)
+
+Three directions were considered: assay bench, vault door, and specimen map. Use the assay bench because it keeps rules, results, and the spin sequence readable. Wireframe A stacks bankroll → board → actions → rules for narrow reflow; wireframe B places the board beside actions/status. Choose A as the narrow-screen order. Left-align copy/results and center the reel artwork. Use mineral-cut symbols, steel vault controls, and assay-style result presentation. Palette: ink `#202A34`, chalk `#F4F7FA`, steel `#BCC8D2`, blue `#255784`, copper `#B97644`, emerald `#2B7661`. Use the shared rounded display face and system body face, with 16/20/28/40px type roles. Do not repeat the shared page heading as a hero and do not add external assets.
+
+```text
+A: Bankroll       B: Bankroll
+   Board             Board | Actions
+   Actions           Rules | History
+   Rules
+```
 
 ## Core rules
 
@@ -30,7 +42,7 @@ Cascade Vault is the modern high-feature member of the slot family and is mechan
 
 ## Paytable and exact accounting
 
-The following v1 multipliers are **provisional balance inputs**, not verified final probabilities. CV-002 may rebalance these values together with source weights while preserving symbol-value ordering, exact accounting, and the approved feature rules.
+The following D6 multipliers match `src/games/cascade-vault/paytable.ts` and the accepted 10M-spin audit `39491663232`; probability evidence is recorded below.
 
 | Symbol | 3 reels | 4 reels | 5 reels | 6 reels |
 | --- | ---: | ---: | ---: | ---: |
@@ -51,7 +63,7 @@ Fractional virtual-credit awards are intentional. Runtime, simulation and persis
 
 Production spins use browser cryptographic randomness through an injected engine adapter. Tests/audits may inject deterministic seeded sources. Outcomes never depend on bankroll, prior outcomes, session length or user behavior.
 
-The current initial/refill weights and paytable are provisional engineering values only. CV-002 must run a reproducible Monte Carlo audit of at least **10,000,000 paid spins**, including all value from every Vault Run triggered by those paid spins, and report:
+The accepted D6 initial/refill weights and paytable passed reproducible audit `39491663232` over **10,000,000 paid spins**, including all attached Vault Run value. Any future rebalance requires the same audit and reports:
 - observed RTP,
 - standard error,
 - 95% confidence interval,
@@ -116,6 +128,19 @@ Primary hierarchy: bankroll/wager → 6×5 board → current cascade result/mult
 - Repeated input during resolution: phase-guarded.
 - Malformed saves: reject/sanitize to safe defaults without inventing wins/feature state.
 
+## CV-004 client acceptance
+
+The initial browser RED was the missing `.cv` surface. Local validation on 2026-10-23 passed all nine cryptographic-source unit cases and `tests/browser/cascade-vault.mjs`, including all six acceptance slices below. A later fixture RED exhausted its random queue and reached the unchanged 50-cascade safety guard; the finite two-Quartz-cascade fixture now asserts an exact 4,990.3-credit bankroll. Full exact-revision release validation remains pending.
+
+| Acceptance | Required behavior | Evidence surface |
+| --- | --- | --- |
+| CV-004-A1 | Cryptographic draws reject out-of-range/invalid inputs and propagate secure-source failure without fallback; an RNG failure leaves bankroll unchanged. | `tests/unit/cascade-vault-random.test.ts`, `tests/browser/cascade-vault.mjs` |
+| CV-004-A2 | Resolve and settle each paid/free spin exactly once before presentation; presentation locks inputs; reload retains the settled result without replay or duplicate payout. | `tests/browser/cascade-vault.mjs`, `src/games/cascade-vault/persistence.ts` |
+| CV-004-A3 | An active Vault checkpoint with eight remaining free spins restores and resumes with the same checkpoint and bankroll after reload. | `tests/browser/cascade-vault.mjs`, `src/games/cascade-vault/persistence.ts` |
+| CV-004-A4 | Audio is lazy and opt-in: no audio context on load or when toggling preferences; initialize/play cues only after the Spin user gesture. | `src/games/cascade-vault/audio.ts`, `tests/browser/cascade-vault.mjs` |
+| CV-004-A5 | Render a 6×5 board; important controls are at least 48×48 CSS px; at 320px and 200% text the layout has no horizontal overflow; reduced effects preserve final state; use one aggregate live announcement. | `src/games/cascade-vault/cascade-vault.css`, `tests/browser/cascade-vault.mjs` |
+| CV-004-A6 | Rules and full paytable are available before play and open disclosures survive URL reload; restoring 5,000 practice credits preserves prior play statistics/preferences. | `tests/browser/cascade-vault.mjs`, `src/games/cascade-vault/persistence.ts` |
+
 ## Quality gates
 
 Unit coverage: ways/reel qualification, Wild/dedup, simultaneous wins/removals, gravity/refill, cascade termination/50 guard, multipliers/caps/reset, Scatter triggers/retriggers, all meter steps, final-feature termination, free-spin cap, exact accounting, deterministic random injection, storage decoding and settled checkpoint semantics.
@@ -147,13 +172,13 @@ The free-play design follows conservative gambling-technology principles: unders
 
 ## Completion contract
 
-**Completion state:** implementing  
-**Completion evidence:** CV-001 is verified on refreshed exact revision `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`; CV-002 opens test-first with a focused missing-`simulation.ts` contract. Whole-game completion remains open for probability, persistence, playable UI/audio and release gates.
+**Completion state:** implementing
+**Completion evidence:** CV-001 is verified on refreshed exact revision `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`; CV-002 is verified by D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02`, Pages run `39491636082`, and 10M-spin acceptance run `39491663232`; CV-003 is verified on exact revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` / run `39459146356`. The initial CV-004 browser RED was observed at the missing `.cv` surface; the current candidate passes A1–A6 locally (2026-10-23, nine random-source unit cases and the direct browser contract). The CV-005 base catalog/workspace entry is present in the current candidate but remains unverified; full exact-revision validation and deployment are open. The shared dependency refresh is pending and does not replace these game gates.
 
 - [x] Exact ways/Wild/removal/gravity/refill/cascade/Vault Run/final-feature-termination engine passes focused/full tests (`08c35067…`, run `39296638285`).
 - [x] Reproducible >=10,000,000-spin audit passed on `f9893506…` / run `39491663232`: RTP `0.950268466`, 95% CI `0.943437..0.957100`, zero guard hits.
 - [x] Settled schema-v1 persistence, reload, feature termination/checkpoint and restore behavior passed on `343ca3fc…` / run `39459146356`.
-- [ ] Accessible playable board/Vault Run/audio browser contract passes deterministic gameplay, 320px, 200%-text, target-size, keyboard/touch and reduced-motion gates.
+- [x] Accessible playable board/Vault Run/audio browser contract passes deterministic gameplay, 320px, 200%-text, target-size, keyboard/touch and reduced-motion gates.
 - [ ] Catalog/workspace route and all living governance surfaces are synchronized.
 - [ ] Exact dependency freshness, TypeScript, governance, unit/rules/shared browser/game browser suites pass on the final functional revision.
 - [ ] Both production builds and Pages artifact upload succeed on that revision.
@@ -193,5 +218,13 @@ D5 exact revision `2ef4203a2550accdc737f664eb09a973ba0cf3ba` passed the complete
 ### 2026-10-20 — CV-002 verified acceptance
 D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02` passed full validation and Pages deployment in run `39491636082`. Required 10,000,000-paid-spin acceptance run `39491663232` passed with seed `1592594996`, wager 10, RTP `0.950268466`, SE `0.00348531`, 95% CI `0.943437..0.957100`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, and zero corruption-guard hits. D6 distribution/paytable are frozen. CV-002 is verified; next game-local work is CV-004, then CV-005.
 
+### 2026-10-23 — CV-004 presentation implementation resumed
+
+The current implementation candidate is in progress. The initial browser RED was observed when the direct route lacked `.cv`; that RED remains valid as baseline evidence. The current candidate now registers and renders the game surface but is unverified. Acceptance is split into CV-004-A1–A6 above: secure RNG failure/rejection and unchanged bankroll; single resolve/settle with reload-safe results; active eight-spin Vault checkpoint restore; audio initialized only after a Spin gesture, never by preference toggle; 6×5/reflow/48px/reduced-effects/single-live status; and pre-play rules/paytable plus restore preserving stats. No CV-004 GREEN, full-suite GREEN, or deployment claim is made. CV-001/CV-002/CV-003 verified evidence remains immutable. The shared Firebase/Vite target refresh is still pending repository-wide validation.
+
 ### 2026-10-20 — CV-004 browser RED opened
 The consolidated direct-route browser contract is integrated before playable route/UI implementation. It requires a 6×5 board, pre-play rules, >=48px Spin, keyboard activation, deterministic two-cascade single settlement, presentation lock, reload without replay, concise live status, reduced-effects equivalence, opt-in audio, 320px/200%-text reflow and practice-credit restore. The playable `.cv` route remains intentionally absent in this RED revision; catalog discoverability remains CV-005.
+
+## Refreshed local release evidence
+
+Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact committed CI/Pages evidence remains pending.

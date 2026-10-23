@@ -7,6 +7,8 @@
 - [x] Runtime network is restricted to the shared optional Firebase account/save platform.
 - [x] No third-party visual/audio/font/gameplay asset dependency.
 
+Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared full validation remains pending.
+
 ## Core Feature Execution Pipeline
 
 ### THR-001 — Deterministic Solvable Round Engine

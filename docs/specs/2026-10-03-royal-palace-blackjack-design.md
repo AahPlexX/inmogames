@@ -1,7 +1,8 @@
 # Royal Palace Blackjack design
 
 **Status:** Verified — 2026-10-09 table experience/viewport/motion polish complete; live Firebase account services remain externally blocked by TASK-003  
-**Last synchronized:** 2026-10-09  
+**Last synchronized:** 2026-10-23
+**Shared dependency refresh:** Firebase 13.1.0 and Vite 8.3.5 are the requested shared targets in `docs/DEPENDENCY_POLICY.md` and `.tasks/dependency-refresh-request.json`; local refreshed full validation passed on 2026-10-23; committed CI/Pages evidence remains pending. No game-local behavior, save schema, completion state, or prior verification evidence changed.
 **Route:** `#/games/royal-palace-blackjack`
 
 ## Product intent
@@ -137,7 +138,7 @@ Rendered browser gates cover 320 CSS-px and 200% text reflow, table-help discove
 
 Historical verified baseline: run `37255447688` passed exact dependency freshness, design lint, TypeScript, structural checks, 44 unit tests, Firestore rules, account/persistence browser checks, all Royal Palace browser suites, both production builds, artifact upload and automatic Pages deployment. Repository-wide revision `9ee0f93d` later passed the complete validation/deployment chain in run `37256390159`. Independent live desktop inspection was clean; live mobile inspection exposed the former lone-action defect, and an isolated live-browser selector discrimination confirmed that correction before the unchanged 320px regression and Pages deployment passed. A later post-deploy live-browser retry timed out, so no unsupported post-fix live-mobile claim is recorded.
 
-Current dependency baseline: run `37994433846` reverified the exact current stable dependency set used by this pass: React/React DOM 19.3.0, Firebase 13.0.0, Vite 8.3.4, TypeScript 7.0.2, Vitest 5.0.3 and Playwright 1.64.0.
+Dependency baseline verified in run `37994433846` for that historical pass: React/React DOM 19.3.0, Firebase 13.0.0, Vite 8.3.4, TypeScript 7.0.2, Vitest 5.0.3 and Playwright 1.64.0.
 
 Governance evidence for the polish is explicit. Initial integration `5dbe580c` triggered Pages run `37860044626`, which stopped at `game:check` before unit/browser execution because the reopened tracker used unsupported capability-state vocabulary and omitted the exact required `Last verified revision` field. Tracker-schema repair `5bc8d6fc` triggered run `37941713765`; that run reached `game-check: 4 game(s) OK` and then correctly stopped because the repository requires this authoritative spec and tracker to be synchronized in the same change. Sequential evidence commits `1fb1f328`/`0116ae6b` later produced the same push-level guard in run `37943885380`; atomic sync is therefore mandatory for these game-local evidence changes.
 

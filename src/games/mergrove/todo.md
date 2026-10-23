@@ -1,17 +1,19 @@
 # TODO: Mergrove (mergrove)
 
 **Status:** Complete v1; approved v2 progression design awaiting written-spec review; implementation not started  
-**Last synchronized:** 2026-10-07  
+**Last synchronized:** 2026-10-23
 **Architecture & Engine:** Shipped v1 is a static React/Vite game with a pure deterministic TypeScript 5 × 5 merge engine, repository-authored SVG sprites, and the shared versioned save platform. Approved v2 preserves that core while adding Campaign/progression modules around it; no production v2 code has started.  
 **Verified v1 evidence:** revision `965c91a5b9090da321ae3eb0d11f9383678b02c6`, GitHub Actions run `37553471015`, plus fresh HTTP-200 deployed-route render.  
 **Dependencies Used:**
-- [x] `react@19.3.0`
-- [x] `react-dom@19.3.0`
-- [x] `firebase@12.19.0` — shared optional account/save platform only
-- [x] `vite@8.3.3` — build/dev
+- [x] `react@19.3.1`
+- [x] `react-dom@19.3.1`
+- [x] `firebase@13.1.0` — shared optional account/save platform only
+- [x] `vite@8.3.5` — build/dev
 - [x] `typescript@7.0.2` — development/type safety
-- [x] `vitest@5.0.3` — unit verification
-- [x] `playwright@1.63.0` — rendered browser verification
+- [x] `vitest@5.0.5` — unit verification
+- [x] `playwright@1.64.1` — rendered browser verification
+
+> Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared full validation remains pending.
 
 > Dependency rule: direct dependency and devDependency declarations remain exact pinned stable versions only; `^` and `~` are prohibited. Revision `965c91a5b9090da321ae3eb0d11f9383678b02c6` passed both dependency gates in run `37553471015`. The approved v2 design requires no new runtime dependency unless the implementation plan proves one necessary against current official documentation.
 

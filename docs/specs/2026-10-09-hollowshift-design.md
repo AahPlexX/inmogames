@@ -1,6 +1,6 @@
 # Hollowshift Product Requirements & Design Specification
 
-**Last synchronized:** 2026-10-09  
+**Last synchronized:** 2026-10-23
 **Status:** pre-implementation product design; approved direction, implementation intentionally not started in this integration  
 **Provisional display name:** Hollowshift  
 **Provisional slug:** `hollowshift`  
@@ -930,3 +930,7 @@ Before any future agent writes Hollowshift gameplay code:
 4. Create the required `src/games/hollowshift/PRD.md`, `TRACKER.md`, `todo.md`, meta/workspace files and GAME_INDEX/task state in one valid integration when implementation begins.
 5. Keep this authoritative spec and the game tracker synchronized with every later Hollowshift implementation/test/index change.
 6. Do not mark the game verified until the full content/progression contract—not merely the vertical slice—passes.
+
+## Prototype release-asset repair (2026-10-23)
+
+`public/prototypes/hollowshift-core-loop-v2.html` links the existing `public/icon.svg` with `../icon.svg`. The full repository browser gate reproduced an automatic `/favicon.ico` HTTP 404 before this change (`tests/browser/hollowshift-prototype.mjs`); prototype rules and production-game scope are unchanged.

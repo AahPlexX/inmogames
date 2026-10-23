@@ -1,6 +1,7 @@
 # Royal Fortune Slots tracker
 
-**Last synchronized:** 2026-10-10  
+**Last synchronized:** 2026-10-23
+**Shared dependency refresh:** Firebase 13.1.0 and Vite 8.3.5 are the requested shared targets in `docs/DEPENDENCY_POLICY.md` and `.tasks/dependency-refresh-request.json`; local refreshed full validation passed on 2026-10-23; committed CI/Pages evidence remains pending. No game-local behavior, save schema, completion state, or prior verification evidence changed.
 **Spec:** `docs/specs/2026-10-10-royal-fortune-slots-design.md`
 
 ## Capability status

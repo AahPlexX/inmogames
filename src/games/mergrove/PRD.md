@@ -1,6 +1,6 @@
 # Mergrove Product Requirements Document
 
-**Last synchronized:** 2026-10-07 (feature inventory expanded from a source audit of `main`; roadmap added; v1 verification state unchanged from the 2026-10-06 sign-off)  
+**Last synchronized:** 2026-10-23 (feature inventory expanded from a source audit of `main`; roadmap added; v1 verification state unchanged from the 2026-10-06 sign-off)
 **Authoritative design:** `docs/specs/2026-10-06-mergrove-design.md`  
 **Execution checklist:** `src/games/mergrove/todo.md`  
 **Tracker:** `src/games/mergrove/TRACKER.md`
@@ -31,13 +31,13 @@ Planned Functional Features Specification:
   technical_foundation:
     architecture_and_engine: "Static React/Vite client. Pure deterministic TypeScript 5x5 merge engine; React presentation; repository-authored inline SVG sprite bank; versioned shared save contract using localStorage for guests and the shared optional Firebase account-save platform for authenticated players. No game-specific runtime network or external asset dependency."
     dependencies_used:
-      - "react@19.3.0"
-      - "react-dom@19.3.0"
-      - "firebase@12.19.0 (shared optional account/save platform only)"
-      - "vite@8.3.3 (build/dev)"
+      - "react@19.3.1"
+      - "react-dom@19.3.1"
+      - "firebase@13.1.0 (shared optional account/save platform only)"
+      - "vite@8.3.5 (build/dev)"
       - "typescript@7.0.2 (development/type safety)"
-      - "vitest@5.0.3 (unit verification)"
-      - "playwright@1.63.0 (rendered browser verification)"
+      - "vitest@5.0.5 (unit verification)"
+      - "playwright@1.64.1 (rendered browser verification)"
     module_map:
       - "engine.ts: pure rules (constants, seed/RNG, piece draw, run creation, placement, flood-fill grouping, merge/cascade, scoring, sunlight, ancient bloom, compost, terminal check). Imports nothing."
       - "persistence.ts: MergroveSave type, structural v1 decoder, GameSaveDefinition (slug/schema/storage key/initial). Imports only engine constants and isRunOver."

@@ -4,12 +4,12 @@ Planned Functional Features Specification:
   game_identity:
     name: "Cascade Vault"
     slug: "cascade-vault"
-    development_status: "Implementing — CV-001/CV-002/CV-003 verified; CV-004/CV-005 planned"
+    development_status: "Implementing — CV-001/CV-002/CV-003 verified; CV-004 started; CV-005 release integration pending"
 
   technical_foundation:
     architecture_and_engine: Pure six-reel/five-row adjacent-ways cascade engine with immutable evaluation, exact centi-credit accounting, injected randomness, bounded base/Vault multipliers, explicit final-feature termination, reproducible production-engine simulation, settled persistence, React presentation and shared save platform.
-    dependencies_used: ["React 19.3.1", "React DOM 19.3.1", "TypeScript 7.0.2", "Vitest 5.0.5", "Playwright 1.64.1", "Firebase 13.0.0", "Vite 8.3.4"]
-    dependency_refresh: "Completed through maintenance run 39296252148 and dependency-only bot commit 08c3506773d17eee3fed7554f211531141856386; exact refreshed Pages run 39296638285 passed full validation and deployment."
+    dependencies_used: ["React 19.3.1", "React DOM 19.3.1", "TypeScript 7.0.2", "Vitest 5.0.5", "Playwright 1.64.1", "Firebase 13.1.0", "Vite 8.3.5"]
+    dependency_refresh: "Current exact targets are installed with frozen lockfile; see docs/DEPENDENCY_POLICY.md. Full refreshed release validation remains pending."
 
   core_feature_specifications:
     - name: "Exact ways/cascade/Vault Run engine"
@@ -19,7 +19,7 @@ Planned Functional Features Specification:
 
     - name: "Reproducible probability and balance audit"
       id: "CV-002"
-      details: "Deterministic seeded audit reuses production createWeightedVaultRandomSource and resolveSpin. Each observation is one paid spin plus all value/cascades from its complete triggered Vault Run, with no extra free-spin wager denominator. Final >=10,000,000 paid spins report RTP, standard error, 95% CI, Vault Run entry frequency, defined average cascade depth and corruption-guard incidence. Current distributions and paytable are provisional for balance; the authoritative design permits rebalancing both, and the accepted interval must intersect 94%-97% with zero corruption-guard hits."
+      details: "Deterministic seeded audit reuses production createWeightedVaultRandomSource and resolveSpin. Each observation is one paid spin plus all value/cascades from its complete triggered Vault Run, with no extra free-spin wager denominator. Final >=10,000,000 paid spins report RTP, standard error, 95% CI, Vault Run entry frequency, defined average cascade depth and corruption-guard incidence. D6 distributions and paytable passed acceptance run 39491663232; the authoritative design permits rebalancing both, and the accepted interval must intersect 94%-97% with zero corruption-guard hits."
       feature_development_status: "verified — D6 f9893506 / Pages 39491636082 / 10M acceptance 39491663232"
 
     - name: "Settled durable practice progression"
@@ -29,13 +29,13 @@ Planned Functional Features Specification:
 
     - name: "Accessible cascading board and feature presentation"
       id: "CV-004"
-      details: "Responsive 6x5 board, aggregate live cascade status, Vault Run meter/free-spin/multiplier panel, native >=48px important controls, finite/reduced-motion sequence presentation, opt-in procedural audio, rules/paytable, 320px/200%-text keyboard/touch/overflow gates."
-      feature_development_status: "started — browser RED integrated; evidence pending"
+      details: "Accessible 6x5 board, aggregate live cascade status, Vault Run meter and free-spin/multiplier panel, >=48px important controls, finite/reduced-effects presentation, lazy opt-in procedural audio, rules/paytable before play, 320px/200%-text keyboard/touch/overflow behavior, cryptographic rejection and failure handling, exactly-once pre-presentation settlement, reload-safe results and active eight-free-spin checkpoint recovery, and stats-preserving practice-credit restore."
+      feature_development_status: "started — A1–A6 pass local browser acceptance and nine secure-random unit cases on 2026-10-23; exact-revision CI/Pages release evidence pending"
 
     - name: "Catalog, governance and exact-revision release"
       id: "CV-005"
-      details: "Discoverable catalog/lazy route only after browser RED; synchronized spec/plan/tracker/PRD/todo/GAME_INDEX/.tasks; exact dependency checks; full repository validation; both builds; GitHub Pages deployment."
-      feature_development_status: "planned"
+      details: "Register the playable catalog/lazy route after browser RED; synchronize spec/plan/tracker/PRD/todo/GAME_INDEX/.tasks; pass exact dependency checks and full repository validation; produce both builds and deploy the exact functional revision to GitHub Pages."
+      feature_development_status: "started — base catalog/workspace entry is present in the current candidate; final exact-revision validation and deployment remain open"
 
 ## Current evidence
 
@@ -47,7 +47,8 @@ Planned Functional Features Specification:
 - Dependency-maintenance run `39293588043` exposed stale request revision 7. Request revision 8 corrected the target versions.
 - Dependency-maintenance run `39294812001` verified every revision-8 direct dependency as npm latest and reached `pnpm validate`; design lint and TypeScript passed. `game:check` then correctly rejected the Cascade PRD/todo because the previous handoff rewrite renamed the required `technical_foundation.dependencies_used` field and the required `Dependencies` todo heading. These governance structures are restored without changing gameplay source.
 - Two isolated advisory implementation reviews were centrally reconciled with source. Supporting pre-audit analysis indicates current balance is far above the target and that weights-only tuning is not credible; CV-002 therefore exercises the spec-authorized paytable + distribution rebalance rather than treating the current paytable as final.
-- No gameplay capability is marked verified until canonical repository validation passes. TASK-003 remains the separate external live-Firebase blocker only.
+- CV-004 A1–A6 pass local browser acceptance on 2026-10-23; initial missing-surface and exhausted-fixture REDs remain historical evidence. Exact-revision CI/Pages are pending. CV-001/CV-002/CV-003 historical verification remains intact.
+- The shared Firebase 13.1.0/Vite 8.3.5 dependency targets are in the current request; repository-wide refresh validation remains pending. The current candidate includes the CV-005 catalog/workspace base entry, but no all-repository GREEN or deployment is claimed. TASK-003 is the only external service blocker.
 
 ## CV-001 verification and CV-002 opening — 2026-10-19
 

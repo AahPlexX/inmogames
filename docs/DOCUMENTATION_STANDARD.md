@@ -18,7 +18,7 @@ The canonical account/save contract is `docs/FIREBASE_ARCHITECTURE.md`.
 
 ## Dependency evidence
 
-All direct `dependencies` and `devDependencies` must be exact-pinned latest stable releases at integration time. Any dependency change requires current authoritative release evidence plus npmjs.com corroboration recorded in `docs/DEPENDENCY_POLICY.md`, an updated `.tasks/dependency-refresh-request.json`, a regenerated frozen lockfile, and successful `pnpm dependency:check`, `pnpm dependency:current`, and full validation. Prerelease channels are excluded unless separately approved by a repository decision.
+All direct `dependencies` and `devDependencies` must be exact-pinned latest stable releases at integration time. Any dependency change requires current authoritative release evidence plus approved npm corroboration recorded in `docs/DEPENDENCY_POLICY.md`, an updated `.tasks/dependency-refresh-request.json`, a regenerated frozen lockfile, and successful `pnpm dependency:check`, `pnpm dependency:current`, and full validation. Prerelease channels are excluded unless separately approved by a repository decision.
 
 ## Naming convention
 

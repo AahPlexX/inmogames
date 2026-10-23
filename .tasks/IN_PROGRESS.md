@@ -1,5 +1,11 @@
 # In progress
 
+## Resume here — current release candidate (2026-10-23)
+
+**Current state:** D-025 dependency refresh and CV-004 acceptance pass locally; all 161 unit cases, four rules tests, shared/game browser checks and both builds are GREEN. Cloudline account-emulator checks pass with the refreshed SDK. The prototype favicon RED is fixed with the existing icon and unchanged console gate. D-026 closes only Cloudline’s automated client-fix tranche at `1d0c269`; its full PRD remains implementing.
+**Next action:** push the validated release candidate, verify exact-revision CI/Pages, smoke the deployed routes, then reconcile evidence records.
+**Blockers:** committed CI/Pages evidence pending; TASK-003 remains external live Firebase. Cloudline campaign/human sign-off and preserved Mergrove branch review remain open.
+
 ## PLATFORM-001: Firebase authentication and account saves
 **Priority:** P0 | **Tags:** firebase, auth, firestore, persistence
 
@@ -7,16 +13,16 @@ Shared optional email/password Auth, isolated guest/account repositories, transa
 
 Lucky Seven Classic is game-locally verified on exact functional revision `04ae049259232edf9ec5af4aa63d4786d8673ba4` / run `38121766726`; its remaining live-Firebase concern is only this shared external TASK-003 platform blocker.
 
-## GAME-CLOUDLINE-COURIERS-001: Cloudline Couriers presentation and first-session quality
-**Priority:** P1 | **Tags:** cloudline-couriers, animation, vfx, interaction, onboarding, accessibility | **Status:** implementing — active one-game workstream
+## Historical item — GAME-CLOUDLINE-COURIERS-001: automated client-fix tranche closed locally
+**Priority:** P1 | **Tags:** cloudline-couriers, animation, vfx, interaction, onboarding, accessibility | **Status:** client-fix tranche closed on `1d0c269`; broader game implementation remains open
 
 Authoritative design: `docs/specs/2026-10-06-cloudline-couriers-design.md`. Product requirements: `src/games/cloudline-couriers/PRD.md`. Execution/resume state: `src/games/cloudline-couriers/todo.md` and `TRACKER.md`.
 
-### Current client-triage handoff — 2026-10-23
+### Local client-triage closeout — 2026-10-23
 
-**Current state:** implementing; local acceptance and the runtime/test/config digest are recorded in the Cloudline spec's Active client-triage acceptance section.
-**Next action:** resolve dependency corroboration and apply the documented exact-pin/full-validation integration sequence. Origin/main remains `8012fccd77c5f1fbfa8f99762167a24dc62caa64`; no push/deployment of this candidate is claimed.
-**Blockers:** npmjs.com package pages return 403; official registry metadata independently matches the target manifest but substitution remains an owner question under `docs/DEPENDENCY_POLICY.md`. Existing stale pins stop `pnpm validate`; the preserved Cascade Vault CV-004 missing `.cv` stops aggregate browser checks after Cloudline. D-022 keeps other game quality work paused. Live Firebase remains TASK-003.
+**Current state:** the automated client-fix acceptance is GREEN on local functional revision `1d0c269`; full exact-revision validation and deployment remain pending. Cloudline is not game-complete.
+**Next action:** resume Cloudline only for a new reproduced defect or remaining broader PRD/human-comprehension work after the current Cascade release gate.
+**Remaining scope:** complete-game PRD, human comprehension and deployed sign-off remain open. D-026 closes only the automated client-fix tranche. Live Firebase remains TASK-003.
 
 ### Historical evidence
 
@@ -24,69 +30,75 @@ Owner playtesting on 2026-10-22 identified unclear purpose/controls, generic lan
 
 The next CLC-011/CLC-015 RED was isolated in `39959280821`: non-delivery, first-delivery and first-upgrade states all collapsed to generic upgrade guidance because starting credits already permitted upgrades. Production revision `8e74431747cff945021b0c42689b64dbc086d99e`, validated from main head `397fc2d33b33e12cb61a7070b0752228ab328fd8` in run `39960131577`, passed dependency-current/design/type/document gates, all 151 unit tests, Firestore rules, account-browser checks, and the expanded Cloudline browser contract: first-screen purpose/help, contextual delivery → upgrade → starter-contract guidance, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion without stale animation-only state, and guest reload persistence. The guidance derives from existing run state and adds no save-schema field.
 
-Cloudline remains implementing. CLC-007 still needs broader campaign-quality VFX/art state breadth and independent human rendered critique; CLC-011 still needs comprehension evidence; generalized CLC-015 contract generation/variety/persistence remains open. Continue Cloudline only until the active quality workstream is explicitly closed; do not start another game's animation/effects/interactions work in parallel.
+Cloudline remains implementing overall. CLC-007 still needs broader campaign-quality VFX/art state breadth and independent human rendered critique; CLC-011 still needs comprehension evidence; generalized CLC-015 contract generation/variety/persistence remains open. D-026 closes the automated client-fix tranche so the previously specified Cascade release gate can resume.
 
-Repository package/lock dependency refresh remains blocked from committing because maintenance run `39960131577` reached and passed Cloudline, then hit the preserved unrelated Cascade Vault CV-004 RED waiting for `.cv`. TASK-003 remains the external live-Firebase blocker only.
+The prior dependency-corroboration blocker is resolved by D-025. Package/lock refresh and full validation remain pending on the current candidate; the resumed Cascade CV-004/CV-005 release gate is active. TASK-003 remains the external live-Firebase blocker.
 
-**Resume here:** use the Current client-triage handoff above and Cloudline tracker; the earlier run evidence is historical. Resolve the named integration blockers before claiming deployment or full validation.
+**Historical resume note:** earlier triage blockers and next steps above are superseded by the authoritative Current resume at the top of this file. Preserve their run evidence as historical; do not treat them as the active workstream.
 
 ## GAME-CASCADE-VAULT-001: Cascade Vault production implementation
-**Priority:** P1 | **Tags:** arcade, ways, cascades, probability, accessibility, persistence | **Status:** paused — preserved CV-004 browser RED; Cloudline is the active game workstream
+**Priority:** P1 | **Tags:** arcade, ways, cascades, probability, accessibility, persistence | **Status:** active — D-026 resumes CV-004 presentation and CV-005 release integration
 
 Authoritative design: `docs/specs/2026-10-10-cascade-vault-design.md`. Plan: `docs/plans/2026-10-10-cascade-vault.md`.
 
 CV-001 is verified on exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`: dependency freshness, design lint, TypeScript, history-aware governance, the full unit/rules/browser chain, both production builds, Pages artifact upload and deployment all passed. The earlier RED/fixture/terminal-feature evidence remains preserved in the game spec/tracker.
 
-CV-002 opens test-first with a focused simulation contract before `simulation.ts` exists. It must reuse production `createWeightedVaultRandomSource` + `resolveSpin`, treat one paid spin plus its complete attached Vault Run as one RTP observation, stream confidence statistics, report Vault entry/cascade metrics, and reject any corruption-guard hit. Current paytable and weights remain provisional; supporting reconnaissance rules out a weights-only tune, so the spec-authorized paytable + distribution rebalance remains in scope.
+CV-002 and CV-003 are complete and their historical evidence is retained below. The active work is CV-004 presentation/browser acceptance followed by CV-005 release integration; preserve the audited D6 economy and schema-v1 save contract.
 
-The governance-only workspace shell remains non-playable; route registration waits for browser RED. TASK-003 remains the external real-Firebase blocker only.
+The playable workspace/route candidate is now present; CV-004 browser acceptance and CV-005 exact-revision release verification remain open. TASK-003 remains the external real-Firebase blocker only.
 
-CV-002 RED is exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487`. Simulator implementation `cf8f6e3723f483bc126b0f50b0f42161c14dff56` then passed the full repository validation and Pages deployment chain in run `39298014858`. Independent simulation review identified three test-evidence gaps. Run `39299103907` then showed the nonzero feature fixture itself had an accidental second Sapphire cascade and exhausted its queue; production simulation code was unaffected. The refill triplet is corrected to `vault_crown/copper/copper` and independently checked to produce exactly one 200-unit quartz cascade. The fixture correction is GREEN on `fac39b0744d2872ec05cab7b9e8f7c7aadb26cc6` / run `39299407841`. Next when resumed: validate the opt-in audit harness/workflow, run a 25,000-spin production-engine screen of the unchanged configuration, use that evidence to select/tune paytable+weights, and only then run the required >=10M acceptance audit before CV-003 integration claims.
+### Historical CV-002 test-first and balance evidence
+
+CV-002 RED is exact revision `82b7bb2fa9d2e5aafa2cd7d2b080052127240c5e` / run `39297705487`. Simulator implementation `cf8f6e3723f483bc126b0f50b0f42161c14dff56` then passed the full repository validation and Pages deployment chain in run `39298014858`. Independent simulation review identified three test-evidence gaps. Run `39299103907` then showed the nonzero feature fixture itself had an accidental second Sapphire cascade and exhausted its queue; production simulation code was unaffected. The refill triplet is corrected to `vault_crown/copper/copper` and independently checked to produce exactly one 200-unit quartz cascade. The fixture correction is GREEN on `fac39b0744d2872ec05cab7b9e8f7c7aadb26cc6` / run `39299407841`. Later CV-002 verification and the current CV-004/CV-005 action are recorded separately; this historical next-step sequence is superseded.
 
 ## GAME-MERGROVE-002: Progression expansion planning
 **Priority:** P1 | **Tags:** mergrove, campaign, levels, power-ups, progression, achievements | **Status:** design approved; implementation separately gated
 
-The approved v2 Mergrove scope remains documented and outside the active Cloudline Couriers workstream.
+The approved v2 Mergrove scope remains documented and outside the active Cascade Vault release workstream.
 
 ## QUALITY-001: Device- and viewport-agnostic game UX contract
 **Priority:** P0 | **Tags:** responsive, device-agnostic, viewport, accessibility, design-browser, quality | **Status:** design approved; separately gated
 
-Repository-wide quality direction remains governed by its own specification. Cloudline's current interaction tranche is browser-verified at 390/1024/1440 plus reduced motion, but complete-game 320px/200%-text/input evidence remains open. Cascade Vault must ultimately meet the same quality bar when its paused workstream resumes.
+Repository-wide quality direction remains governed by its own specification. Cloudline's local interaction tranche has browser evidence at 390/1024/1440 plus reduced motion, while complete-game 320px/200%-text/input evidence remains open. Active Cascade CV-004/CV-005 work must meet the same quality bar before release.
 
-### Cascade Vault audit harness discovery repair
-Run `39300303052` passed dependency/type/focused engine+simulation checks, then failed because the repo Vitest include excluded `tests/audit/**`. The fix conditionally adds audit discovery only under `CASCADE_VAULT_AUDIT=1`; routine unit discovery remains unchanged. Validate full repo + 25k audit before balance tuning.
+### Historical Cascade Vault audit harness discovery repair
+Run `39300303052` passed dependency/type/focused engine+simulation checks, then failed because the repo Vitest include excluded `tests/audit/**`. Conditional discovery under `CASCADE_VAULT_AUDIT=1` was later integrated and passed in run `39457748530`; routine unit discovery remains unchanged. D6 balance acceptance is complete.
 
-## GAME-CASCADE-VAULT-003: Settled persistence
-**Status:** RED contract opened in parallel with CV-002 audit
+### Historical CV-003 RED contract (later verified)
 
-Schema-v1 tests require exact centi-credit accounting, validated post-spin Vault checkpoints, compact settled summaries, restore guards, and no partial cascade/animation persistence. Production `storage.ts` / `persistence.ts` remain intentionally absent until the missing-module RED is recorded.
+The CV-003 RED contract required exact centi-credit accounting, validated post-spin Vault checkpoints, compact settled summaries, restore guards, and no partial cascade/animation persistence. The RED revision intentionally lacked production `storage.ts` / `persistence.ts`; the settled implementation was later verified as recorded below.
 
-### CV-003 GREEN candidate
-RED `40442255…` / run `39458077585` isolated only missing persistence/storage modules. Candidate implements the unchanged settled-only contract; verification pending. Audit discovery fix `4808b129…` / run `39457748530` is fully green/deployed; 25k balance screen remains open.
+### Historical CV-003 RED and GREEN
+RED `40442255…` / run `39458077585` isolated the missing persistence/storage modules. CV-003 was later verified on `343ca3fc…` / full validation and Pages run `39459146356`; the candidate-era pending wording is superseded. Audit discovery fix `4808b129…` / run `39457748530` is fully green/deployed; D6 balance acceptance later completed.
 
-### CV-002 distribution candidate D1
+### Historical CV-002 distribution candidate D1
 25k audit `39459206136` aborted on one corruption-guard hit, so provisional weights are rejected. D1 flattens common paying weights and reduces Wild to 1 while preserving initial Scatter 4; paytable remains unchanged to isolate board-evolution risk. CV-003 is fully GREEN/deployed on run `39459146356`.
 
-### CV-002 structural candidate D2
+### Historical CV-002 structural candidate D2
 D1 25k audit `39459715477` still hit the 50-cascade guard. D2 adds inert nonpaying `blank` weight 24 to initial/refill tables, with focused tests; paytable remains unchanged. Next gate: full validation + same-seed 25k audit.
 
-### CV-002 calibrated candidate D3
+### Historical CV-002 calibrated candidate D3
 D2 is chain-safe (25k run `39460203286`, zero guard hits) but RTP=13.214587. D3 sets blank=30 and a positive integer-centi paytable near 8.5% of D2, targeting ~0.955 by screening estimate. Full validation + same-seed 25k measurement are next; no acceptance claim yet.
 
-### D3 test synchronization
+### Historical D3 test synchronization
 Audit `39461070614` reached focused tests and failed only because the historical one-cascade feature fixture still expected 200 units; D3 correctly produces 20. Test-only expectation synchronized; production unchanged. Rerun full + 25k audit next.
 
-### CV-002 paytable candidate D4
+### Historical CV-002 paytable candidate D4
 D3 audit `39461462180`: zero guard hits, RTP 0.6285558, SE .04704613, CI .536345-.720766. Distribution is frozen; D4 modifies only positive integer-centi paytable values, retaining minimum common 3-reel awards. Next: full validation + same-seed 25k screen.
 
-### CV-002 paytable candidate D5
+### Historical CV-002 paytable candidate D5
 D4 `84a18f92…` passed full validation/Pages (`39461928870`) and same-seed 25k audit `39461954213` with zero guard hits but RTP `1.1440064`. Distribution remains frozen at blank 30. D5 is paytable-only using midpoint scale `0.8347855`; next gate is full validation + same-seed 25k, then >=10M acceptance only if calibration is plausible.
 
-### CV-002 paytable candidate D6
+### Historical CV-002 paytable candidate D6
 D5 full validation/Pages is green (`2ef4203a…`, run `39490450975`), but 10M acceptance `39490755045` rejected RTP `0.87157806` (95% CI `0.865325..0.877831`) with zero guard hits. D6 changes paytable only by midpoint scale ~1.0957; next gate is full validation then >=10M acceptance.
 
-### CV-002 verified acceptance
-D6 `f9893506…` passed Pages `39491636082` and 10M acceptance `39491663232` at RTP `0.950268466` with zero guard hits. Resume with CV-004 browser RED.
+### Historical CV-002 verified acceptance
+D6 `f9893506…` passed Pages `39491636082` and 10M acceptance `39491663232` at RTP `0.950268466` with zero guard hits. CV-002 is complete; see the current CV-004/CV-005 resume above.
 
-### CV-004 browser RED candidate
-Consolidated `tests/browser/cascade-vault.mjs` is registered before playable workspace routing; expected first failure is missing `.cv`. Its RED remains preserved while Cloudline is the active one-game quality workstream.
+### Historical CV-004 browser RED
+The preserved direct-route RED identified the missing `.cv` workspace. The current CV-004 candidate and browser contract are being completed under D-026; the active release state is recorded at the top of this file and in the Cascade Vault tracker.
+
+## RELEASE-001: Prototype icon release gate
+
+**Status:** local verification passed; exact committed CI/Pages pending. Full validation reached the Hollowshift prototype after all production-game browser checks passed, then reproduced `/favicon.ico` HTTP 404. The prototype now reuses `public/icon.svg`; the browser console gate is unchanged.
+**Resume here:** current state: focused and full local browser checks passed; next action: verify exact committed CI/Pages; blockers: no additional service blocker.

@@ -22,17 +22,17 @@
 
 ## Current handoff
 
-**Implementation state:** implementing; the client-triage candidate passes the local acceptance contract in the authoritative spec. The candidate is not integrated or deployed.
-**Last verified revision:** historical first-win functional revision `8e74431747cff945021b0c42689b64dbc086d99e`, run `39960131577`; current local evidence and runtime/test/config digest are in the spec's Active client-triage acceptance section.
-**Open game-local work:** PRD campaign systems, generalized contracts, production art/audio breadth and human comprehension sign-off remain open. Initial-hydration blocking CLC-009-A2 is excluded under the shared platform contract; CLC-009-A3 preserves cached play with an upfront authority warning.
-**External blockers:** npmjs.com corroboration is unavailable, so the dependency-policy substitution question remains pending. Stale package pins stop `pnpm validate`; Cascade Vault CV-004's missing `.cv` stops the aggregate browser chain after Cloudline. TASK-003 blocks live Firebase verification. D-022 keeps other game-quality workstreams paused.
-**Next action:** resolve dependency corroboration under `docs/DEPENDENCY_POLICY.md` before integrating. Preserve all gates and distinguish local acceptance from full-suite/deployed evidence.
+**Implementation state:** Implementing. D-026 closes the automated Cloudline client-fix tranche at local functional revision `1d0c269`; this is not full-game completion, full-repository validation or deployment.
+**Last verified revision:** historical first-win functional revision `8e74431747cff945021b0c42689b64dbc086d99e`, run `39960131577`; scoped client-triage acceptance and the historical candidate digest are recorded in the spec. D-026 records the automated tranche closure at `1d0c269`.
+**Open game-local work:** the CLC-001..CLC-030 campaign/feature scope, long-campaign evidence, human comprehension, production-art review and TASK-003 live Firebase verification remain open. Initial-hydration blocking CLC-009-A2 is excluded under the shared platform contract; CLC-009-A3 preserves cached play with an upfront authority warning.
+**External blockers:** Dependency targets are installed and lockfile-synchronized under D-025 (including Firebase 13.1.0 and Vite 8.3.5). Full validation/deployment remain pending: D-026 resumes Cascade Vault CV-004/CV-005 as the shared release blocker. D-022 sequencing remains in force.
+**Next action:** resume the existing Cascade Vault CV-004/CV-005 release workstream; then run exact-revision full validation and deployment gates. Preserve local evidence as scoped and historical where noted.
 
 ## Resume here
 
-**Current state:** client fixes and RED→GREEN regressions are in the local candidate; acceptance and evidence are authoritative in the spec. Pending cargo now blocks landmark upgrades at the engine boundary; cargo settlement never waits for animation. Save schema and reward/cost formulas are unchanged.
-**Next action:** resolve the dependency evidence question, refresh the exact pins through the documented workflow, run full validation and integrate on origin/main when governing gates permit it.
-**Blockers:** dependency policy corroboration, stale pins, preserved Cascade Vault browser RED, and external live Firebase TASK-003. Do not mark all 30 PRD features or the game complete.
+**Current state:** automated client-fix tranche closed locally at revision `1d0c269` under D-026. Pending cargo blocks landmark upgrades; cargo settlement does not wait for animation. Dependency targets are installed under D-025. Save schema and reward/cost formulas are unchanged.
+**Next action:** resume the specified Cascade Vault CV-004/CV-005 workstream; after that shared release blocker clears, run exact-revision full validation and deployment gates.
+**Blockers:** full repository validation/deployment remain pending behind Cascade Vault CV-004/CV-005; TASK-003 live Firebase, human comprehension and long-campaign evidence remain open. Do not mark all 30 PRD features or the game complete.
 
 ## Development-tooling review (2026-10-07)
 
@@ -64,3 +64,7 @@ The repo currently has TypeScript, Vitest, Playwright and dependency-current enf
 - Account-emulator evidence: `tests/browser/cloudline-couriers-account-persistence.mjs`
 
 Do not infer completion from chat history. The expanded PRD, todo, authoritative spec and this tracker are the current repository resume contract.
+
+## Refreshed local release evidence
+
+Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact committed CI/Pages evidence remains pending.

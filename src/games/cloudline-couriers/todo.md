@@ -3,13 +3,13 @@
 **Status:** Implementing — expanded long-form game scope  
 **Last synchronized:** 2026-10-23  
 **Architecture & Engine:** Deterministic TypeScript rules + React presentation + shared versioned save platform. The target is now a five-region/twenty-district long-form campaign plus post-campaign mastery, not a ten-feature board-loop prototype.  
-**Dependencies Used:** exact repository pins only; no game-local dependency is approved merely because it would speed implementation.
+**Dependencies Used:** exact repository pins only; current 2026-10-23 package/lock targets are installed under D-025 (Firebase 13.1.0, Vite 8.3.5 and remaining targets in `.tasks/dependency-refresh-request.json`). This records the installed target set, not full validation or deployment.
 
 ## Resume here
 
-**Current state:** implementing; client-triage acceptance is locally GREEN as recorded with the candidate digest in the authoritative spec. No full-suite, origin/main integration or deployment claim is made.
-**Next action:** resolve dependency corroboration, then perform the documented exact-pin/full-validation/main integration sequence.
-**Blockers:** npmjs.com package-page corroboration is unavailable and official-registry substitution remains an owner question. Stale Firebase/CLI/Vite pins and the preserved Cascade Vault browser RED block aggregate release checks. TASK-003 blocks live Firebase; human comprehension and production-art sign-off remain open.
+**Current state:** D-026 closes the automated Cloudline client-fix tranche at local functional revision `1d0c269`; Cloudline remains Implementing. Dependency targets are installed and lockfile-synchronized under D-025, including Firebase 13.1.0 and Vite 8.3.5. No exact-revision full-suite validation or deployment claim is made.
+**Next action:** resume the specified Cascade Vault CV-004/CV-005 release workstream, then perform exact-revision full validation and deployment checks.
+**Blockers:** Cascade Vault CV-004/CV-005 remain the shared full-validation/deployment blocker; TASK-003 live Firebase, human comprehension and long-campaign evidence remain open. The full PRD and production-art sign-off remain Implementing.
 
 ## Core Feature Execution Pipeline
 
@@ -267,7 +267,7 @@
 - [ ] Mobile/tablet/laptop/desktop/large-display, 320 CSS px, 200% text, keyboard/touch/pointer and reduced-motion evidence passes.
 - [ ] Versioned save migrations preserve expanded career progression; deterministic reload/recovery is verified.
 - [ ] Economy/playtest audit finds no dead progression, excessive grind wall, hidden difficulty manipulation or punitive absence mechanic.
-- [ ] Exact dependency policy passes; dependency changes require current authoritative-source + npmjs.com verification.
+- [ ] Exact dependency policy passes; dependency changes require current authoritative-source evidence plus npmjs.com or the D-025-approved official registry corroboration.
 - [ ] PRD/todo/TRACKER/spec/GAME_INDEX are synchronized and sufficient for a new provider to continue without chat history.
 - [ ] Full exact-revision validation, Pages deployment and deployed smoke/accessibility checks pass.
 - [ ] Overall state becomes Complete/Verified only after every applicable gate has repository evidence.

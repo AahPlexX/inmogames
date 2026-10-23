@@ -3,10 +3,12 @@
 **Status:** Verified — 2026-10-10 game-local production scope complete  
 **Architecture / Engine:** Pure TypeScript five-reel/payline engine with source-controlled probability audit, React presentation and shared versioned persistence.  
 **Dependencies Used:**
-- [x] React 19.3.0 / React DOM 19.3.0
-- [x] TypeScript 7.0.2 / Vite 8.3.4
-- [x] Vitest 5.0.3 / Playwright 1.64.0
-- [x] Firebase 13.0.0 shared optional account-save platform
+- [x] React 19.3.1 / React DOM 19.3.1
+- [x] TypeScript 7.0.2 / Vite 8.3.5
+- [x] Vitest 5.0.5 / Playwright 1.64.1
+- [x] Firebase 13.1.0 shared optional account-save platform
+
+Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared full validation remains pending.
 
 ## Core Feature Execution Pipeline
 

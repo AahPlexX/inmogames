@@ -1,5 +1,11 @@
 # Next
 
+## Resume here — 2026-10-23
+
+**Current state:** refreshed local full validation and targeted Cloudline account-emulator checks pass; CV-004 acceptance and CV-005 route are implemented.
+**Next action:** integrate the validated candidate, verify exact-revision CI/Pages, smoke deployed Cloudline/Cascade routes, and record the release evidence in their canonical trackers.
+**Blockers:** committed CI/Pages evidence pending; TASK-003 remains external live Firebase; broader Cloudline campaign/human sign-off and preserved Mergrove branch reconciliation remain open.
+
 ## TASK-004: Optional Firebase Hosting deployment
 **Priority:** P2 | **Tags:** deployment, firebase-hosting | **Status:** blocked
 

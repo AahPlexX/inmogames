@@ -58,8 +58,8 @@ Planned Functional Features Specification:
     dependencies_used:
       - "react@19.3.1"
       - "react-dom@19.3.1"
-      - "firebase@13.0.0 (shared optional account/save platform only)"
-      - "vite@8.3.4 (build/dev)"
+      - "firebase@13.1.0 (shared optional account/save platform only)"
+      - "vite@8.3.5 (build/dev)"
       - "typescript@7.0.2 (development/type safety)"
       - "vitest@5.0.5 (unit verification)"
       - "playwright@1.64.1 (rendered browser verification)"
@@ -188,7 +188,7 @@ Planned Functional Features Specification:
 
   quality_and_completion_contract:
     originality_boundary: "Genre-level inspiration only. Do not copy Monopoly GO or Monopoly trademarks, character/property names, board geometry, art, sound, event names, currency presentation, UI/trade dress, text, map structure or proprietary event/minigame implementation."
-    dependency_policy: "All direct dependencies/devDependencies exact pinned stable versions; no ^ or ~. At dependency-changing integration time verify authoritative project sources plus npmjs.com and require repository dependency checks."
+    dependency_policy: "All direct dependencies/devDependencies exact pinned stable versions; no ^ or ~. At dependency-changing integration time verify authoritative project sources plus npmjs.com, or official npm registry latest corroboration when npmjs.com is unavailable as approved by D-025, and require repository dependency checks."
     documentation_policy: "PRD/todo/TRACKER/spec/GAME_INDEX remain synchronized and sufficient for a new provider to resume without chat history. Every CLC feature ID has a matching todo execution section."
     art_quality_policy: "No emoji-as-game-art, crude primitive SVG stand-ins, generic icon-only world art or placeholder-grade production assets. Visual acceptance requires rendered review at gameplay scale and state variation."
     engagement_policy: "Optimize for voluntary long-term enjoyment, competence, agency, collection and earned progression—not impaired control, dark patterns or monetized frustration."

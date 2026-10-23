@@ -1,26 +1,27 @@
 # Cascade Vault tracker
 
-**Last synchronized:** 2026-10-20  
-**Spec:** `docs/specs/2026-10-10-cascade-vault-design.md`  
+**Last synchronized:** 2026-10-23
+**Shared dependency refresh:** Firebase 13.1.0 and Vite 8.3.5 are the requested shared targets in `docs/DEPENDENCY_POLICY.md` and `.tasks/dependency-refresh-request.json`; local refreshed full validation passed on 2026-10-23; committed CI/Pages evidence remains pending. CV-004 presentation is implementing; CV-001/CV-002/CV-003 evidence and the schema-v1 save contract remain unchanged.
+**Spec:** `docs/specs/2026-10-10-cascade-vault-design.md`
 **Plan:** `docs/plans/2026-10-10-cascade-vault.md`
 
 | Capability | Status | Verification |
 | --- | --- | --- |
 | Exact adjacent-ways / cascade engine | verified | CV-001 passed the exact refreshed full validation/deploy chain on revision `08c3506773d17eee3fed7554f211531141856386`, run `39296638285`: dependency freshness, TypeScript, history-aware governance, unit/rules/browser suites, both builds, artifact upload and Pages deployment all succeeded. |
-| Exact payout precision | verified | Integer centi-credit accounting (`CREDIT_SCALE = 100`), rational ×1.5 feature boost, fractional paytable awards and multiplier progression are covered by the CV-001 focused/full unit suite in run `39296638285`. Balance values remain provisional under CV-002, but accounting precision is verified. |
+| Exact payout precision | verified | Integer centi-credit accounting (`CREDIT_SCALE = 100`), rational ×1.5 feature boost, fractional paytable awards and multiplier progression are covered by the CV-001 focused/full unit suite in run `39296638285`. D6 balance is accepted under CV-002, but accounting precision is verified. |
 | Reproducible 10M-spin probability audit | verified | D6 `f9893506…`; run `39491663232` passed 10M paid spins at RTP `0.950268466`, 95% CI `0.943437..0.957100`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, zero guard hits. |
 | Settled durable checkpoints | verified | CV-003 RED `40442255…` / run `39458077585`; exact GREEN revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` / run `39459146356` passed full validation and Pages deployment with schema-v1 settled state, exact centi-credit accounting, compact results, validated active/null Vault checkpoints and restore below 10 credits. |
-| Accessible board / Vault Run UI / audio | started | Consolidated browser contract: deterministic cascade/feature presentation, aggregate live status, 320px/200%-text reflow, >=48px important targets, keyboard/touch, reduced motion, opt-in audio. |
-| Catalog / route / production release | planned | Governance-only metadata/workspace shell exists; playable catalog/lazy route remains intentionally unregistered until browser RED. Exact-revision full validation and Pages deployment are required. |
+| Accessible board / Vault Run UI / audio | started | The initial browser RED was observed when `.cv` was missing; that remains baseline evidence. The current candidate passes local A1–A6 browser acceptance and nine secure-random unit cases (2026-10-23). CV-004-A1–A6 cover secure RNG failure/rejection with unchanged bankroll; exactly-once resolve/settle and reload; active eight-spin Vault checkpoint recovery; audio only after Spin, not preference toggle; 6×5/48px/320px/200%/reduced-effects/single-live status; and pre-play rules/paytable plus stats-preserving restore. Full exact-revision release evidence remains pending. |
+| Catalog / route / production release | started | Base catalog/workspace entry is present in the current candidate but unverified; exact-revision full validation, both builds and Pages deployment remain required before release. |
 | Authenticated live-project persistence | blocked externally | Shared account-save architecture will be reused; real configured-project Firebase verification remains TASK-003. |
 
 ## Current handoff
 
-**Implementation state:** implementing — CV-001/CV-002/CV-003 verified; CV-004/CV-005 planned
-**Last verified revision:** `f989350673c2166eea688836e73ce250bbff0d02` / Pages `39491636082` + 10M acceptance `39491663232`
-**Open game-local work:** CV-004 playable UI/audio/browser quality; CV-005 catalog/release closeout
-**External blockers:** TASK-003 for real configured-project Firebase services only; it does not block game-local implementation or verification  
-**Next action:** capture the intentional CV-004 browser RED on the absent playable `.cv` route, then implement the minimum workspace/random adapter/CSS/audio behavior against that unchanged contract.
+**Implementation state:** implementing — CV-001/CV-002/CV-003 verified; CV-004 presentation candidate in progress; CV-005 release integration pending.
+**Last verified revision:** CV-002 exact revision `f989350673c2166eea688836e73ce250bbff0d02` / Pages `39491636082` plus 10M acceptance run `39491663232`; CV-003 exact revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` / full validation and Pages `39459146356`. These historical game gates remain verified; they do not verify the current CV-004 candidate.
+**Open game-local work:** CV-004-A1–A6 pass locally; finish the CV-005 catalog/workspace entry and exact-revision release evidence. Preserve D6 balance and the verified schema-v1 save contract.
+**External blockers:** TASK-003 is the only external service blocker for live configured-project Firebase verification. The shared Firebase 13.1.0/Vite 8.3.5 dependency refresh and exact-revision full validation are pending repository gates; Pages deployment is also required after the functional revision.
+**Next action:** local CV-004 acceptance is GREEN; validate the current CV-005 base route with full exact-revision validation/build/deployment. Do not claim CV-004 or whole-game GREEN before evidence lands.
 
 ## Canonical verification recovery — 2026-10-19
 
@@ -112,3 +113,13 @@ D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02` passed full validat
 
 ### 2026-10-20 — CV-004 browser RED opened
 The consolidated direct-route browser contract is integrated before playable route/UI implementation. It requires a 6×5 board, pre-play rules, >=48px Spin, keyboard activation, deterministic two-cascade single settlement, presentation lock, reload without replay, concise live status, reduced-effects equivalence, opt-in audio, 320px/200%-text reflow and practice-credit restore. The playable `.cv` route remains intentionally absent in this RED revision; catalog discoverability remains CV-005.
+
+## Resume here
+
+**Current state:** all six CV-004 acceptance slices pass locally on 2026-10-23; D6 engine/distributions/paytable and schema-v1 settlement are unchanged.
+**Next action:** finish full validation and both builds, integrate the functional revision on main, then verify CI/Pages and close CV-005 with exact evidence.
+**Blockers:** Pages/CI evidence pending; TASK-003 remains external live Firebase work.
+
+## Refreshed local release evidence
+
+Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact committed CI/Pages evidence remains pending.

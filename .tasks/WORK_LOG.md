@@ -61,3 +61,5 @@
 - 2026-10-20 - Opened Cascade Vault CV-004 test-first with consolidated browser contract; route/workspace intentionally remains absent until the RED is evidenced.
 
 - 2026-10-23 - Cloudline client-triage local acceptance covers responsive controls, truthful bonus guidance, animation-independent cargo, fuel recovery, confirmed resets, live reduced motion, pending-cargo upgrade validation and upfront account-precedence disclosure. Evidence and integration blockers: `docs/specs/2026-10-06-cloudline-couriers-design.md`; full validation/deployment remain blocked.
+
+- 2026-10-23 — D-025 approved official-registry corroboration during npmjs HTTP 403; installed exact current targets with frozen lockfile. D-026 resumed existing Cascade CV-004/CV-005 after local Cloudline client-fix tranche `1d0c269`. Local full validation passed 161 unit cases, four rules tests, shared/game browsers and both builds; Cloudline account-emulator checks passed. D-027 fixed the prototype favicon HTTP 404 by reusing the existing icon. Exact-revision CI/Pages evidence remains pending.

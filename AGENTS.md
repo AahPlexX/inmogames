@@ -72,7 +72,7 @@ Older chat messages, summaries or provider memory never override the current per
 
 - Every direct `dependencies` and `devDependencies` entry must be the latest stable npm `latest` release at the time it is integrated to `main`.
 - Direct dependency specifications are exact semver only. Never use `^`, `~`, `*`, tags, URLs or ranges in `package.json`.
-- Before changing a dependency, verify the stable release against the package/project's authoritative release documentation and corroborate the exact version on npmjs.com. Record the evidence in `docs/DEPENDENCY_POLICY.md` and update `.tasks/dependency-refresh-request.json`.
+- Before changing a dependency, verify the stable release against the package/project's authoritative release documentation and corroborate the exact version using the approved npm evidence sources in `docs/DEPENDENCY_POLICY.md`. Record the evidence in `docs/DEPENDENCY_POLICY.md` and update `.tasks/dependency-refresh-request.json`.
 - `pnpm dependency:check` enforces exact pins. `pnpm dependency:current` verifies the manifest matches `package.json` and rechecks every direct package against npm's live `latest` tag. Both are mandatory integration gates.
 - A prerelease (`alpha`, `beta`, `rc`, `next`, canary, experimental) is never substituted for stable `latest` unless a separate explicit repository decision changes this rule.
 

@@ -6,4 +6,5 @@ export const workspaces: Record<string, LazyExoticComponent<ComponentType>> = {
   'cloudline-couriers': lazy(() => import('./cloudline-couriers/CloudlineCouriersWorkspace')),
   'royal-fortune-slots': lazy(() => import('./royal-fortune-slots/RoyalFortuneSlotsWorkspace')),
   'lucky-seven-classic': lazy(() => import('./lucky-seven-classic/LuckySevenClassicWorkspace')),
+  'cascade-vault': lazy(() => import('./cascade-vault/CascadeVaultWorkspace')),
 };

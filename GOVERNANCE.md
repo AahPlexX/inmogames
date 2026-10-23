@@ -94,7 +94,7 @@ Every game todo uses this structure. Wording may be game-specific, but the liste
 - [ ] Zero known uncaught game-local console errors/warnings and current applicable MDN/W3C/WCAG requirements satisfied.
 - [ ] Responsive behavior verified across mobile, tablet, laptop, desktop, and large displays, including required 320 CSS-px and 200% text/reflow evidence where applicable.
 - [ ] Persistence/reload/restart behavior verified and deterministic for the defined game/save contract.
-- [ ] Dependency/devDependency policy verified: latest stable exact pins at integration time, authoritative-source + npmjs.com corroboration when dependency state changes, and no `^` or `~`.
+- [ ] Dependency/devDependency policy verified: latest stable exact pins at integration time, authoritative-source + approved npm corroboration under `docs/DEPENDENCY_POLICY.md` when dependency state changes, and no `^` or `~`.
 - [ ] PRD, todo, TRACKER, authoritative spec, GAME_INDEX, and applicable task state are synchronized.
 - [ ] Full repository validation is green on the exact integrated revision.
 - [ ] GitHub Pages deployment and deployed-route smoke verification are green when the deployed app changed.
@@ -111,7 +111,7 @@ Rules for this todo structure:
 
 ## Dependency integration
 
-Every direct runtime/development dependency must be the latest stable release at the moment a change reaches `main`, pinned to an exact version. Dependency research must use the package/project's authoritative release source and be corroborated against npmjs.com. The researched target set is recorded in `.tasks/dependency-refresh-request.json` and the evidence record in `docs/DEPENDENCY_POLICY.md`.
+Every direct runtime/development dependency must be the latest stable release at the moment a change reaches `main`, pinned to an exact version. Dependency research must use the package/project's authoritative release source and be corroborated using the approved npm evidence sources in `docs/DEPENDENCY_POLICY.md`. The researched target set is recorded in `.tasks/dependency-refresh-request.json` and the evidence record in `docs/DEPENDENCY_POLICY.md`.
 
 CI must run both `pnpm dependency:check` and `pnpm dependency:current`. The first rejects non-exact specifications; the second rejects a package/manifest mismatch or a direct dependency that no longer equals npm's stable `latest` tag. A new upstream stable release therefore blocks a later integration until the repository is deliberately refreshed and fully revalidated.
 

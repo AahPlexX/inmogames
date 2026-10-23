@@ -9,13 +9,13 @@ Planned Functional Features Specification:
   technical_foundation:
     architecture_and_engine: "Static React/Vite presentation over a pure deterministic TypeScript game engine, with shared repository persistence and optional account synchronization. The authoritative behavioral contract is docs/specs/2026-10-03-threefold-design.md; TRACKER.md is the live handoff."
     dependencies_used:
-      - "react@19.3.0"
-      - "react-dom@19.3.0"
-      - "firebase@12.19.0 (shared optional account saves only)"
-      - "vite@8.3.3"
+      - "react@19.3.1"
+      - "react-dom@19.3.1"
+      - "firebase@13.1.0 (shared optional account saves only)"
+      - "vite@8.3.5"
       - "typescript@7.0.2"
-      - "vitest@5.0.3"
-      - "@playwright/test@1.63.0"
+      - "vitest@5.0.5"
+      - "playwright@1.64.1"
 
   core_feature_specifications:
     - name: "Deterministic Solvable Round Engine"

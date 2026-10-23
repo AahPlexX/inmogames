@@ -9,13 +9,13 @@ Planned Functional Features Specification:
   technical_foundation:
     architecture_and_engine: "Static React/Vite casino-table presentation over deterministic TypeScript blackjack rules and persistence boundaries. The authoritative behavioral contract is docs/specs/2026-10-03-royal-palace-blackjack-design.md; TRACKER.md is the live handoff."
     dependencies_used:
-      - "react@19.3.0"
-      - "react-dom@19.3.0"
-      - "firebase@13.0.0 (shared optional account saves only)"
-      - "vite@8.3.4"
+      - "react@19.3.1"
+      - "react-dom@19.3.1"
+      - "firebase@13.1.0 (shared optional account saves only)"
+      - "vite@8.3.5"
       - "typescript@7.0.2"
-      - "vitest@5.0.3"
-      - "playwright@1.64.0"
+      - "vitest@5.0.5"
+      - "playwright@1.64.1"
 
   core_feature_specifications:
     - name: "Blackjack Rules Engine"

@@ -1,9 +1,24 @@
 # Decision log
 
-## D-024 Open dependency corroboration question (2026-10-23)
+## D-027 Preserve the prototype console gate by repairing its icon (2026-10-23)
 
-Open owner question: may official npm registry metadata substitute for npmjs.com package-page corroboration while the required pages return HTTP 403 (`docs/DEPENDENCY_POLICY.md`)?
-The target manifest matches current official registry metadata; no corroboration exception is authorized and no dependency refresh is integrated (`.tasks/dependency-refresh-request.json`, local 2026-10-23 metadata check).
+The Hollowshift v2 public prototype reuses `public/icon.svg` through a relative icon link after the unchanged browser console gate reproduced `/favicon.ico` HTTP 404 (`tests/browser/hollowshift-prototype.mjs`).
+
+## D-026 Resume the specified Cascade Vault screen to unblock Cloudline deployment (2026-10-23)
+
+The Cloudline client-fix implementation tranche is closed on local functional revision `1d0c269`; its automated acceptance is GREEN, while the full game PRD, human comprehension and deployed sign-off remain open (`docs/specs/2026-10-06-cloudline-couriers-design.md`).
+D-022 sequencing now resumes the already-specified Cascade Vault CV-004 screen and CV-005 route integration because its preserved missing-route RED blocks the shared full validator and Cloudline deployment (`tests/browser/cascade-vault.mjs`).
+The existing Cascade engine, audited distribution/paytable and save schema remain unchanged; no validation or deployment gate is removed.
+
+## D-025 Official npm registry metadata is the fallback for unavailable npmjs pages (2026-10-23)
+
+The owner approved official npm registry package metadata as corroboration when a package's npmjs.com page is unavailable, including the reported HTTP 403 condition. The package/project's authoritative release source remains independently required; the official registry `latest` endpoint must return the exact same stable version, and its URL, returned version, check date and page-unavailability evidence must be recorded in `docs/DEPENDENCY_POLICY.md`. This resolves D-024's open question.
+
+This decision changes only the evidence path. Exact pins, target-manifest/lockfile synchronization, `pnpm dependency:check`, `pnpm dependency:current`, frozen install, full validation and deployment requirements remain unchanged. It does not waive validation, authorize a dependency change without the required gates, or claim integration/deployment. The 2026-10-23 endpoint audit corroborated the existing target manifest; dependency refresh remains in progress.
+
+## D-024 Dependency corroboration question (resolved by D-025, 2026-10-23)
+
+Historical owner question resolved by D-025: may official npm registry metadata substitute for npmjs.com package-page corroboration while required pages return HTTP 403 (`docs/DEPENDENCY_POLICY.md`)? The target manifest matches current official registry metadata; dependency refresh was not integrated at the time this question was opened (`.tasks/dependency-refresh-request.json`, 2026-10-23 metadata check).
 
 ## D-023 Cloudline discloses account precedence before cached play (2026-10-23)
 

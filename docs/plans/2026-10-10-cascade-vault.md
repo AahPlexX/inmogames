@@ -168,3 +168,9 @@ D4 exact revision `84a18f92a77add9e058c58c030bf364b3f962003` passed the complete
 
 ### 2026-10-20 — CV-002 acceptance miss and paytable candidate D6
 D5 exact revision `2ef4203a2550accdc737f664eb09a973ba0cf3ba` passed the complete repository validation and Pages deployment chain in run `39490450975`. Its same-seed 25,000-paid-spin screen `39490491425` measured RTP `0.9567358` with zero guard hits, but the required 10,000,000-paid-spin acceptance run `39490755045` decisively rejected D5: RTP `0.87157806`, SE `0.00319013`, 95% CI `0.865325..0.877831`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, and zero corruption-guard hits. D6 keeps the proven distribution, engine, RNG, feature, persistence and audit paths unchanged and scales only paytable values by midpoint factor `0.955 / 0.87157806 ≈ 1.0957`, rounded to positive integer centi multipliers. Payout-contribution instrumentation is intentionally deferred because the current payout is linear in the paytable and a direct proportional correction is the smaller complete change; revisit diagnostics only if D6 fails the >=10M acceptance gate.
+
+## Resume here — 2026-10-23
+
+**Current state:** CV-001/002/003 historical verification remains intact; CV-004 A1–A6 pass local unit/browser acceptance in the authoritative spec. Catalog/workspace registration is present.
+**Next action:** complete the full refreshed-dependency validator, both builds, exact-revision CI/Pages and CV-005 evidence closeout.
+**Blockers:** release evidence pending; TASK-003 is external live configured-project Firebase.
