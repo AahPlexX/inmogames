@@ -2,9 +2,28 @@
 
 ## Resume here — 2026-10-23
 
-**Current state:** Cloudline client-triage fixes and Cascade CV-004/CV-005 are released on `2628ca2`; full CI/Pages `40034775904`, fresh 10M acceptance `40036114157` and live route smoke passed. Cascade is game-locally verified; Cloudline remains implementing for its expanded PRD.
-**Next action:** continue the remaining Cloudline PRD through its canonical todo and obtain human comprehension/art/motion testing; perform real Firebase checks after TASK-003 provisioning.
-**Blockers:** TASK-003 and human testing. Preserved Mergrove branch review and Node-only dependency advisories are separately recorded in `.tasks/BACKLOG.md`.
+**Current state:** `docs/GAME_PRESENTATION_QUALITY.md` is now the binding all-games animation/interaction/effects audit standard. Cloudline's released client-fix tranche already covers finite/skippable/reduced-motion travel, event feedback, animation-independent settlement and visible landmark stages, while its expanded PRD and human comprehension/art/motion review remain open. Repository source reconnaissance confirms Cascade Vault has no authored gameplay motion, Mergrove has only a placement-pop family, and Threefold has only immediate hover/selection transforms; Lucky Seven Classic and Royal Fortune Slots have partial reel/action motion; Royal Palace Blackjack already has the strongest finite-motion baseline and rendered reduced-motion evidence.
+**Next action:** keep presentation implementation serialized. Finish or explicitly human-block the remaining Cloudline presentation criteria, then open Cascade Vault's presentation audit test-first and synchronize its spec/tracker/PRD/todo/index/task state before or with the first game-local test/change. Continue afterward in the queue defined by `docs/GAME_PRESENTATION_QUALITY.md`.
+**Blockers:** Cloudline human comprehension/art/motion review and TASK-003 real Firebase verification remain external/manual gates. They do not erase their open criteria and do not prevent the next machine-auditable game from entering the serialized presentation queue once Cloudline's machine work is closed. Preserved Mergrove branch review and Node-only dependency advisories remain separately recorded in `.tasks/BACKLOG.md`.
+
+## QUALITY-002: All-game presentation quality audit
+**Priority:** P0 | **Tags:** animation, vfx, effects, interaction, micro-interaction, accessibility, reduced-motion, browser-quality | **Status:** active — serialized audit queue
+
+Authoritative standard: `docs/GAME_PRESENTATION_QUALITY.md`. Repository instruction: `AGENTS.md` → `Game presentation quality`. D-022 continues to require one-game-at-a-time presentation implementation.
+
+Source reconnaissance on 2026-10-23 establishes the starting queue, not final rendered approval:
+
+- **Cloudline Couriers:** current automated presentation tranche is released; expanded campaign VFX/art breadth and human comprehension/art/motion review remain open in its existing implementing contract.
+- **Cascade Vault:** confirmed missing gameplay animation/effect sequencing in `cascade-vault.css`; reduced-motion rules currently disable motion that is not otherwise authored. This is the next confirmed implementation audit after Cloudline machine work.
+- **Mergrove:** current authored motion is essentially the bounded `mg-pop` placement feedback; merge/cascade/resource/reward transitions require explicit audit and likely implementation.
+- **Threefold:** current presentation uses immediate hover/pressed transforms with no authored keyframe/transition sequence; action/result feedback requires explicit audit and likely implementation.
+- **Lucky Seven Classic:** reel-settle and lever-pull motion plus reduced-effects handling exist; outcome/recovery/reward-significance and micro-interaction depth require audit before deciding on implementation.
+- **Royal Fortune Slots:** reel-spin and winning-symbol pop plus reduced-effects handling exist; free-feature/reward cadence and broader micro-interactions require audit before deciding on implementation.
+- **Royal Palace Blackjack:** finite deal/reveal/hand/result/dialog/control motion and reduced-motion rendered evidence already exist; perform a confirmatory audit and change only reproduced gaps.
+
+**Current state:** the repository-wide requirement and source baseline are durable. No verified game has been silently reclassified solely from reconnaissance; each verified game must reopen when its audit becomes active or a concrete presentation defect is implemented, in accordance with governance.
+**Next action:** use Cloudline's canonical todo/tracker to close or human-block its remaining presentation criteria, then begin Cascade Vault with a rendered RED that proves the missing normal-motion feedback without changing game mathematics or persistence.
+**Blockers:** human-only review remains human-only; source reconnaissance cannot substitute for browser evidence. No presentation audit may be marked complete from source inspection alone.
 
 ## Historical progress — current state is above
 
@@ -43,7 +62,7 @@ The prior dependency-corroboration blocker is resolved by D-025. Package/lock re
 
 Authoritative design: `docs/specs/2026-10-10-cascade-vault-design.md`. Plan: `docs/plans/2026-10-10-cascade-vault.md`.
 
-CV-001 is verified on exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`: dependency freshness, design lint, TypeScript, history-aware governance, the full unit/rules/browser chain, both production builds, Pages artifact upload and deployment all passed. The earlier RED/fixture/terminal-feature evidence remains preserved in the game spec/tracker.
+CV-001 is verified on exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`: dependency freshness, design lint, TypeScript, history-aware governance, the full unit/rules/browser chain, both builds, Pages artifact upload and deployment all passed. The earlier RED/fixture/terminal-feature evidence remains preserved in the game spec/tracker.
 
 CV-002 and CV-003 are complete and their historical evidence is retained below. The active work is CV-004 presentation/browser acceptance followed by CV-005 release integration; preserve the audited D6 economy and schema-v1 save contract.
 
@@ -74,7 +93,7 @@ The CV-003 RED contract required exact centi-credit accounting, validated post-s
 RED `40442255…` / run `39458077585` isolated the missing persistence/storage modules. CV-003 was later verified on `343ca3fc…` / full validation and Pages run `39459146356`; the candidate-era pending wording is superseded. Audit discovery fix `4808b129…` / run `39457748530` is fully green/deployed; D6 balance acceptance later completed.
 
 ### Historical CV-002 distribution candidate D1
-25k audit `39459206136` aborted on one corruption-guard hit, so provisional weights are rejected. D1 flattens common paying weights and reduces Wild to 1 while preserving initial Scatter 4; paytable remains unchanged to isolate board-evolution risk. CV-003 is fully GREEN/deployed on run `39459146356`.
+25k audit `39459206136` aborted on one corruption-guard hit, so provisional weights are rejected. D1 flattens common paying-symbol concentration/Wild frequency before the next screen.
 
 ### Historical CV-002 structural candidate D2
 D1 25k audit `39459715477` still hit the 50-cascade guard. D2 adds inert nonpaying `blank` weight 24 to initial/refill tables, with focused tests; paytable remains unchanged. Next gate: full validation + same-seed 25k audit.
