@@ -62,7 +62,7 @@ The prior dependency-corroboration blocker is resolved by D-025. Package/lock re
 
 Authoritative design: `docs/specs/2026-10-10-cascade-vault-design.md`. Plan: `docs/plans/2026-10-10-cascade-vault.md`.
 
-CV-001 is verified on exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`: dependency freshness, design lint, TypeScript, history-aware governance, the full unit/rules/browser chain, both builds, Pages artifact upload and deployment all passed. The earlier RED/fixture/terminal-feature evidence remains preserved in the game spec/tracker.
+CV-001 is verified on exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`: dependency freshness, design lint, TypeScript, history-aware governance, the full unit/rules/browser chain, both builds, artifact upload and Pages deployment all succeeded. The earlier RED/fixture/terminal-feature evidence remains preserved in the game spec/tracker.
 
 CV-002 and CV-003 are complete and their historical evidence is retained below. The active work is CV-004 presentation/browser acceptance followed by CV-005 release integration; preserve the audited D6 economy and schema-v1 save contract.
 
@@ -93,7 +93,7 @@ The CV-003 RED contract required exact centi-credit accounting, validated post-s
 RED `40442255…` / run `39458077585` isolated the missing persistence/storage modules. CV-003 was later verified on `343ca3fc…` / full validation and Pages run `39459146356`; the candidate-era pending wording is superseded. Audit discovery fix `4808b129…` / run `39457748530` is fully green/deployed; D6 balance acceptance later completed.
 
 ### Historical CV-002 distribution candidate D1
-25k audit `39459206136` aborted on one corruption-guard hit, so provisional weights are rejected. D1 flattens common paying-symbol concentration/Wild frequency before the next screen.
+25k audit `39459206136` aborted on one corruption-guard hit, so provisional weights are rejected. D1 flattens common paying weights and reduces Wild to 1 while preserving initial Scatter 4; paytable remains unchanged to isolate board-evolution risk. CV-003 is fully GREEN/deployed on run `39459146356`.
 
 ### Historical CV-002 structural candidate D2
 D1 25k audit `39459715477` still hit the 50-cascade guard. D2 adds inert nonpaying `blank` weight 24 to initial/refill tables, with focused tests; paytable remains unchanged. Next gate: full validation + same-seed 25k audit.
