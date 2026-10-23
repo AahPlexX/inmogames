@@ -37,11 +37,8 @@ async function assertNoHorizontalOverflow(page, label) {
   assert.ok(sizes.scrollWidth <= sizes.width + 1, `${label} must not horizontally overflow: ${sizes.scrollWidth}px > ${sizes.width}px.`);
 }
 
-async function readSeededCurrentJob(browserInstance, overrides) {
-  const context = await browserInstance.newContext({ viewport: { width: 390, height: 844 } });
-  const page = await context.newPage();
-  page.on('pageerror', error => errors.push(error.message));
-  const run = {
+function seededRun(overrides = {}) {
+  return {
     seed: 1,
     rngState: 1,
     position: 0,
@@ -58,14 +55,38 @@ async function readSeededCurrentJob(browserInstance, overrides) {
     message: 'Ready at Dispatch Dock. Choose a boost, then fly.',
     ...overrides,
   };
+}
+
+async function openSeededCloudline(browserInstance, overrides) {
+  const context = await browserInstance.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(({ key, activeRun }) => {
     localStorage.setItem(key, JSON.stringify({ schemaVersion: 1, state: { activeRun } }));
-  }, { key: cloudlineStorageKey, activeRun: run });
+  }, { key: cloudlineStorageKey, activeRun: seededRun(overrides) });
   await page.goto(base + '#/games/cloudline-couriers');
   await waitForCloudlineSurface(page);
+  return { context, page };
+}
+
+async function readSeededCurrentJob(browserInstance, overrides) {
+  const { context, page } = await openSeededCloudline(browserInstance, overrides);
   const currentJob = (await page.locator('.cl-brief > div > p').first().innerText()).trim();
   await context.close();
   return currentJob;
+}
+
+async function readSeededLandmarkStageLayers(browserInstance) {
+  const { context, page } = await openSeededCloudline(browserInstance, {
+    landmarks: [1, 2, 3, 4],
+    credits: 0,
+    deliveries: 4,
+    streak: 0,
+    message: 'District improvements in progress.',
+  });
+  const layerCounts = await page.locator('.cl-landmark').evaluateAll(elements => elements.map(element => element.querySelectorAll('[data-cl-stage-layer]').length));
+  await context.close();
+  return layerCounts;
 }
 
 try {
@@ -145,6 +166,12 @@ try {
     'Starter contract: complete 4 deliveries. Progress 1/4. The fourth delivery pays 120 × boost credits.',
   ], 'CLC-011/CLC-015 first-session guidance must preserve the delivery → upgrade → starter-contract teaching sequence.');
 
+  assert.deepEqual(
+    await readSeededLandmarkStageLayers(browser),
+    [1, 2, 3, 4],
+    'CLC-004/CLC-007 landmark stages must add visible authored structure at every earned stage instead of changing only progress pips.',
+  );
+
   await page.screenshot({ path: 'test-results/cloudline-couriers/phone-390.png', fullPage: true });
   await page.reload();
   await waitForCloudlineSurface(page);
@@ -183,7 +210,7 @@ try {
   await reducedContext.close();
 
   assert.deepEqual(errors, []);
-  console.log('Cloudline design checks passed: first-screen purpose/help, first-session delivery→upgrade→starter-contract guidance, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion without stale animation state, and guest reload persistence.');
+  console.log('Cloudline design checks passed: first-screen purpose/help, first-session delivery→upgrade→starter-contract guidance, visible landmark stage transformations, stepwise bounded flight, event/upgrade feedback, 390/1024/1440 reflow, reduced motion without stale animation state, and guest reload persistence.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');
