@@ -2,6 +2,8 @@
 
 One row per game. Update when a game is added, changes status, or is removed.
 
+All current and future games are subject to `docs/GAME_PRESENTATION_QUALITY.md`. Its source baseline is reconnaissance rather than a status override: a verified game reopens only when its presentation audit becomes active or a concrete presentation defect/change is taken into implementation under the per-game governance contract.
+
 | Slug | Name | Category | Players | Storage | Status |
 | --- | --- | --- | --- | --- | --- |
 | `threefold` | Threefold | puzzle | single | localStorage (guest), Firestore (account) | verified game; account saves emulator-verified, live Firebase setup blocked by TASK-003 |
