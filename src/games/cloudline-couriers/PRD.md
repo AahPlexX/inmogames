@@ -1,6 +1,6 @@
 # PRD: Cloudline Couriers (`cloudline-couriers`)
 
-**Last synchronized:** 2026-10-22  
+**Last synchronized:** 2026-10-23  
 **Status:** Implementing — scope deliberately reopened/expanded after teleological player-experience review  
 **Authoritative design:** `docs/specs/2026-10-06-cloudline-couriers-design.md`  
 **Execution checklist:** `src/games/cloudline-couriers/todo.md`  
@@ -108,7 +108,7 @@ Planned Functional Features Specification:
     - name: "Playable Onboarding and First-Session Journey"
       id: "CLC-011"
       details: "Teach by doing. First roll, event, reward, upgrade and contract are introduced contextually; help is replayable and guidance can be skipped. Avoid front-loaded instruction walls."
-      feature_development_status: "Started: direct purpose/current-job guidance and replayable help implemented; contextual reward→upgrade→contract sequence and comprehension evidence pending"
+      feature_development_status: "Started: purpose/current-job/help plus contextual delivery→upgrade→starter-contract guidance are implemented and browser-verified in run 39960131577; comprehension playtest evidence remains pending"
     - name: "Courier Rank and Experience Progression"
       id: "CLC-012"
       details: "Meaningful completed play grants transparent career XP. Ranks unlock mechanics, cosmetics, titles and options at a paced cadence; rank never exists solely as an arbitrary grind gate."
@@ -124,7 +124,7 @@ Planned Functional Features Specification:
     - name: "Route Contracts and Optional Objectives"
       id: "CLC-015"
       details: "Short/medium contracts create concrete goals—deliveries, efficient fuel use, safe storms, cache recovery, landmark work and region-specific challenges. Contracts are optional, refresh without punishing absence, and clearly preview requirements/rewards."
-      feature_development_status: "Planned"
+      feature_development_status: "Started: onboarding starter contract derives from the existing four-delivery route bonus and is browser-verified in run 39960131577; generalized contract generation, variety and persistence remain pending"
     - name: "Career Milestone Reward Track"
       id: "CLC-016"
       details: "Lifetime accomplishments fill a non-expiring reward path. Milestones award earned credits, fuel-capacity tokens, cosmetics, blueprints and collection items so cumulative effort remains visible and valuable."
@@ -168,7 +168,7 @@ Planned Functional Features Specification:
     - name: "Session Goals, Objective Clarity, and Return Resume"
       id: "CLC-026"
       details: "At all times the player can answer: what am I doing, why, what will I earn, and what can I do next? Returning players get a concise recap of district, contract, upgrades and next recommended actions."
-      feature_development_status: "Started: current job, district progress and immediate next-action guidance implemented; return recap/contracts remain pending"
+      feature_development_status: "Started: current job, district progress and contextual first-session next-action guidance are browser-verified in run 39960131577; return recap and generalized contracts remain pending"
     - name: "Reward Presentation and Celebration Cadence"
       id: "CLC-027"
       details: "Feedback scales with significance: routine rewards resolve quickly; streaks/upgrades receive stronger response; landmark/rank/district/region milestones get premium celebration. Animations can be accelerated/skipped and reduced-motion has equivalent clarity."
