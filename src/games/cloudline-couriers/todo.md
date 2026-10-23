@@ -3,13 +3,13 @@
 **Status:** Implementing — expanded long-form game scope  
 **Last synchronized:** 2026-10-23  
 **Architecture & Engine:** Deterministic TypeScript rules + React presentation + shared versioned save platform. The target is now a five-region/twenty-district long-form campaign plus post-campaign mastery, not a ten-feature board-loop prototype.  
-**Dependencies Used:** exact repository pins only; current 2026-10-23 package/lock targets are installed under D-025 (Firebase 13.1.0, Vite 8.3.5 and remaining targets in `.tasks/dependency-refresh-request.json`). This records the installed target set, not full validation or deployment.
+**Dependencies Used:** exact repository pins only; current 2026-10-23 package/lock targets are installed under D-025 (Firebase 13.1.0, Vite 8.3.5 and remaining targets in `.tasks/dependency-refresh-request.json`). The shared target set passed CI/Pages on `2628ca2` / run `40034775904`.
 
 ## Resume here
 
-**Current state:** D-026 closes the automated Cloudline client-fix tranche at local functional revision `1d0c269`; Cloudline remains Implementing. Dependency targets are installed and lockfile-synchronized under D-025, including Firebase 13.1.0 and Vite 8.3.5. No exact-revision full-suite validation or deployment claim is made.
-**Next action:** resume the specified Cascade Vault CV-004/CV-005 release workstream, then perform exact-revision full validation and deployment checks.
-**Blockers:** Cascade Vault CV-004/CV-005 remain the shared full-validation/deployment blocker; TASK-003 live Firebase, human comprehension and long-campaign evidence remain open. The full PRD and production-art sign-off remain Implementing.
+**Current state:** client-triage fixes are released on `2628ca2` / CI/Pages `40034775904` and live-smoked on 2026-10-23. Cloudline remains Implementing for the expanded PRD.
+**Next action:** continue remaining PRD features and obtain human first-session comprehension/art/motion testing.
+**Blockers:** TASK-003 live Firebase and awaiting human testing of comprehension/art/motion; broader campaign work remains open.
 
 ## Core Feature Execution Pipeline
 

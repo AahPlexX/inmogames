@@ -8,7 +8,7 @@
 - [x] Vitest 5.0.5 / Playwright 1.64.1
 - [x] Firebase 13.1.0 shared optional account-save platform
 
-Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared full validation remains pending.
+Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared validation and Pages passed on `2628ca2` / run `40034775904`.
 
 ## Core Feature Execution Pipeline
 

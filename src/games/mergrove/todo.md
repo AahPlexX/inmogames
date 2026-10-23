@@ -13,7 +13,7 @@
 - [x] `vitest@5.0.5` — unit verification
 - [x] `playwright@1.64.1` — rendered browser verification
 
-> Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared full validation remains pending.
+> Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared validation and Pages passed on `2628ca2` / run `40034775904`.
 
 > Dependency rule: direct dependency and devDependency declarations remain exact pinned stable versions only; `^` and `~` are prohibited. Revision `965c91a5b9090da321ae3eb0d11f9383678b02c6` passed both dependency gates in run `37553471015`. The approved v2 design requires no new runtime dependency unless the implementation plan proves one necessary against current official documentation.
 

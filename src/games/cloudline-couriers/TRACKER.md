@@ -22,17 +22,17 @@
 
 ## Current handoff
 
-**Implementation state:** Implementing. D-026 closes the automated Cloudline client-fix tranche at local functional revision `1d0c269`; this is not full-game completion, full-repository validation or deployment.
-**Last verified revision:** historical first-win functional revision `8e74431747cff945021b0c42689b64dbc086d99e`, run `39960131577`; scoped client-triage acceptance and the historical candidate digest are recorded in the spec. D-026 records the automated tranche closure at `1d0c269`.
+**Implementation state:** implementing — the automated client-fix tranche from `1d0c269` is released in functional `2628ca2`; the expanded PRD remains open.
+**Last verified revision:** `2628ca27e8aa95778203f78848d30df31e60f25e`, CI/Pages run `40034775904`, live Cloudline smoke 2026-10-23; targeted account-emulator acceptance also passed locally under the refreshed SDK.
 **Open game-local work:** the CLC-001..CLC-030 campaign/feature scope, long-campaign evidence, human comprehension, production-art review and TASK-003 live Firebase verification remain open. Initial-hydration blocking CLC-009-A2 is excluded under the shared platform contract; CLC-009-A3 preserves cached play with an upfront authority warning.
-**External blockers:** Dependency targets are installed and lockfile-synchronized under D-025 (including Firebase 13.1.0 and Vite 8.3.5). Full validation/deployment remain pending: D-026 resumes Cascade Vault CV-004/CV-005 as the shared release blocker. D-022 sequencing remains in force.
-**Next action:** resume the existing Cascade Vault CV-004/CV-005 release workstream; then run exact-revision full validation and deployment gates. Preserve local evidence as scoped and historical where noted.
+**External blockers:** TASK-003 blocks live configured-project Firebase verification. Human comprehension and art/motion approval await human testing. The former dependency/Cascade release blockers are resolved.
+**Next action:** resume the remaining Cloudline PRD through its existing todo; obtain human first-session comprehension and art/motion testing before closing those criteria.
 
 ## Resume here
 
-**Current state:** automated client-fix tranche closed locally at revision `1d0c269` under D-026. Pending cargo blocks landmark upgrades; cargo settlement does not wait for animation. Dependency targets are installed under D-025. Save schema and reward/cost formulas are unchanged.
-**Next action:** resume the specified Cascade Vault CV-004/CV-005 workstream; after that shared release blocker clears, run exact-revision full validation and deployment gates.
-**Blockers:** full repository validation/deployment remain pending behind Cascade Vault CV-004/CV-005; TASK-003 live Firebase, human comprehension and long-campaign evidence remain open. Do not mark all 30 PRD features or the game complete.
+**Current state:** the client-fix tranche is deployed and browser-smoked; all 30 PRD features are not complete.
+**Next action:** resume the remaining Cloudline PRD through its existing todo; obtain human first-session comprehension and art/motion testing before closing those criteria.
+**Blockers:** TASK-003 and human comprehension/art/motion testing; expanded campaign implementation remains open.
 
 ## Development-tooling review (2026-10-07)
 
@@ -67,4 +67,4 @@ Do not infer completion from chat history. The expanded PRD, todo, authoritative
 
 ## Refreshed local release evidence
 
-Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact committed CI/Pages evidence remains pending.
+Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact The refreshed functional revision `2628ca2` passed CI/Pages run `40034775904` on 2026-10-23.

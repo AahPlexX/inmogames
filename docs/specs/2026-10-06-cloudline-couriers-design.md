@@ -111,7 +111,7 @@ Motion-specific sources rechecked 2026-10-22: Apple HIG Motion requires purposef
 
 ## Completion contract
 **Completion state:** implementing  
-**Completion evidence:** Schema-v1 baseline is `232102f4` / `37555538295`; prior first-win browser evidence is `39960131577`; the historical 2026-10-23 client-triage evidence and pre-integration candidate digest are recorded above. D-026 closes the automated client-fix tranche at local functional revision `1d0c269`; current dependency targets are installed under D-025. Exact-revision full validation and deployment remain pending, with Cascade Vault CV-004/CV-005 the shared release blocker. Cloudline remains Implementing; no completed expanded-game claim is made.
+**Completion evidence:** Client fixes from `1d0c269` are released in exact functional `2628ca27e8aa95778203f78848d30df31e60f25e`, full CI/Pages `40034775904`, with live purpose/help/reduced-motion/reflow smoke on 2026-10-23. Targeted account-emulator checks passed under the refreshed SDK. Cloudline remains implementing for its expanded PRD; campaign systems and human comprehension/art/motion testing remain open; TASK-003 is external.
 - [ ] All 30 PRD/todo feature IDs are implemented or explicitly excluded with evidence/rationale.
 - [ ] First-session onboarding is playable, optional/replayable and comprehension-tested.
 - [ ] Full five-region/twenty-district campaign target is authored and pacing/playtime measured; 20–40h target adjusted from evidence if needed.
@@ -128,4 +128,8 @@ Only after every applicable gate is evidenced may Completion state become verifi
 
 ## Refreshed local release evidence
 
-Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact committed CI/Pages evidence remains pending.
+Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact The refreshed functional revision `2628ca2` passed CI/Pages run `40034775904` on 2026-10-23.
+
+## Client-triage release — 2026-10-23
+
+Client fixes from `1d0c269` are deployed in exact functional revision `2628ca27e8aa95778203f78848d30df31e60f25e`, CI/Pages run `40034775904`. Live Chromium passed purpose/help/reduced-motion flight and 320/1024/1440 reflow. Full shared validation and targeted local Cloudline account-emulator checks passed with refreshed dependencies. Broader campaign requirements remain implementing; human comprehension and production-art/motion approval await human testing. TASK-003 remains external.

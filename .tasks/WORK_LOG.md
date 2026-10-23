@@ -63,3 +63,7 @@
 - 2026-10-23 - Cloudline client-triage local acceptance covers responsive controls, truthful bonus guidance, animation-independent cargo, fuel recovery, confirmed resets, live reduced motion, pending-cargo upgrade validation and upfront account-precedence disclosure. Evidence and integration blockers: `docs/specs/2026-10-06-cloudline-couriers-design.md`; full validation/deployment remain blocked.
 
 - 2026-10-23 — D-025 approved official-registry corroboration during npmjs HTTP 403; installed exact current targets with frozen lockfile. D-026 resumed existing Cascade CV-004/CV-005 after local Cloudline client-fix tranche `1d0c269`. Local full validation passed 161 unit cases, four rules tests, shared/game browsers and both builds; Cloudline account-emulator checks passed. D-027 fixed the prototype favicon HTTP 404 by reusing the existing icon. Exact-revision CI/Pages evidence remains pending.
+
+- 2026-10-23 — Functional `2628ca27e8aa95778203f78848d30df31e60f25e` passed full CI/Pages `40034775904`, focused prototype `40034775794`, refreshed 10M acceptance `40036114157`, and live Cloudline/Cascade browser smoke. Cascade CV-001–CV-005 are game-locally verified; Cloudline’s client-fix tranche is released while campaign/human criteria remain open. Source/runtime files are unchanged by the evidence closeout.
+
+**Resume here:** current state, next action and blockers are owned by `.tasks/IN_PROGRESS.md`.

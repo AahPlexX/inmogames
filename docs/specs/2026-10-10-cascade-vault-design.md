@@ -1,8 +1,8 @@
 # Cascade Vault design
 
-**Status:** Implementing — CV-001/CV-002/CV-003 verified; CV-004 presentation implementation in progress; CV-005 release gates remain open
+**Status:** Verified game-local implementation; configured-project Firebase remains TASK-003
 **Last synchronized:** 2026-10-23
-**Shared dependency refresh:** Firebase 13.1.0 and Vite 8.3.5 are the requested shared targets in `docs/DEPENDENCY_POLICY.md` and `.tasks/dependency-refresh-request.json`; local refreshed full validation passed on 2026-10-23; committed CI/Pages evidence remains pending. CV-004 is reopened for the playable presentation tranche; CV-001/CV-002/CV-003 evidence and the schema-v1 save contract remain unchanged.
+**Shared dependency refresh:** Functional revision `2628ca27e8aa95778203f78848d30df31e60f25e` passed full CI/Pages `40034775904` on 2026-10-23; exact targets and registry evidence are owned by `docs/DEPENDENCY_POLICY.md` and `.tasks/dependency-refresh-request.json`.
 **Proposed route:** `#/games/cascade-vault`
 
 ## Product intent
@@ -130,7 +130,7 @@ Primary hierarchy: bankroll/wager → 6×5 board → current cascade result/mult
 
 ## CV-004 client acceptance
 
-The initial browser RED was the missing `.cv` surface. Local validation on 2026-10-23 passed all nine cryptographic-source unit cases and `tests/browser/cascade-vault.mjs`, including all six acceptance slices below. A later fixture RED exhausted its random queue and reached the unchanged 50-cascade safety guard; the finite two-Quartz-cascade fixture now asserts an exact 4,990.3-credit bankroll. Full exact-revision release validation remains pending.
+The initial browser RED was the missing `.cv` surface. Local validation on 2026-10-23 passed all nine cryptographic-source unit cases and `tests/browser/cascade-vault.mjs`, including all six acceptance slices below. A later fixture RED exhausted its random queue and reached the unchanged 50-cascade safety guard; the finite two-Quartz-cascade fixture now asserts an exact 4,990.3-credit bankroll. Full exact-revision release and refreshed audit evidence are recorded in the Completion contract.
 
 | Acceptance | Required behavior | Evidence surface |
 | --- | --- | --- |
@@ -172,17 +172,17 @@ The free-play design follows conservative gambling-technology principles: unders
 
 ## Completion contract
 
-**Completion state:** implementing
-**Completion evidence:** CV-001 is verified on refreshed exact revision `08c3506773d17eee3fed7554f211531141856386` / run `39296638285`; CV-002 is verified by D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02`, Pages run `39491636082`, and 10M-spin acceptance run `39491663232`; CV-003 is verified on exact revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` / run `39459146356`. The initial CV-004 browser RED was observed at the missing `.cv` surface; the current candidate passes A1–A6 locally (2026-10-23, nine random-source unit cases and the direct browser contract). The CV-005 base catalog/workspace entry is present in the current candidate but remains unverified; full exact-revision validation and deployment are open. The shared dependency refresh is pending and does not replace these game gates.
+**Completion state:** verified
+**Completion evidence:** Functional revision `2628ca27e8aa95778203f78848d30df31e60f25e` passed full validation, both builds and Pages deployment in run `40034775904`; required refreshed 10M-spin acceptance passed in run `40036114157`. Live Cloudline purpose/help/reduced-motion/reflow and Cascade board/paytable/spin/reload checks passed on 2026-10-23 without page errors. D6 paytable/distributions, engine rules and schema-v1 persistence are unchanged.
 
 - [x] Exact ways/Wild/removal/gravity/refill/cascade/Vault Run/final-feature-termination engine passes focused/full tests (`08c35067…`, run `39296638285`).
 - [x] Reproducible >=10,000,000-spin audit passed on `f9893506…` / run `39491663232`: RTP `0.950268466`, 95% CI `0.943437..0.957100`, zero guard hits.
 - [x] Settled schema-v1 persistence, reload, feature termination/checkpoint and restore behavior passed on `343ca3fc…` / run `39459146356`.
 - [x] Accessible playable board/Vault Run/audio browser contract passes deterministic gameplay, 320px, 200%-text, target-size, keyboard/touch and reduced-motion gates.
-- [ ] Catalog/workspace route and all living governance surfaces are synchronized.
-- [ ] Exact dependency freshness, TypeScript, governance, unit/rules/shared browser/game browser suites pass on the final functional revision.
-- [ ] Both production builds and Pages artifact upload succeed on that revision.
-- [ ] GitHub Pages deployment succeeds and tracker/PRD/todo/GAME_INDEX/.tasks close as verified; TASK-003 may remain externally blocked.
+- [x] Catalog/workspace route and all living governance surfaces are synchronized.
+- [x] Exact dependency freshness, TypeScript, governance, unit/rules/shared browser/game browser suites pass on the final functional revision.
+- [x] Both production builds and Pages artifact upload succeed on that revision.
+- [x] GitHub Pages deployment succeeds and tracker/PRD/todo/GAME_INDEX/.tasks close as verified; TASK-003 may remain externally blocked.
 
 ### 2026-10-20 — Audit runner discovery repair
 Audit workflow run `39300303052` on `7696b76668cd984a5a9e10ccbcc3c39250c37cff` passed dependency freshness, TypeScript, and all 25 focused engine/simulation tests, then failed before simulation because the repository Vitest configuration only discovered `tests/unit/**/*.test.ts`; `tests/audit/cascade-vault-audit.test.ts` was filtered out. The audit runner itself and production simulator were not implicated. `vite.config.ts` now conditionally includes `tests/audit/**/*.test.ts` only when `CASCADE_VAULT_AUDIT=1`, leaving routine `pnpm test:unit` discovery unchanged. Next evidence: routine full validation plus an explicit 25,000-paid-spin audit run on the repaired harness.
@@ -220,11 +220,19 @@ D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02` passed full validat
 
 ### 2026-10-23 — CV-004 presentation implementation resumed
 
-The current implementation candidate is in progress. The initial browser RED was observed when the direct route lacked `.cv`; that RED remains valid as baseline evidence. The current candidate now registers and renders the game surface but is unverified. Acceptance is split into CV-004-A1–A6 above: secure RNG failure/rejection and unchanged bankroll; single resolve/settle with reload-safe results; active eight-spin Vault checkpoint restore; audio initialized only after a Spin gesture, never by preference toggle; 6×5/reflow/48px/reduced-effects/single-live status; and pre-play rules/paytable plus restore preserving stats. No CV-004 GREEN, full-suite GREEN, or deployment claim is made. CV-001/CV-002/CV-003 verified evidence remains immutable. The shared Firebase/Vite target refresh is still pending repository-wide validation.
+Before validation, the implementation candidate was in progress. The initial browser RED was observed when the direct route lacked `.cv`; that RED remains valid as baseline evidence. That candidate registered and rendered the surface before validation. Acceptance is split into CV-004-A1–A6 above: secure RNG failure/rejection and unchanged bankroll; single resolve/settle with reload-safe results; active eight-spin Vault checkpoint restore; audio initialized only after a Spin gesture, never by preference toggle; 6×5/reflow/48px/reduced-effects/single-live status; and pre-play rules/paytable plus restore preserving stats. This pre-validation entry made no GREEN or deployment claim; current evidence is in the Completion contract. CV-001/CV-002/CV-003 verified evidence remains immutable. At that pre-validation point the shared refresh had not passed the full repository suite.
 
 ### 2026-10-20 — CV-004 browser RED opened
 The consolidated direct-route browser contract is integrated before playable route/UI implementation. It requires a 6×5 board, pre-play rules, >=48px Spin, keyboard activation, deterministic two-cascade single settlement, presentation lock, reload without replay, concise live status, reduced-effects equivalence, opt-in audio, 320px/200%-text reflow and practice-credit restore. The playable `.cv` route remains intentionally absent in this RED revision; catalog discoverability remains CV-005.
 
 ## Refreshed local release evidence
 
-Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact committed CI/Pages evidence remains pending.
+Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact The refreshed functional revision `2628ca2` passed CI/Pages run `40034775904` on 2026-10-23.
+
+## Current release evidence — 2026-10-23
+
+Functional revision `2628ca27e8aa95778203f78848d30df31e60f25e` passed full validation, both builds and Pages deployment in run `40034775904`; required refreshed 10M-spin acceptance passed in run `40036114157`. Live Cloudline purpose/help/reduced-motion/reflow and Cascade board/paytable/spin/reload checks passed on 2026-10-23 without page errors.
+
+Audit `40036114157` used 10,000,000 paid spins, seed 1592594996 and wager 10; RTP was 0.950268466, standard error 0.0034853147598822264, 95% interval 0.9434372490706309–0.9570996829293692, Vault entry frequency 0.0188731, average winning-cascade depth 0.7492685 and zero guard hits. The unchanged acceptance gate passed.
+
+Expected load is one solo game per tab with a fixed 30-cell board, no autoplay, a 50-winning-cascade fault limit and at most 20 remaining feature spins. Source: `engine.ts`, `CascadeVaultWorkspace.tsx` and the core rules above.

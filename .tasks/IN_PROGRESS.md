@@ -1,10 +1,12 @@
 # In progress
 
-## Resume here — current release candidate (2026-10-23)
+## Resume here — 2026-10-23
 
-**Current state:** D-025 dependency refresh and CV-004 acceptance pass locally; all 161 unit cases, four rules tests, shared/game browser checks and both builds are GREEN. Cloudline account-emulator checks pass with the refreshed SDK. The prototype favicon RED is fixed with the existing icon and unchanged console gate. D-026 closes only Cloudline’s automated client-fix tranche at `1d0c269`; its full PRD remains implementing.
-**Next action:** push the validated release candidate, verify exact-revision CI/Pages, smoke the deployed routes, then reconcile evidence records.
-**Blockers:** committed CI/Pages evidence pending; TASK-003 remains external live Firebase. Cloudline campaign/human sign-off and preserved Mergrove branch review remain open.
+**Current state:** Cloudline client-triage fixes and Cascade CV-004/CV-005 are released on `2628ca2`; full CI/Pages `40034775904`, fresh 10M acceptance `40036114157` and live route smoke passed. Cascade is game-locally verified; Cloudline remains implementing for its expanded PRD.
+**Next action:** continue the remaining Cloudline PRD through its canonical todo and obtain human comprehension/art/motion testing; perform real Firebase checks after TASK-003 provisioning.
+**Blockers:** TASK-003 and human testing. Preserved Mergrove branch review and Node-only dependency advisories are separately recorded in `.tasks/BACKLOG.md`.
+
+## Historical progress — current state is above
 
 ## PLATFORM-001: Firebase authentication and account saves
 **Priority:** P0 | **Tags:** firebase, auth, firestore, persistence

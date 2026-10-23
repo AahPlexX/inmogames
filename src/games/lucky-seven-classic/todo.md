@@ -4,7 +4,7 @@
 **Architecture / Engine:** Pure center-line engine → settled durable persistence → React mechanical cabinet/audio → one consolidated browser regression → both production builds → exact-revision Pages evidence.  
 **Dependencies Used:** React 19.3.1; TypeScript 7.0.2; Vitest 5.0.5; Playwright 1.64.1; Firebase 13.1.0; Vite 8.3.5.
 
-Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared full validation remains pending.
+Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared validation and Pages passed on `2628ca2` / run `40034775904`.
 
 ## Core Feature Execution Pipeline
 

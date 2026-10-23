@@ -2,9 +2,11 @@
 
 ## Resume here — 2026-10-23
 
-**Current state:** refreshed local full validation and targeted Cloudline account-emulator checks pass; CV-004 acceptance and CV-005 route are implemented.
-**Next action:** integrate the validated candidate, verify exact-revision CI/Pages, smoke deployed Cloudline/Cascade routes, and record the release evidence in their canonical trackers.
-**Blockers:** committed CI/Pages evidence pending; TASK-003 remains external live Firebase; broader Cloudline campaign/human sign-off and preserved Mergrove branch reconciliation remain open.
+**Current state:** Cloudline client-triage fixes and Cascade CV-004/CV-005 are released on `2628ca2`; full CI/Pages `40034775904`, fresh 10M acceptance `40036114157` and live route smoke passed. Cascade is game-locally verified; Cloudline remains implementing for its expanded PRD.
+**Next action:** continue the remaining Cloudline PRD through its canonical todo and obtain human comprehension/art/motion testing; perform real Firebase checks after TASK-003 provisioning.
+**Blockers:** TASK-003 and human testing. Preserved Mergrove branch review and Node-only dependency advisories are separately recorded in `.tasks/BACKLOG.md`.
+
+## Historical progress — current state is above
 
 ## TASK-004: Optional Firebase Hosting deployment
 **Priority:** P2 | **Tags:** deployment, firebase-hosting | **Status:** blocked

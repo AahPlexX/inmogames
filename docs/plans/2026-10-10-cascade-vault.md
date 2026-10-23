@@ -6,7 +6,7 @@
 
 **Architecture:** The game is isolated under `src/games/cascade-vault/`. Pure board/ways/cascade/feature logic is separated from React, persistence, simulation tooling, and audio. It integrates through existing catalog/workspace/save contracts and shares no gameplay logic with the other slot titles.
 
-**Tech Stack:** React 19.3.0, TypeScript 7.0.2, Vite 8.3.4, Vitest 5.0.3, Playwright 1.64.0, Firebase 13.0.0 shared save platform, CSS.
+**Tech Stack:** current exact versions are owned by `package.json` and `docs/DEPENDENCY_POLICY.md`; static React/TypeScript/CSS with the shared Firebase save platform.
 
 ## Global Constraints
 
@@ -49,15 +49,15 @@ Revision `a52d9977…` / run `38122640264` failed because `symbols.ts`, `paytabl
 
 Board is six reel arrays of five symbols. Ways are evaluated from one immutable snapshot. Duplicate Wild interpretation is handled combinatorially: only all-Wild concrete ways overlap between symbol interpretations, so those ways are awarded once to the highest valid paytable interpretation rather than enumerating every concrete path. Collapse keeps survivor order, refills top vacancies only, and the step-1 feature Wild uses the same random source. Exact awards remain centi-credit integers. Current symbol weights are provisional until Task 2.
 
-- [ ] **Step 4: Verify focused pass**
+- [x] **Step 4: Verify focused pass**
 
 Run `pnpm vitest run tests/unit/cascade-vault-engine.test.ts`; expected zero exit.
 
-- [ ] **Step 5: Integration check**
+- [x] **Step 5: Integration check**
 
 Run `pnpm typecheck && pnpm game:check && pnpm test:unit`; expected zero exit.
 
-- [ ] **Step 6: Commit passing deliverable**
+- [x] **Step 6: Commit passing deliverable**
 
 Record the exact GREEN revision/run and then open Task 2.
 
@@ -75,12 +75,12 @@ Record the exact GREEN revision/run and then open Task 2.
 - Consumes: source-controlled symbol distributions and `resolveSpin` engine.
 - Produces: deterministic seeded PRNG adapter for audit only, `simulatePaidSpins(count, seed)`, observed RTP, standard error, 95% confidence interval, feature frequency, average cascade depth.
 
-- [ ] **Step 1: Add focused failing tests** — weight normalization/counts, same-seed reproducibility, known confidence calculation, finite/non-negative counters.
-- [ ] **Step 2: Verify failure** — focused simulation test must fail because module is absent.
-- [ ] **Step 3: Implement minimum behavior** — seeded PRNG remains audit/test-only; stream statistics; production remains cryptographic.
-- [ ] **Step 4: Verify focused pass** — focused simulation tests zero exit.
-- [ ] **Step 5: Run balance audit** — reproducible >=10,000,000 paid spins; 95% RTP CI must intersect 94–97%; rebalance weights/paytable and rerun if not.
-- [ ] **Step 6: Commit balance evidence source** — record seed/count/RTP/SE/95% CI/feature frequency/cascade depth only after final constants are fixed.
+- [x] **Step 1: Add focused failing tests** — weight normalization/counts, same-seed reproducibility, known confidence calculation, finite/non-negative counters.
+- [x] **Step 2: Verify failure** — focused simulation test must fail because module is absent.
+- [x] **Step 3: Implement minimum behavior** — seeded PRNG remains audit/test-only; stream statistics; production remains cryptographic.
+- [x] **Step 4: Verify focused pass** — focused simulation tests zero exit.
+- [x] **Step 5: Run balance audit** — reproducible >=10,000,000 paid spins; 95% RTP CI must intersect 94–97%; rebalance weights/paytable and rerun if not.
+- [x] **Step 6: Commit balance evidence source** — record seed/count/RTP/SE/95% CI/feature frequency/cascade depth only after final constants are fixed.
 
 ### Task 3: Durable save/checkpoint contract
 
@@ -92,12 +92,12 @@ Record the exact GREEN revision/run and then open Task 2.
 **Interfaces:**
 - Produces: `CascadeVaultSave`, `cascadeVaultSaveDefinition`, fully settled paid/free-spin checkpoint helpers.
 
-- [ ] **Step 1: Add focused failing tests** — 5,000 initial bankroll, supported wager, malformed/non-finite/negative rejection, stats, settled Vault Run decode, no partial cascade representation, restore preserving stats/preferences.
-- [ ] **Step 2: Verify failure** — missing module.
-- [ ] **Step 3: Implement minimum behavior** — schema v1, slug `cascade-vault`, storage key `inmogames:cascade-vault:v1`; persist settled bankroll/statistics/preferences plus post-free-spin feature state only.
-- [ ] **Step 4: Verify focused pass**.
-- [ ] **Step 5: Integration check** — `pnpm test:unit && pnpm typecheck`.
-- [ ] **Step 6: Commit passing deliverable**.
+- [x] **Step 1: Add focused failing tests** — 5,000 initial bankroll, supported wager, malformed/non-finite/negative rejection, stats, settled Vault Run decode, no partial cascade representation, restore preserving stats/preferences.
+- [x] **Step 2: Verify failure** — missing module.
+- [x] **Step 3: Implement minimum behavior** — schema v1, slug `cascade-vault`, storage key `inmogames:cascade-vault:v1`; persist settled bankroll/statistics/preferences plus post-free-spin feature state only.
+- [x] **Step 4: Verify focused pass**.
+- [x] **Step 5: Integration check** — `pnpm test:unit && pnpm typecheck`.
+- [x] **Step 6: Commit passing deliverable**.
 
 ### Task 4: Accessible cascading board UI, finite sequence presentation, and audio
 
@@ -111,12 +111,12 @@ Record the exact GREEN revision/run and then open Task 2.
 - Consumes: pre-resolved engine event sequence and save contract.
 - Produces: responsive board/feature UI and opt-in procedural cues.
 
-- [ ] **Step 1: Add focused failing browser test** — route/rules; Spin keyboard/touch; deterministic multi-cascade; aggregate announcements; feature multiplier/meter/free-spin counts; wager lock during resolution; reduced-motion replacement; sound opt-in; 320px/200%-text no overflow; 48px important controls.
-- [ ] **Step 2: Verify failure** — expected missing playable route/workspace integration.
-- [ ] **Step 3: Implement minimum behavior** — resolve logic before presentation; finite CSS transitions only; reduced motion skips travel; concise accessible labels; native disclosure for rules/paytable.
-- [ ] **Step 4: Verify focused pass**.
-- [ ] **Step 5: Integration check** — `pnpm typecheck && pnpm test:unit && pnpm build`.
-- [ ] **Step 6: Commit passing deliverable**.
+- [x] **Step 1: Add focused failing browser test** — route/rules; Spin keyboard/touch; deterministic multi-cascade; aggregate announcements; feature multiplier/meter/free-spin counts; wager lock during resolution; reduced-motion replacement; sound opt-in; 320px/200%-text no overflow; 48px important controls.
+- [x] **Step 2: Verify failure** — expected missing playable route/workspace integration.
+- [x] **Step 3: Implement minimum behavior** — resolve logic before presentation; finite CSS transitions only; reduced motion skips travel; concise accessible labels; native disclosure for rules/paytable.
+- [x] **Step 4: Verify focused pass**.
+- [x] **Step 5: Integration check** — `pnpm typecheck && pnpm test:unit && pnpm build`.
+- [x] **Step 6: Commit passing deliverable**.
 
 ### Task 5: Catalog/governance integration and exact-revision verification
 
@@ -127,12 +127,12 @@ Record the exact GREEN revision/run and then open Task 2.
 - Maintain: `src/games/cascade-vault/PRD.md`, `TRACKER.md`, `todo.md`, authoritative spec/plan, `docs/GAME_INDEX.md`, `.tasks/IN_PROGRESS.md`
 - Test: `tests/unit/catalog.test.ts`
 
-- [ ] **Step 1: Add/update integration assertions** — catalog slug uniqueness/workspace route and browser suite registration.
-- [ ] **Step 2: Verify governance failure before completion** where applicable.
-- [ ] **Step 3: Complete integration/governance** — register metadata/workspace and record final 10M audit evidence.
-- [ ] **Step 4: Verify integration** — `pnpm game:check && pnpm typecheck && pnpm test:unit`.
-- [ ] **Step 5: Full validation** — `pnpm validate`; confirm Actions build and Pages deployment for exact revision.
-- [ ] **Step 6: Synchronize verification evidence** — update tracker/spec/todo/GAME_INDEX/.tasks atomically with exact revision/workflow evidence; keep TASK-003 external where live account saves remain blocked.
+- [x] **Step 1: Add/update integration assertions** — catalog slug uniqueness/workspace route and browser suite registration.
+- [x] **Step 2: Verify governance failure before completion** where applicable.
+- [x] **Step 3: Complete integration/governance** — register metadata/workspace and record final 10M audit evidence.
+- [x] **Step 4: Verify integration** — `pnpm game:check && pnpm typecheck && pnpm test:unit`.
+- [x] **Step 5: Full validation** — `pnpm validate`; confirm Actions build and Pages deployment for exact revision.
+- [x] **Step 6: Synchronize verification evidence** — update tracker/spec/todo/GAME_INDEX/.tasks atomically with exact revision/workflow evidence; keep TASK-003 external where live account saves remain blocked.
 
 ## Unresolved externally observable decisions
 
@@ -171,6 +171,10 @@ D5 exact revision `2ef4203a2550accdc737f664eb09a973ba0cf3ba` passed the complete
 
 ## Resume here — 2026-10-23
 
-**Current state:** CV-001/002/003 historical verification remains intact; CV-004 A1–A6 pass local unit/browser acceptance in the authoritative spec. Catalog/workspace registration is present.
-**Next action:** complete the full refreshed-dependency validator, both builds, exact-revision CI/Pages and CV-005 evidence closeout.
-**Blockers:** release evidence pending; TASK-003 is external live configured-project Firebase.
+**Current state:** CV-001 through CV-005 verified; full release run `40034775904`, refreshed audit `40036114157`, live smoke 2026-10-23.
+**Next action:** TASK-003 real-project verification after provisioning; game-local plan is complete.
+**Blockers:** TASK-003 external live Firebase only.
+
+## Completion evidence — 2026-10-23
+
+Functional revision `2628ca27e8aa95778203f78848d30df31e60f25e` passed full validation, both builds and Pages deployment in run `40034775904`; required refreshed 10M-spin acceptance passed in run `40036114157`. Live Cloudline purpose/help/reduced-motion/reflow and Cascade board/paytable/spin/reload checks passed on 2026-10-23 without page errors. Earlier task narratives record their original RED/candidate state; this entry and the authoritative Completion contract own the final state.

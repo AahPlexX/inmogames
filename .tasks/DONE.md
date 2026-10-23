@@ -53,3 +53,17 @@ Completed 2026-10-05. Every game requires exactly one authoritative dated spec s
 ## DOCS-002: Verified-game contract integrity
 
 Completed 2026-10-05. The structural game checker now parses tracker capability rows instead of relying on loose status text. It rejects unsupported states, missing terminal verification/rationale, vague verified completion evidence, spec/tracker state disagreement, verified handoffs that still name game-local work, and externally blocked capabilities without a named blocker. Regression fixtures cover each failure mode while keeping the implementation inside the existing checker with no new dependency or abstraction.
+
+## GAME-CASCADE-VAULT-001: Approved game-local release
+
+Completed 2026-10-23. Functional revision `2628ca27e8aa95778203f78848d30df31e60f25e` passed full validation, both builds and Pages deployment in run `40034775904`; required refreshed 10M-spin acceptance passed in run `40036114157`. Live Cloudline purpose/help/reduced-motion/reflow and Cascade board/paytable/spin/reload checks passed on 2026-10-23 without page errors. CV-001 through CV-005, canonical documents/index and original CSS/procedural assets are reconciled; TASK-003 remains external.
+
+## RELEASE-001: Prototype icon release gate
+
+Completed on `2628ca2`, CI/Pages `40034775904` and focused prototype run `40034775794`; the unchanged console gate passes using the existing icon.
+
+## Cloudline automated client-fix tranche (GAME-CLOUDLINE-COURIERS-001 subset)
+
+Client instructions/purpose/copy, finite/skippable/reduced-motion flights, visible landmark stages, animation-independent cargo settlement, pending-cargo upgrade guard, affordable boost recovery and confirmed resets are released in `2628ca2` / `40034775904`. Broader game requirements are not marked complete.
+
+**Resume here:** current state, next action and blockers are owned by `.tasks/IN_PROGRESS.md`.

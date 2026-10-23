@@ -1,7 +1,7 @@
 # Cascade Vault tracker
 
 **Last synchronized:** 2026-10-23
-**Shared dependency refresh:** Firebase 13.1.0 and Vite 8.3.5 are the requested shared targets in `docs/DEPENDENCY_POLICY.md` and `.tasks/dependency-refresh-request.json`; local refreshed full validation passed on 2026-10-23; committed CI/Pages evidence remains pending. CV-004 presentation is implementing; CV-001/CV-002/CV-003 evidence and the schema-v1 save contract remain unchanged.
+**Shared dependency refresh:** Functional revision `2628ca27e8aa95778203f78848d30df31e60f25e` passed full CI/Pages `40034775904` on 2026-10-23; exact targets and registry evidence are owned by `docs/DEPENDENCY_POLICY.md` and `.tasks/dependency-refresh-request.json`.
 **Spec:** `docs/specs/2026-10-10-cascade-vault-design.md`
 **Plan:** `docs/plans/2026-10-10-cascade-vault.md`
 
@@ -11,17 +11,17 @@
 | Exact payout precision | verified | Integer centi-credit accounting (`CREDIT_SCALE = 100`), rational ×1.5 feature boost, fractional paytable awards and multiplier progression are covered by the CV-001 focused/full unit suite in run `39296638285`. D6 balance is accepted under CV-002, but accounting precision is verified. |
 | Reproducible 10M-spin probability audit | verified | D6 `f9893506…`; run `39491663232` passed 10M paid spins at RTP `0.950268466`, 95% CI `0.943437..0.957100`, Vault entry frequency `0.0188731`, average cascade depth `0.7492685`, zero guard hits. |
 | Settled durable checkpoints | verified | CV-003 RED `40442255…` / run `39458077585`; exact GREEN revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` / run `39459146356` passed full validation and Pages deployment with schema-v1 settled state, exact centi-credit accounting, compact results, validated active/null Vault checkpoints and restore below 10 credits. |
-| Accessible board / Vault Run UI / audio | started | The initial browser RED was observed when `.cv` was missing; that remains baseline evidence. The current candidate passes local A1–A6 browser acceptance and nine secure-random unit cases (2026-10-23). CV-004-A1–A6 cover secure RNG failure/rejection with unchanged bankroll; exactly-once resolve/settle and reload; active eight-spin Vault checkpoint recovery; audio only after Spin, not preference toggle; 6×5/48px/320px/200%/reduced-effects/single-live status; and pre-play rules/paytable plus stats-preserving restore. Full exact-revision release evidence remains pending. |
-| Catalog / route / production release | started | Base catalog/workspace entry is present in the current candidate but unverified; exact-revision full validation, both builds and Pages deployment remain required before release. |
+| Accessible board / Vault Run UI / audio | verified | The initial browser RED was observed when `.cv` was missing; that remains baseline evidence. The current candidate passes local A1–A6 browser acceptance and nine secure-random unit cases (2026-10-23). CV-004-A1–A6 cover secure RNG failure/rejection with unchanged bankroll; exactly-once resolve/settle and reload; active eight-spin Vault checkpoint recovery; audio only after Spin, not preference toggle; 6×5/48px/320px/200%/reduced-effects/single-live status; and pre-play rules/paytable plus stats-preserving restore. Exact functional revision `2628ca2` passed run `40034775904` and live smoke checks. |
+| Catalog / route / production release | verified | Catalog/lazy route, full validation, both builds, Pages and live smoke passed on `2628ca2`, run `40034775904`. Refreshed 10M acceptance passed in `40036114157`. |
 | Authenticated live-project persistence | blocked externally | Shared account-save architecture will be reused; real configured-project Firebase verification remains TASK-003. |
 
 ## Current handoff
 
-**Implementation state:** implementing — CV-001/CV-002/CV-003 verified; CV-004 presentation candidate in progress; CV-005 release integration pending.
-**Last verified revision:** CV-002 exact revision `f989350673c2166eea688836e73ce250bbff0d02` / Pages `39491636082` plus 10M acceptance run `39491663232`; CV-003 exact revision `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` / full validation and Pages `39459146356`. These historical game gates remain verified; they do not verify the current CV-004 candidate.
-**Open game-local work:** CV-004-A1–A6 pass locally; finish the CV-005 catalog/workspace entry and exact-revision release evidence. Preserve D6 balance and the verified schema-v1 save contract.
-**External blockers:** TASK-003 is the only external service blocker for live configured-project Firebase verification. The shared Firebase 13.1.0/Vite 8.3.5 dependency refresh and exact-revision full validation are pending repository gates; Pages deployment is also required after the functional revision.
-**Next action:** local CV-004 acceptance is GREEN; validate the current CV-005 base route with full exact-revision validation/build/deployment. Do not claim CV-004 or whole-game GREEN before evidence lands.
+**Implementation state:** verified — CV-001 through CV-005 are complete for the approved game-local scope.
+**Last verified revision:** `2628ca27e8aa95778203f78848d30df31e60f25e`, full CI/Pages run `40034775904`; refreshed 10M acceptance run `40036114157`; live route smoke 2026-10-23.
+**Open game-local work:** none. The approved game-local scope is complete.
+**External blockers:** TASK-003 remains the only live configured-project Firebase blocker. Node-only dependency hygiene is separately tracked as SECURITY-001 in `.tasks/BACKLOG.md`; no affected browser caller is present.
+**Next action:** complete the real configured-project matrix only after TASK-003 provisioning; reopen the game before any new game-local change.
 
 ## Canonical verification recovery — 2026-10-19
 
@@ -116,10 +116,14 @@ The consolidated direct-route browser contract is integrated before playable rou
 
 ## Resume here
 
-**Current state:** all six CV-004 acceptance slices pass locally on 2026-10-23; D6 engine/distributions/paytable and schema-v1 settlement are unchanged.
-**Next action:** finish full validation and both builds, integrate the functional revision on main, then verify CI/Pages and close CV-005 with exact evidence.
-**Blockers:** Pages/CI evidence pending; TASK-003 remains external live Firebase work.
+**Current state:** verified on functional revision `2628ca2`; CI/Pages `40034775904`, fresh 10M audit `40036114157` and live smoke passed.
+**Next action:** complete the real configured-project matrix only after TASK-003 provisioning; reopen the game before any new game-local change.
+**Blockers:** TASK-003 live Firebase provisioning only; game-local release gates are complete.
 
 ## Refreshed local release evidence
 
-Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact committed CI/Pages evidence remains pending.
+Local release evidence (2026-10-23): frozen pnpm 10.0.0 install, exact/current dependency gates, design lint, TypeScript, game/document governance, 161 unit tests, four Firestore rules tests, shared account browser checks, all game/design browser checks including Hollowshift, and both builds passed. Cloudline account-emulator checks also passed with Firebase 13.1.0. Final paytable reflow/keyboard/skip browser checks and both builds passed after the last presentation change. Runtime/test/config SHA-256 `0df0e1be6c4e09a35067136ba18ed0dbee9ced6681917145b7b1cae30c1d46df` uses sorted tracked and new non-Markdown files, excluding `.tasks/` except the dependency request, with each path and file bytes delimited by NUL. Exact The refreshed functional revision `2628ca2` passed CI/Pages run `40034775904` on 2026-10-23.
+
+## Original assets
+
+Mineral shapes and board artwork are repository-authored CSS in `cascade-vault.css`; sound is synthesized by `audio.ts`. No external art, sound or font asset was added.

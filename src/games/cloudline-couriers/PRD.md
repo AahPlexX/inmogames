@@ -211,3 +211,6 @@ Every major reward must answer **what did the player do to earn this?** Permanen
 ## Continuation rule
 
 Any provider resuming this game begins with this PRD, `todo.md`, `TRACKER.md` and the authoritative design spec. Do not collapse this expanded scope back into the original ten-feature prototype. Any scope/implementation/verification/dependency/completion change must reconcile those documents in the same development cycle. Never infer completion from chat history; exact evidence belongs in-repo.
+## Client-triage release — 2026-10-23
+
+Client fixes from `1d0c269` are deployed in exact functional revision `2628ca27e8aa95778203f78848d30df31e60f25e`, CI/Pages run `40034775904`. Live Chromium passed purpose/help/reduced-motion flight and 320/1024/1440 reflow. Full shared validation and targeted local Cloudline account-emulator checks passed with refreshed dependencies. Broader campaign requirements remain implementing; human comprehension and production-art/motion approval await human testing. TASK-003 remains external.

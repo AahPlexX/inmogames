@@ -1,25 +1,25 @@
 # Cascade Vault execution
 
-**Status:** Implementing — CV-001/CV-002/CV-003 verified; CV-004 started; CV-005 release integration pending
+**Status:** Verified game-local scope; TASK-003 remains external
 **Architecture / Engine:** Immutable 6×5 board → adjacent ways → simultaneous removal → gravity/refill → bounded base/Vault transitions → production-engine simulation → settled persistence → accessible React presentation.
-**Dependencies Used:** React 19.3.1; React DOM 19.3.1; TypeScript 7.0.2; Vitest 5.0.5; Playwright 1.64.1; Firebase 13.1.0; Vite 8.3.5. Dependency refresh completed through maintenance run `39296252148`; refreshed exact revision `08c3506773d17eee3fed7554f211531141856386` passed Pages run `39296638285`.
+**Dependencies Used:** exact versions in `package.json` and the PRD inventory; refresh evidence in `docs/DEPENDENCY_POLICY.md`.
 
 ## CV-001 canonical verification
 
-Historical exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` passed the full repository chain and GitHub Pages deployment in run `39296638285`. Dependency freshness, design lint, TypeScript, history-aware governance, unit/rules/shared browser/design-game browser suites, both production builds and artifact upload were all green on that revision. The current exact target set is installed; shared repository validation remains pending.
+Historical exact refreshed revision `08c3506773d17eee3fed7554f211531141856386` passed the full repository chain and GitHub Pages deployment in run `39296638285`. Dependency freshness, design lint, TypeScript, history-aware governance, unit/rules/shared browser/design-game browser suites, both production builds and artifact upload were all green on that revision. The current exact target set passed full CI/Pages on `2628ca2` / run `40034775904`.
 
 - [x] Exact current direct dependency pins and lockfile validated.
 - [x] History-aware spec/tracker governance validated.
 - [x] Full CV-001 unit and repository regression chain passed.
 - [x] Both production builds, artifact upload and Pages deployment passed.
 
-Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared full validation remains pending.
+Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh-request.json` and `docs/DEPENDENCY_POLICY.md`. Shared validation and Pages passed on `2628ca2` / run `40034775904`.
 
 ## Resume here
 
-**Current state:** CV-001/CV-002/CV-003 retain their historical verified evidence. CV-004 is the active game-local implementation tranche. The initial browser RED while `.cv` was absent remains valid baseline evidence; the current candidate now renders `.cv` and is not yet verified. CV-004-A1 through A6 are pending in the authoritative spec; none is marked GREEN. The shared Firebase 13.1.0/Vite 8.3.5 target set is installed; exact-revision repository validation, builds and Pages deployment remain pending.
-**Next action:** finish the CV-004 workspace, CSS, RNG and audio implementation against the six acceptance slices; get the direct browser contract green, then validate the current CV-005 base route with final exact-revision validation/build/Pages release.
-**Blockers:** TASK-003 is the only external blocker (live configured-project Firebase). Repository-wide dependency freshness, full validation, builds and Pages deployment are still release gates, not completed evidence.
+**Current state:** CV-001 through CV-005 are verified on functional `2628ca2`; full CI/Pages `40034775904`, fresh 10M acceptance `40036114157` and live smoke passed on 2026-10-23.
+**Next action:** TASK-003 real-project verification after provisioning; no open game-local release work.
+**Blockers:** TASK-003 only; game-local validation/deployment passed.
 
 ## Core Feature Execution Pipeline
 
@@ -61,12 +61,12 @@ Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh
 **Implementation Details:** schema v1; slug `cascade-vault`; storage key `inmogames:cascade-vault:v1`. Controller ruling: engine denomination remains 10/20/50/100/250 credits while durable money fields use centi-credit integers. `largestSpinWin` is one resolved engine spin, and `highestCascadeChain` is `result.cascades.length`. RED `40442255…` / run `39458077585` failed only on missing production modules; current candidate adds `storage.ts` and `persistence.ts` only.
 **Verification & State Sign-off:** verified on `343ca3fcaccd8efb09ebc0200e6608ca1ed74b74` / run `39459146356` (full validation + Pages).
 
-- [ ] Persistence RED/GREEN recorded after CV-001 canonical GREEN.
-- [ ] Base settlement deducts exactly wager×100 units; free-spin settlement deducts zero wager.
-- [ ] Reload cannot duplicate or lose a completed award.
-- [ ] Final free-spin completion checkpoints feature null and increments completed Vault Runs once.
-- [ ] Decoder rejects inconsistent net/feature/result states and unsafe integers.
-- [ ] Restore-to-5,000 preserves prior history/preferences.
+- [x] Persistence RED/GREEN recorded after CV-001 canonical GREEN.
+- [x] Base settlement deducts exactly wager×100 units; free-spin settlement deducts zero wager.
+- [x] Reload cannot duplicate or lose a completed award.
+- [x] Final free-spin completion checkpoints feature null and increments completed Vault Runs once.
+- [x] Decoder rejects inconsistent net/feature/result states and unsafe integers.
+- [x] Restore-to-5,000 preserves prior history/preferences.
 
 ### CV-004 — Accessible cascading board / Vault Run presentation / audio
 **Purpose:** Present pre-resolved outcomes clearly without animation affecting score.
@@ -82,24 +82,24 @@ Current exact direct-package targets: `package.json`, `.tasks/dependency-refresh
 **Dependencies Touched:** `src/catalog.ts`, `src/games/workspaces.tsx`, `package.json` if suite registration changes, spec/plan/tracker/PRD/todo/GAME_INDEX/`.tasks`.
 **Technical Notes & Edge Cases:** verified state requires terminal capability rows, exact revision/run, no open game-local work, both production builds and Pages success; TASK-003 stays external.
 **Implementation Details:** the CV-005 base catalog/workspace entry is present in the current candidate. Final release remains open until the exact functional revision passes full validation, builds and Pages deployment.
-**Verification & State Sign-off:** [ ] base route registration; [ ] full exact-revision validation; [ ] both builds and Pages deployment; [ ] evidence-only verified closeout.
+**Verification & State Sign-off:** [x] base route registration; [x] full exact-revision validation; [x] both builds and Pages deployment; [x] evidence-only verified closeout.
 
-- [ ] Catalog/workspace base integration after browser RED.
-- [ ] Full exact-revision canonical validation passes.
-- [ ] GitHub Pages deployment succeeds for same functional revision.
-- [ ] Evidence-only closeout commit passes verified-state governance/deployment.
+- [x] Catalog/workspace base integration after browser RED.
+- [x] Full exact-revision canonical validation passes.
+- [x] GitHub Pages deployment succeeds for same functional revision.
+- [x] Evidence-only closeout commit passes verified-state governance/deployment.
 
 ## Final Game Assembly & Verification Checklist
 
-- [ ] Console/runtime quality gate has no uncaught game-local errors.
-- [ ] Responsive viewport/reflow passes 320px and 200% text without horizontal overflow.
-- [ ] Persistence/reload/restart/restore/final-feature checkpoint behavior is verified.
-- [ ] Exact dependency pin/current-version gates pass.
-- [ ] TRACKER, PRD, GAME_INDEX, authoritative spec, plan, todo and `.tasks` are synchronized.
-- [ ] Final >=10,000,000-spin audit meets the RTP confidence gate with zero corruption-guard hits.
-- [ ] Full canonical validation passes on the exact final functional revision.
-- [ ] GitHub Pages deployment succeeds for that exact revision.
-- [ ] Mark Complete / Verified only after every game-local gate is evidenced; TASK-003 may remain externally blocked.
+- [x] Console/runtime quality gate has no uncaught game-local errors.
+- [x] Responsive viewport/reflow passes 320px and 200% text without horizontal overflow.
+- [x] Persistence/reload/restart/restore/final-feature checkpoint behavior is verified.
+- [x] Exact dependency pin/current-version gates pass.
+- [x] TRACKER, PRD, GAME_INDEX, authoritative spec, plan, todo and `.tasks` are synchronized.
+- [x] Final >=10,000,000-spin audit meets the RTP confidence gate with zero corruption-guard hits.
+- [x] Full canonical validation passes on the exact final functional revision.
+- [x] GitHub Pages deployment succeeds for that exact revision.
+- [x] Mark Complete / Verified only after every game-local gate is evidenced; TASK-003 may remain externally blocked.
 
 ### 2026-10-20 — Audit runner discovery repair
 Audit workflow run `39300303052` on `7696b76668cd984a5a9e10ccbcc3c39250c37cff` passed dependency freshness, TypeScript, and all 25 focused engine/simulation tests, then failed before simulation because the repository Vitest configuration only discovered `tests/unit/**/*.test.ts`; `tests/audit/cascade-vault-audit.test.ts` was filtered out. The audit runner itself and production simulator were not implicated. `vite.config.ts` now conditionally includes `tests/audit/**/*.test.ts` only when `CASCADE_VAULT_AUDIT=1`, leaving routine `pnpm test:unit` discovery unchanged. Next evidence: routine full validation plus an explicit 25,000-paid-spin audit run on the repaired harness.
@@ -134,3 +134,7 @@ D6 exact revision `f989350673c2166eea688836e73ce250bbff0d02` passed full validat
 
 ### 2026-10-20 — CV-004 browser RED opened
 The consolidated direct-route browser contract is integrated before playable route/UI implementation. It requires a 6×5 board, pre-play rules, >=48px Spin, keyboard activation, deterministic two-cascade single settlement, presentation lock, reload without replay, concise live status, reduced-effects equivalence, opt-in audio, 320px/200%-text reflow and practice-credit restore. The playable `.cv` route remains intentionally absent in this RED revision; catalog discoverability remains CV-005.
+
+## Release closeout — 2026-10-23
+
+Functional revision `2628ca27e8aa95778203f78848d30df31e60f25e` passed full validation, both builds and Pages deployment in run `40034775904`; required refreshed 10M-spin acceptance passed in run `40036114157`. Live Cloudline purpose/help/reduced-motion/reflow and Cascade board/paytable/spin/reload checks passed on 2026-10-23 without page errors. Current acceptance, original RED evidence and audit metrics are in the authoritative spec. The approved feature checklist is complete; TASK-003 is external.

@@ -1,5 +1,12 @@
 # Decision log
 
+## D-028 Close the release repair with exact evidence (2026-10-23)
+
+Cloudline client fixes and Cascade CV-004/CV-005 are released in functional `2628ca27e8aa95778203f78848d30df31e60f25e`, CI/Pages run `40034775904`, with live Chromium smoke on 2026-10-23.
+Cascade’s required refreshed 10M acceptance passed unchanged in run `40036114157`; the game-local approved scope is verified.
+Cloudline’s expanded PRD remains implementing and human comprehension/art/motion approval awaits human testing.
+Node-only Firebase gRPC advisories and the preserved Mergrove branch remain separate backlog work (`.tasks/BACKLOG.md`); no transitive override, shared-history rewrite or branch deletion was performed.
+
 ## D-027 Preserve the prototype console gate by repairing its icon (2026-10-23)
 
 The Hollowshift v2 public prototype reuses `public/icon.svg` through a relative icon link after the unchanged browser console gate reproduced `/favicon.ico` HTTP 404 (`tests/browser/hollowshift-prototype.mjs`).
