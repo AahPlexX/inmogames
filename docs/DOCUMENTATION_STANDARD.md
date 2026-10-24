@@ -20,6 +20,8 @@ The canonical account/save contract is `docs/FIREBASE_ARCHITECTURE.md`.
 
 All direct `dependencies` and `devDependencies` must be exact-pinned latest stable releases at integration time. Any dependency change requires current authoritative release evidence plus approved npm corroboration recorded in `docs/DEPENDENCY_POLICY.md`, an updated `.tasks/dependency-refresh-request.json`, a regenerated frozen lockfile, and successful `pnpm dependency:check`, `pnpm dependency:current`, and full validation. Prerelease channels are excluded unless separately approved by a repository decision.
 
+Vulnerable transitive packages are patched with scoped, exact `pnpm.overrides` entries (D-029). Every override needs an advisory ID and a row in the "Transitive security overrides" table of `docs/DEPENDENCY_POLICY.md`, and `pnpm audit` must be re-run at each refresh so obsolete overrides are removed.
+
 ## Naming convention
 
 - Slug: lowercase kebab-case, unique, stable once published (`^[a-z0-9]+(-[a-z0-9]+)*$`).

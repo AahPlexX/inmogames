@@ -75,6 +75,7 @@ Older chat messages, summaries or provider memory never override the current per
 - Before changing a dependency, verify the stable release against the package/project's authoritative release documentation and corroborate the exact version using the approved npm evidence sources in `docs/DEPENDENCY_POLICY.md`. Record the evidence in `docs/DEPENDENCY_POLICY.md` and update `.tasks/dependency-refresh-request.json`.
 - `pnpm dependency:check` enforces exact pins. `pnpm dependency:current` verifies the manifest matches `package.json` and rechecks every direct package against npm's live `latest` tag. Both are mandatory integration gates.
 - A prerelease (`alpha`, `beta`, `rc`, `next`, canary, experimental) is never substituted for stable `latest` unless a separate explicit repository decision changes this rule.
+- Vulnerable *transitive* packages are fixed with `pnpm.overrides` in `package.json` (D-029): each key is a `name@vulnerable-range` selector, each value one exact patched version; bare package names and ranges are rejected by `pnpm dependency:check`. Every override needs an advisory ID and a row in the "Transitive security overrides" table of `docs/DEPENDENCY_POLICY.md`. Run `pnpm audit` on every dependency refresh and remove overrides the upstream package now satisfies. Overrides never replace the direct-pin rules above.
 
 ## Design integration
 

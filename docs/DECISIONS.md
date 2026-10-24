@@ -1,11 +1,19 @@
 # Decision log
 
+## D-029 Pin patched transitive dependencies with scoped pnpm overrides (2026-10-24)
+
+The GitHub dependency-graph SBOM for `main` (SPDX, 665 unique npm package names, version-identical to the pre-change `pnpm-lock.yaml`) carries no advisory data. `pnpm audit` against that lockfile reported 17 advisories (6 high, 8 moderate, 3 low), all in transitive packages reached through `firebase` and `firebase-tools`; every direct dependency was already the exact npm `latest` release, so a direct bump could not fix them. D-017's latest-stable gate governs direct dependencies only.
+
+Decision: `package.json` carries a `pnpm.overrides` block. Every entry is a `name@vulnerable-range` selector mapped to one exact patched version, so only the vulnerable range is rewritten and other majors are untouched. A bare package name (a global pin) or a semver range as the target is rejected by `pnpm dependency:check`. The full table, with advisory IDs, lives in `docs/DEPENDENCY_POLICY.md` under "Transitive security overrides".
+
+Maintenance rule: an override is a temporary patch, not a permanent pin. At each dependency refresh, run `pnpm audit`, delete every override the upstream package now satisfies natively, and keep the table in `docs/DEPENDENCY_POLICY.md` in step with `package.json`. This supersedes the "no transitive override was performed" clause of D-028 and resolves SECURITY-001. Overrides never relax D-017: they are additive and do not replace exact pins or the `dependency:current` gate.
+
 ## D-028 Close the release repair with exact evidence (2026-10-23)
 
 Cloudline client fixes and Cascade CV-004/CV-005 are released in functional `2628ca27e8aa95778203f78848d30df31e60f25e`, CI/Pages run `40034775904`, with live Chromium smoke on 2026-10-23.
 Cascade’s required refreshed 10M acceptance passed unchanged in run `40036114157`; the game-local approved scope is verified.
 Cloudline’s expanded PRD remains implementing and human comprehension/art/motion approval awaits human testing.
-Node-only Firebase gRPC advisories and the preserved Mergrove branch remain separate backlog work (`.tasks/BACKLOG.md`); no transitive override, shared-history rewrite or branch deletion was performed.
+Node-only Firebase gRPC advisories and the preserved Mergrove branch remained separate backlog work (`.tasks/BACKLOG.md`); no transitive override, shared-history rewrite or branch deletion was performed at that time. *(Superseded in part by D-029 on 2026-10-24: the advisories were resolved with scoped overrides. The Mergrove branch review, INTEGRATION-001, is still open.)*
 
 ## D-027 Preserve the prototype console gate by repairing its icon (2026-10-23)
 

@@ -13,6 +13,17 @@ for (const group of groups) {
   }
 }
 
+// Transitive security overrides (D-029) must target a vulnerable range and resolve to one exact version.
+const scopedOverrideKey = /^(?:@[^/@]+\/)?[^/@]+@\S.*$/;
+for (const [selector, version] of Object.entries(pkg.pnpm?.overrides ?? {})) {
+  if (!scopedOverrideKey.test(selector)) {
+    problems.push(`pnpm.overrides.${selector}: expected a "name@vulnerable-range" selector, not a bare package name`);
+  }
+  if (!exactSemver.test(version)) {
+    problems.push(`pnpm.overrides.${selector}: expected an exact version, found "${version}"`);
+  }
+}
+
 if (!/^pnpm@\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(pkg.packageManager ?? '')) {
   problems.push(`packageManager: expected exact pnpm version, found "${pkg.packageManager ?? ''}"`);
 }
