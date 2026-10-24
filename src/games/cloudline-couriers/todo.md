@@ -108,8 +108,8 @@
 **Inputs:** completed gameplay actions/XP/rank.  
 **Dependencies Touched:** engine/save/HUD/content.  
 **Technical Notes & Edge Cases:** transparent XP; no arbitrary grind-only gates.  
-**Implementation Details:** planned.  
-**Verification & State Sign-off:** [ ] rank curve; [ ] unlock table; [ ] persistence; [ ] progression tests.
+**Implementation Details:** XP awards, eight rank titles, the schema-v2 save with v1 migration and the Courier rank panel are implemented (spec CLC-012-A1..A6, 2026-10-24). Rank unlocks titles only; mechanic and cosmetic unlocks wait on CLC-013/017/019/020 and an owner decision (OQ-CLC-012-1).  
+**Verification & State Sign-off:** [x] rank curve; [ ] unlock table (titles only; mechanic/cosmetic unlocks open); [x] persistence; [x] progression tests.
 
 ### CLC-013 — Airship Permanent Upgrade Tree
 **Purpose:** Let the player feel their vehicle becoming more capable.  

@@ -15,6 +15,18 @@ import {
   type CloudlineRun,
   type TileKind,
 } from './engine';
+import {
+  awardXp,
+  rankStanding,
+  XP_PER_CARGO,
+  XP_PER_CIRCUIT,
+  XP_PER_DELIVERY,
+  XP_PER_DISTRICT,
+  XP_PER_UPGRADE,
+  xpForUpgrade,
+  xpFromFlight,
+  type CloudlineCareer,
+} from './career';
 import { cloudlineCouriersSaveDefinition, type CloudlineSave } from './persistence';
 import { AirshipSprite, CargoPodSprite, LandmarkSprite, TileSprite } from './sprites';
 import './cloudline-couriers.css';
@@ -59,8 +71,11 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [cargoChoice, setCargoChoice] = useState<CargoChoice | null>(null);
   const [upgradedLandmark, setUpgradedLandmark] = useState<number | null>(null);
+  const [career, setCareer] = useState<CloudlineCareer>(() => initial.career);
+  const [rankUp, setRankUp] = useState<string | null>(null);
   const feedbackSequence = useRef(0);
   const isFlying = flight !== null;
+  const standing = rankStanding(career.xp);
   const completedStages = run.landmarks.reduce((sum, stage) => sum + stage, 0);
   const canUpgrade = LANDMARK_NAMES.some((_, index) => {
     const cost = landmarkCost(run, index);
@@ -85,20 +100,24 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     feedbackSequence.current += 1;
     setFeedback({ id: feedbackSequence.current, kind, label });
   };
-  const commitRun = (next: CloudlineRun) => {
+  const commitRun = (next: CloudlineRun, xpGained = 0) => {
+    const nextCareer = awardXp(career, xpGained);
+    const nextRank = rankStanding(nextCareer.xp).rank;
     setRun(next);
     setBoost(current => Math.min(current, next.fuel) as 1 | 2 | 3);
-    persist({ activeRun: next });
+    setCareer(nextCareer);
+    setRankUp(nextRank.rank > standing.rank.rank ? nextRank.title : null);
+    persist({ activeRun: next, career: nextCareer });
   };
-  const commitWithoutMotionFeedback = (next: CloudlineRun) => {
+  const commitWithoutMotionFeedback = (next: CloudlineRun, xpGained = 0) => {
     setFeedback(null);
     setUpgradedLandmark(null);
-    commitRun(next);
+    commitRun(next, xpGained);
   };
   const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finishFlight = (current: Flight) => {
     setFlight(null);
-    commitRun(current.next);
+    commitRun(current.next, xpFromFlight(run, current.next));
     showFeedback(current.eventKind, EFFECT_LABELS[current.eventKind]);
   };
 
@@ -110,7 +129,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
       setUpgradedLandmark(null);
       if (flight) {
         setFlight(null);
-        commitRun(flight.next);
+        commitRun(flight.next, xpFromFlight(run, flight.next));
       }
     };
     motion.addEventListener('change', reduceMotion);
@@ -153,6 +172,8 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     setUpgradedLandmark(null);
     reset();
     setRun(createCloudlineRun(Date.now()));
+    setCareer({ xp: 0 });
+    setRankUp(null);
     setBoost(1);
   };
   const flyRoute = () => {
@@ -163,7 +184,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     const eventPosition = (run.position + roll) % SKYWAY_STOPS;
     const eventKind = SKYWAY[eventPosition].kind;
     if (prefersReducedMotion()) {
-      commitWithoutMotionFeedback(next);
+      commitWithoutMotionFeedback(next, xpFromFlight(run, next));
       return;
     }
     setFeedback(null);
@@ -173,7 +194,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
     const next = resolveCargo(run, index);
     const reward = next.credits - run.credits;
     // Reward settlement must not depend on animationend: reduced motion can change during an action.
-    commitRun(next);
+    commitRun(next, XP_PER_CARGO);
     setCargoChoice({ index, reward });
     if (prefersReducedMotion()) {
       setFeedback(null);
@@ -184,12 +205,13 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
   };
   const upgrade = (index: number) => {
     const next = upgradeLandmark(run, index);
+    const xpGained = xpForUpgrade(run, next);
     if (prefersReducedMotion()) {
-      commitWithoutMotionFeedback(next);
+      commitWithoutMotionFeedback(next, xpGained);
       return;
     }
     const districtComplete = next.district !== run.district;
-    commitRun(next);
+    commitRun(next, xpGained);
     setUpgradedLandmark(index);
     showFeedback(districtComplete ? 'district' : 'upgrade', districtComplete ? 'District rebuilt' : `${LANDMARK_NAMES[index]} upgraded`);
   };
@@ -228,6 +250,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
           <li><strong>Select Fly route.</strong> The die moves your airship 1–6 stops clockwise. Completing a circuit pays 100 × district × boost credits.</li>
           <li><strong>Read the landing result.</strong> Markets and Dispatch pay credits. Workshops restore fuel. Beacons block one storm. An unshielded storm costs credits and resets the delivery streak. Windgates carry you 2 more stops without triggering another event. Cargo Caches ask you to choose one pod for credits.</li>
           <li><strong>Spend credits on landmark upgrades.</strong> Raise all four landmarks to stage 4 to rebuild the district and move on. Every fourth delivery in a streak pays a bonus; storms only reset it when you have no shield. If fuel reaches zero, 3 reserve fuel lets you keep flying.</li>
+          <li><strong>Earn career XP.</strong> Each delivery earns {XP_PER_DELIVERY} XP, each completed circuit {XP_PER_CIRCUIT}, each cargo cache {XP_PER_CARGO}, each landmark upgrade {XP_PER_UPGRADE}, and completing a district {XP_PER_DISTRICT} more.</li>
         </ol>
       </details>
     </section>
@@ -238,6 +261,18 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
       <div data-pulse={feedback?.kind === 'district'}><dt>District</dt><dd>{run.district}</dd></div>
       <div data-pulse={Boolean(feedback && ['beacon', 'storm'].includes(feedback.kind))}><dt>Storm shield</dt><dd>{run.shield ? 'Ready' : 'Empty'}</dd></div>
     </dl>
+
+    <section className="cl-rank" aria-labelledby="cl-rank-title">
+      <h3 id="cl-rank-title">Courier rank</h3>
+      <p className="cl-rank-name">{standing.rank.title}</p>
+      {standing.next && standing.xpForNext !== null
+        ? <>
+          <progress aria-label={`Progress to ${standing.next.title}`} value={standing.xpIntoRank} max={standing.xpForNext} />
+          <p>{`${standing.xpIntoRank} of ${standing.xpForNext} XP to ${standing.next.title}`}</p>
+        </>
+        : <p>Top rank reached</p>}
+      <p>Career XP: {career.xp}</p>
+    </section>
 
     <div className="cl-layout"><div>
       <div className="cl-board" aria-label="Sixteen-stop skyway" data-impact={boardImpact}>
@@ -290,7 +325,7 @@ function CloudlineGame({ initial, persist, reset }: { initial: CloudlineSave; pe
         <small id="cl-boost-cost">{run.pendingCargo ? 'Choose a cargo pod before the next flight.' : isFlying ? `Flying stop ${Math.min(flight.step, flight.path.length)} of ${flight.path.length}.` : `Boost ${boost}× uses ${boost} fuel. Fuel remaining: ${run.fuel}/${MAX_FUEL}.`}</small>
       </div>
 
-      <p className="cl-status" role="status" aria-live="polite">{isFlying ? flight.step >= flight.path.length ? 'Landing…' : `Flying ${flight.next.lastRoll ?? ''} spaces…` : run.message}</p>
+      <p className="cl-status" role="status" aria-live="polite">{isFlying ? flight.step >= flight.path.length ? 'Landing…' : `Flying ${flight.next.lastRoll ?? ''} spaces…` : `${run.message}${rankUp ? ` Rank up: ${rankUp}.` : ''}`}</p>
 
       {(run.pendingCargo || cargoChoice) && <div className="cl-cache" aria-labelledby="cl-cache-title">
         <div><h3 id="cl-cache-title">Cargo cache</h3><p>{cargoChoice ? `Pod ${cargoChoice.index + 1} delivered. +${cargoChoice.reward} credits. Fly the route to continue.` : 'Choose one sealed pod to finish this stop. Each pod pays credits; boost does not multiply this reward.'}</p></div>
