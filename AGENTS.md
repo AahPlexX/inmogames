@@ -98,6 +98,10 @@ Older chat messages, summaries or provider memory never override the current per
 - Normal-motion and reduced-motion paths both need rendered evidence for significant new effect families. Human-only visual/comprehension gates remain explicitly awaiting human testing until performed.
 - A source-only audit is reconnaissance, not final quality approval.
 
+## Rendering stack
+
+Default is plain React/CSS. 3D games use Three.js `WebGPURenderer` (WebGL 2 fallback); 2D effects-heavy games use PixiJS v8. Neither may be added until a game's spec requires it. Adding either is a dependency integration (exact pin, registry evidence, `docs/DEPENDENCY_POLICY.md` row), is lazy-loaded with its game, keeps rules in pure engine modules, honors reduced motion and 320 CSS px, and never lets outcomes depend on animation callbacks. Assets are original or licence-compatible (Blender glTF/GLB is allowed) and listed in the game's `TRACKER.md`. Verified facts, adoption conditions and open questions: D-032 in `docs/DECISIONS.md`.
+
 ## Code standards
 
 - Keep game rules in pure engine modules (no React, DOM, Firebase, storage or audio) so they can be unit tested.

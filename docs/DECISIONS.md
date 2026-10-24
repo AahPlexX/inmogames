@@ -1,5 +1,17 @@
 # Decision log
 
+## D-032 Rendering stack direction (2026-10-24)
+
+Owner direction, 2026-10-24: 3D games use Three.js `WebGPURenderer` (falls back to WebGL 2); 2D effects-heavy games use PixiJS v8; card and puzzle games stay on plain React/CSS; Blender (free, GPL tool, author owns its output) is the asset tool, exporting glTF/GLB. This is direction only. No rendering dependency is added and no existing game changes; no current game spec requires one.
+
+Adoption conditions for any game: its spec requires the renderer; the package is a direct dependency integrated under `docs/DEPENDENCY_POLICY.md` (exact pin to the stable npm `latest`, registry evidence, policy row, `.tasks/dependency-refresh-request.json`); it is lazy-loaded with the game (`src/games/workspaces.tsx`); game rules stay in pure engine modules and the renderer only reads state; per-frame work stays out of React state; reduced-motion equivalents, 320 CSS px reflow and animation-independent outcomes still apply; assets are original or licence-compatible and listed in the game's `TRACKER.md`; the WebGL 2 and WebGPU paths each have rendered test evidence.
+
+Registry facts, `npm view`, 2026-10-24: `three` latest `0.186.1` (published 2026-09-24; `0.186.0` published 2026-09-08), MIT, no peers, `exports` include `./webgpu` and `./tsl`. `@react-three/fiber` latest `9.8.2`, MIT, peers `react >=19 <19.4`, `react-dom >=19 <19.4`, `three >=0.156`; the repo's React `19.3.1` satisfies the React range, so a React 19.4 upgrade must recheck it. `@react-three/drei` latest `10.7.9`, MIT. `pixi.js` latest `8.22.0`, MIT, no peers. `@babylonjs/core` latest `9.32.0`, Apache-2.0 (considered, not chosen). Unpacked package sizes (not bundle sizes): three 20.4 MB, pixi.js 76.3 MB, `@babylonjs/core` 72.6 MB.
+
+Headless-browser evidence, this container's Chromium build 1243 on a loopback page: `navigator.gpu` exists; a default launch gets no WebGPU adapter (`requestAdapter()` returns null) while WebGL 2 works through software rendering; launching with `--enable-unsafe-webgpu` and software Vulkan flags yields an adapter. A default headless run therefore exercises the WebGL 2 path and a flagged run can exercise WebGPU. The CI Chromium build was not checked.
+
+Unverified, from the owner's memo or not tested: compatibility of React Three Fiber 9.x with `WebGPURenderer`; that `ShaderMaterial` and `onBeforeCompile` are unsupported on `WebGPURenderer` (custom materials in TSL); the Safari and iOS WebGPU support matrix; publish dates for `@react-three/fiber` and `pixi.js`; Blender glTF exporter feature claims (Draco, WebP, instancing). Verify each against the installed package or an authoritative source before relying on it in a game spec.
+
 ## D-031 Owner removed every non-main branch (2026-10-24)
 
 The owner stated in-session that they deleted every branch other than `origin/main`. INTEGRATION-001 (reconcile the Mergrove v1.1 branch) is closed by that decision with no reconciliation; its shared-save audit point is superseded by D-030. The branch rule in `AGENTS.md` and `GOVERNANCE.md` (`origin/main` only) is unchanged. Source: owner message, 2026-10-24.
