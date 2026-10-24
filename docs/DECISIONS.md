@@ -1,5 +1,9 @@
 # Decision log
 
+## D-031 Owner removed every non-main branch (2026-10-24)
+
+The owner stated in-session that they deleted every branch other than `origin/main`. INTEGRATION-001 (reconcile the Mergrove v1.1 branch) is closed by that decision with no reconciliation; its shared-save audit point is superseded by D-030. The branch rule in `AGENTS.md` and `GOVERNANCE.md` (`origin/main` only) is unchanged. Source: owner message, 2026-10-24.
+
 ## D-030 Shared save migration hook and downgrade protection (2026-10-24)
 
 Implements the platform half of Mergrove MER-020 (F02, F03, F05): `GameSaveDefinition.migrate` and `priorStorageKeys`, prior-version local key reads kept until the new write succeeds, a Firestore transactional save that refuses to overwrite a newer stored `schemaVersion`, a `firestore.rules` update guard that refuses to lower `schemaVersion`, and an actionable "refresh the page" message. Contract and limits: `docs/FIREBASE_ARCHITECTURE.md` section "Schema versions, migration and downgrade protection".
