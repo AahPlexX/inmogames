@@ -1,12 +1,12 @@
 # Cloudline Couriers tracker
 
 **Spec:** `docs/specs/2026-10-06-cloudline-couriers-design.md`  
-**Last synchronized:** 2026-10-23
+**Last synchronized:** 2026-10-24
 
 | Capability | Status | Verification |
 | --- | --- | --- |
 | Teleological long-form player journey | started | PRD expanded 2026-10-07 from 10 prototype-level capabilities to 30 release-level systems; 5-region/20-district and 20–40h campaign are tuning targets requiring playtest evidence |
-| Deterministic flight/board/event/economy foundation | started | Revision `d7995308` adds consequence-specific landing copy plus deterministic visible route-step construction including Windgate carry; first-win production revision `8e744317` retains that behavior and run `39960131577` passed all 151 unit tests plus the expanded Cloudline browser contract; expanded route/campaign/economy balance remains open |
+| Deterministic flight/board/event/economy foundation | started | Revision `d7995308` adds consequence-specific landing copy plus deterministic visible route-step construction including Windgate carry; first-win production revision `8e744317` retains that behavior and run `39960131577` passed all 151 unit tests plus the expanded Cloudline browser contract; expanded route/campaign/economy balance remains open. 2026-10-24: 18 characterization tests in `tests/unit/cloudline-couriers-engine-characterization.test.ts` now pin every previously unasserted v1 rule (stop effects, circuit/route/district rewards, emergency reserve, cargo, upgrade errors); ten engine mutations were all detected |
 | Landmark/district progression | started | Base engine/UI/save plus bounded upgrade feedback passed the Cloudline browser contract in `39960131577`. CLC-004/CLC-007 RED `39961820090` exposed `[0,0,0,0]` authored stage layers; the current local candidate adds cumulative subject-native structure for all four landmarks and passes the `[1,2,3,4]` acceptance. Payout/cost formulas and save schema are unchanged; local acceptance is recorded in the spec. |
 | Cargo Cache + streak/shield strategy | started | Local client-triage browser acceptance confirms cargo reward settles once with animation disabled, next flight remains usable, and reload retains the reward; current streak guidance uses the storm-reset value. CLC-005-A2 engine/UI guards now prevent district advancement before cargo settles and pass local unit/browser acceptance. Region depth/tuning and broader campaign evidence remain pending |
 | Long-term rank/airship/campaign progression | planned | CLC-012 through CLC-014 binding; no implementation claim yet |

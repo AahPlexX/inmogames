@@ -1,7 +1,7 @@
 # TODO: Cloudline Couriers (cloudline-couriers)
 
 **Status:** Implementing — expanded long-form game scope  
-**Last synchronized:** 2026-10-23  
+**Last synchronized:** 2026-10-24  
 **Architecture & Engine:** Deterministic TypeScript rules + React presentation + shared versioned save platform. The target is now a five-region/twenty-district long-form campaign plus post-campaign mastery, not a ten-feature board-loop prototype.  
 **Dependencies Used:** exact repository pins only; current 2026-10-23 package/lock targets are installed under D-025 (Firebase 13.1.0, Vite 8.3.5 and remaining targets in `.tasks/dependency-refresh-request.json`). The shared target set passed CI/Pages on `2628ca2` / run `40034775904`.
 
@@ -28,7 +28,7 @@
 **Inputs:** stop type, district variant, player state.  
 **Dependencies Touched:** engine/content/UI/tests.  
 **Technical Notes & Edge Cases:** explicit bounded outcomes; no proprietary imitation.  
-**Implementation Details:** seven base families exist and now emit consequence-specific landing copy.  
+**Implementation Details:** seven base families exist and now emit consequence-specific landing copy. Each base stop effect (Dispatch, Workshop, Beacon, Storm with/without shield, Windgate, Cargo Cache) is pinned by mutation-verified characterization tests (2026-10-24).  
 **Verification & State Sign-off:** [x] base families; [x] base consequence copy; [ ] district variants; [ ] complete event matrix.
 
 ### CLC-003 — Credits, Fuel, and Boost Economy

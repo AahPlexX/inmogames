@@ -1,7 +1,7 @@
 # Cloudline Couriers design
 
 **Status:** Implementing — automated client-fix tranche closed locally; expanded long-form scope remains open
-**Last synchronized:** 2026-10-23  
+**Last synchronized:** 2026-10-24  
 **Route:** `#/games/cloudline-couriers`
 
 ## Product documents
@@ -100,6 +100,9 @@ Post-GREEN inspection found one reduced-motion-only state-lifecycle defect: norm
 Fix revision `a26c22f7c1a9b889f40f1779355f5aea87adb7f4` changes only the reduced-motion presentation boundary: flight, cargo and landmark-upgrade actions commit the same durable gameplay/status state while synchronously clearing/avoiding animation-only feedback state. Maintenance run `39863962054`, validating main head `dec94fe5205e0ce65f4c1fa52cc2c35af8b64c08` with the researched current dependency targets applied in isolation, passed dependency exact/current, design lint, TypeScript, game-document checks, all 151 unit tests, Firestore rules, account-browser checks and the Cloudline browser regression. The aggregate chain then failed only afterward at the preserved Cascade Vault CV-004 RED waiting for `.cv`.
 
 Historical state at maintenance run `39961820090`: the repository still held its prior exact pins and the dependency-refresh commit step was skipped when the Cloudline landmark RED stopped validation; the browser chain was ordered to retain independent Cloudline evidence before the separately opened Cascade Vault CV-004 RED. Current state (2026-10-23): the D-025 target set is installed and lockfile-synchronized. The historical run remains evidence of the earlier RED, not current dependency state; CV-004/CV-005 are resumed by D-026 as the shared release blocker.
+
+## Engine characterization evidence (2026-10-24)
+`tests/unit/cloudline-couriers-engine-characterization.test.ts` pins 18 previously unasserted behaviors of the schema-v1 engine before any campaign system is built on it: Dispatch reward, Workshop refuel and fuel cap, Beacon shield, Storm with and without shield, Windgate carry, Cargo Cache option range, circuit-completion reward and counter, delivery-streak route bonus and wrap, emergency reserve, cargo resolution and range error, completed-landmark errors, non-final upgrade, district-completion reward/fuel/advance, and seed-0 normalization. Mutation check: ten single-constant or single-rule changes to `engine.ts` (each reverted and confirmed identical to HEAD afterward) were all detected by at least one test, so the pins are not vacuous. Limit: seeds 1..5000 only produce first rolls of 1 or 2, so landing-tile scenarios start on tiles reachable by those rolls; Cargo Cache pod values are asserted by range. No engine, economy, save-schema or UI behavior changed.
 
 ## Development quality tooling
 Current repository gates already cover exact/latest dependency versions, TypeScript compilation, game documentation synchronization, Vitest unit tests, Firestore rules, Playwright browser/design regressions and both Firebase/Pages builds. A 2026-10-07 tooling review identified two non-duplicative gaps worth evaluating before broad progression implementation: static typed linting and unit-test coverage measurement. Official/current candidates are ESLint flat config with `@eslint/js` and `typescript-eslint` for typed linting, official `eslint-plugin-react-hooks`, Vite-oriented React Refresh linting, and `@vitest/coverage-v8` matching the installed Vitest major. Playwright itself already supplies ARIA snapshots and visual comparisons, so a separate browser snapshot/a11y assertion dependency is not justified solely to duplicate those capabilities. Any added package must remain an exact pin and pass `dependency:current` at the revision where it is introduced.
