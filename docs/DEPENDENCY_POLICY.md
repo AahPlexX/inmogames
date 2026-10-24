@@ -47,7 +47,7 @@ The 2026-10-19 refresh established the prior exact baseline: Firebase 13.0.0, Re
 
 ## Transitive security overrides
 
-Authority: D-029. Direct packages stay exact-pinned to npm `latest` (rules above); vulnerable *transitive* packages are patched through `pnpm.overrides` in `package.json`. Each key is `name@vulnerable-range`, each value one exact patched version, so only the affected range is rewritten. `pnpm dependency:check` rejects bare package names, selectors whose range is not an upper-bounded version range (`pkg@*`, `pkg@latest`, `pkg@x`, `pkg@>=0.0.0`) and non-exact targets.
+Authority: D-029. Direct packages stay exact-pinned to npm `latest` (rules above); vulnerable *transitive* packages are patched through `pnpm.overrides` in `package.json`. Each key is `name@vulnerable-range`, each value one exact patched version, so only the affected range is rewritten. `pnpm dependency:check` rejects bare package names, selectors whose range does not start with a comparator or digit and contain an upper bound `<` (so `pkg@*`, `pkg@latest`, `pkg@x`, `pkg@>=0.0.0` and exact-version selectors such as `pkg@1.2.3` all fail), and non-exact targets.
 
 **Evidence, 2026-10-24.** The GitHub dependency-graph SBOM for `main` (SPDX, created 2026-10-24T03:10:52Z, 665 unique npm package names) has no advisory data; it was cross-checked against the pre-change `pnpm-lock.yaml` (0 version mismatches) and the advisories were identified with `pnpm audit` on that lockfile: 17 advisories, 6 high / 8 moderate / 3 low, 743 packages, all transitive. After the overrides, `pnpm audit` reports "No known vulnerabilities found". Patched versions were confirmed to exist with `npm view <pkg> versions`.
 
@@ -65,6 +65,8 @@ Authority: D-029. Direct packages stay exact-pinned to npm `latest` (rules above
 | `zod@<4.6.6` → `4.6.7` | GHSA-mrhx-c7xc-m3w5 | high | `firebase-tools` | Same major; 4.6.7 is the current 4.x release. |
 
 **Not fixable by override, accepted:** none; every advisory resolved.
+
+**Knock-on lockfile movement (not overrides, expected):** `qs` gains 6.16.1 because `body-parser@2.4.0` depends on it; `@opentelemetry/semantic-conventions@1.28.0` drops out with `@opentelemetry/core@1.30.1`; the superseded versions of the ten overridden packages are removed. Independent lockfile audit (base `0d04d4c` → `5e5f0f4`): 10 packages changed version, no downgrades, `importers:` unchanged, no packages added or removed, all resolutions are npm integrity hashes. The override check in `scripts/dependency-check.mjs` is textual: hand-crafted ranges such as `pkg@>=0.0.0 <9999` or `pkg@<1 || *` still pass it, so a reviewer must read any new override (see the `shortcut:` comment there).
 
 **Local verification, 2026-10-24 (Node 22.22.0, pnpm 10.0.0):** `pnpm install --frozen-lockfile`, `pnpm dependency:check`, `pnpm typecheck`, `pnpm game:check`, `pnpm test:unit` (161 tests), `pnpm test:rules` (emulator launched through the patched `firebase-tools`), `pnpm build` and `pnpm build:firebase` passed. `pnpm test:browser` and the Playwright design suites could not run in that container (the pinned Playwright 1.64.1 needs a Chromium build that was not installed there) and were not claimed. The exact CI/Pages run for the integrating commit is recorded in `.tasks/WORK_LOG.md` once it exists; the firebase-tools-dependent jobs (rules, account browser tests, maintenance workflow) are the ones that exercise the overridden packages.
 
