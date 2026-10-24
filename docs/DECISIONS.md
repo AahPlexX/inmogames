@@ -1,5 +1,13 @@
 # Decision log
 
+## D-030 Shared save migration hook and downgrade protection (2026-10-24)
+
+Implements the platform half of Mergrove MER-020 (F02, F03, F05): `GameSaveDefinition.migrate` and `priorStorageKeys`, prior-version local key reads kept until the new write succeeds, a Firestore transactional save that refuses to overwrite a newer stored `schemaVersion`, a `firestore.rules` update guard that refuses to lower `schemaVersion`, and an actionable "refresh the page" message. Contract and limits: `docs/FIREBASE_ARCHITECTURE.md` section "Schema versions, migration and downgrade protection".
+
+Choices: migration runs on read and the migrated envelope is persisted by the next save. Account cache keys stay version-scoped so a stale older tab cannot overwrite a newer version's cache. The rules guard is the only protection against a stale older tab (it writes without a transaction) and takes effect only after the rules are published; live publishing is blocked by TASK-003, so the guard is verified in the emulator only. Platform unit tests no longer import game code, which keeps per-game documentation sync out of platform changes.
+
+Consequence: any game may now raise its `schemaVersion` without making existing saves unreadable. First consumer: Cloudline Couriers (CLC-009, CLC-012). Mergrove v2 game-side items (MER-020-F01, F04) remain roadmap work.
+
 ## D-029 Pin patched transitive dependencies with scoped pnpm overrides (2026-10-24)
 
 The GitHub dependency-graph SBOM for `main` (SPDX, 665 unique npm package names, version-identical to the pre-change `pnpm-lock.yaml`) carries no advisory data. `pnpm audit` against that lockfile reported 17 advisories (6 high, 8 moderate, 3 low), all in transitive packages reached through `firebase` and `firebase-tools`; every direct dependency was already the exact npm `latest` release, so a direct bump could not fix them. D-017's latest-stable gate governs direct dependencies only.

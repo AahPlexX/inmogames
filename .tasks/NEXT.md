@@ -3,7 +3,7 @@
 ## Resume here — 2026-10-23
 
 **Current state:** Cloudline client-triage fixes and Cascade CV-004/CV-005 are released on `2628ca2`; full CI/Pages `40034775904`, fresh 10M acceptance `40036114157` and live route smoke passed. Cascade is game-locally verified; Cloudline remains implementing for its expanded PRD.
-**Next action:** continue the remaining Cloudline PRD through its canonical todo and obtain human comprehension/art/motion testing; perform real Firebase checks after TASK-003 provisioning.
+**Next action:** continue the remaining Cloudline PRD through its canonical todo and obtain human comprehension/art/motion testing; perform real Firebase checks after TASK-003 provisioning. Platform schema migration landed 2026-10-24 (D-030); the first schema-v2 Cloudline feature is CLC-012 (rank and XP), then CLC-016 and CLC-013.
 **Blockers:** TASK-003 and human testing. Preserved Mergrove branch review (INTEGRATION-001) and the SECURITY-002 GitHub-alert verification are separately recorded in `.tasks/BACKLOG.md`. The 2026-10-23 Node-only advisories (SECURITY-001) were resolved on 2026-10-24 by scoped `pnpm.overrides` (D-029; `docs/DEPENDENCY_POLICY.md`); keep that override table in step with `package.json` at every dependency refresh.
 
 ## Historical progress — current state is above

@@ -15,7 +15,9 @@ service cloud.firestore {
           && request.resource.data.updatedAt == request.time;
       }
       allow read, delete: if ownsSave();
-      allow create, update: if ownsSave() && validEnvelope();
+      allow create: if ownsSave() && validEnvelope();
+      // A stale tab running an older app version must not overwrite progress saved by a newer one.
+      allow update: if ownsSave() && validEnvelope() && request.resource.data.schemaVersion >= resource.data.schemaVersion;
     }
     match /{document=**} {
       allow read, write: if false;
