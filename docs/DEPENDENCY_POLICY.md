@@ -47,7 +47,7 @@ The 2026-10-19 refresh established the prior exact baseline: Firebase 13.0.0, Re
 
 ## Transitive security overrides
 
-Authority: D-029. Direct packages stay exact-pinned to npm `latest` (rules above); vulnerable *transitive* packages are patched through `pnpm.overrides` in `package.json`. Each key is `name@vulnerable-range`, each value one exact patched version, so only the affected range is rewritten. `pnpm dependency:check` rejects bare package names and non-exact targets.
+Authority: D-029. Direct packages stay exact-pinned to npm `latest` (rules above); vulnerable *transitive* packages are patched through `pnpm.overrides` in `package.json`. Each key is `name@vulnerable-range`, each value one exact patched version, so only the affected range is rewritten. `pnpm dependency:check` rejects bare package names, selectors whose range is not a version range (`pkg@*`, `pkg@latest`, `pkg@x`) and non-exact targets.
 
 **Evidence, 2026-10-24.** The GitHub dependency-graph SBOM for `main` (SPDX, created 2026-10-24T03:10:52Z, 665 unique npm package names) has no advisory data; it was cross-checked against the pre-change `pnpm-lock.yaml` (0 version mismatches) and the advisories were identified with `pnpm audit` on that lockfile: 17 advisories, 6 high / 8 moderate / 3 low, 743 packages, all transitive. After the overrides, `pnpm audit` reports "No known vulnerabilities found". Patched versions were confirmed to exist with `npm view <pkg> versions`.
 
