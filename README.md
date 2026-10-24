@@ -41,7 +41,8 @@ See `docs/FIREBASE_ARCHITECTURE.md` for the canonical account/save contract. See
 ## Commands
 
 - `pnpm dev` - local development server.
-- `pnpm dependency:check` - reject dependency ranges so installs remain reproducible.
+- `pnpm dependency:check` - reject dependency ranges (and non-exact or unscoped `pnpm.overrides`) so installs remain reproducible.
+- `pnpm audit` - report known advisories in the lockfile; transitive fixes live in `pnpm.overrides` (see `docs/DEPENDENCY_POLICY.md`). Not part of `pnpm validate`.
 - `pnpm dependency:current` - require every direct dependency/devDependency to match the researched manifest and npm's current stable `latest` tag.
 - `pnpm design:check` - validate the durable `DESIGN.md` contract with the exact pinned validator.
 - `pnpm game:check` - validate per-game spec/tracker/PRD/todo/completion structure **and** reject game changes whose required documentation was not updated in the same integration.

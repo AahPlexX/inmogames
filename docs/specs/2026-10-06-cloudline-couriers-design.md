@@ -1,7 +1,7 @@
 # Cloudline Couriers design
 
 **Status:** Implementing — automated client-fix tranche closed locally; expanded long-form scope remains open
-**Last synchronized:** 2026-10-23  
+**Last synchronized:** 2026-10-24  
 **Route:** `#/games/cloudline-couriers`
 
 ## Product documents
@@ -101,6 +101,24 @@ Fix revision `a26c22f7c1a9b889f40f1779355f5aea87adb7f4` changes only the reduced
 
 Historical state at maintenance run `39961820090`: the repository still held its prior exact pins and the dependency-refresh commit step was skipped when the Cloudline landmark RED stopped validation; the browser chain was ordered to retain independent Cloudline evidence before the separately opened Cascade Vault CV-004 RED. Current state (2026-10-23): the D-025 target set is installed and lockfile-synchronized. The historical run remains evidence of the earlier RED, not current dependency state; CV-004/CV-005 are resumed by D-026 as the shared release blocker.
 
+## CLC-012 courier rank and XP (2026-10-24)
+
+| Requirement | Status | Observable behavior and acceptance |
+| --- | --- | --- |
+| CLC-012-A1 | verified | Career XP is earned from completed play only: 10 per delivery, 25 per circuit, 5 per resolved cargo cache, 15 per landmark upgrade, plus 100 when the upgrade completes a district. Each action awards exactly once, including with reduced motion and Skip flight (`tests/unit/cloudline-couriers-career.test.ts`, design browser). |
+| CLC-012-A2 | verified | Eight ranks start at 0, 100, 250, 500, 900, 1500, 2400 and 3600 XP: Apprentice Courier, Dock Runner, Windward Courier, Route Keeper, Skyway Pilot, Charter Pilot, Cloudline Captain, Master of the Aerie. Invalid XP (NaN, negative) yields rank 1 with 0 progress, never NaN (unit). |
+| CLC-012-A3 | verified | The save is schema v2 `{ activeRun, career: { xp } }`. A v1 save migrates on load: the run is unchanged and XP is derived from it (`deliveries*10 + circuits*25 + (district-1)*100 + landmark stages*15`, capped at 1,000,000,000 so a valid run can never be rejected); an invalid v1 state is rejected and a newer version is refused (unit; the design browser seeds v1 envelopes, so the migration also runs end to end). |
+| CLC-012-A4 | verified | XP survives Start fresh route and reload and is cleared only by Reset saved career (design browser). |
+| CLC-012-A5 | verified | A named Courier rank region shows the rank title, a labelled progress element, "N of M XP to the next rank" (or "Top rank reached") and Career XP. A rank increase is announced in the existing polite status region. How to play lists the XP sources. No horizontal overflow at 320 CSS px and 200% text (design browser). |
+| CLC-012-A6 | verified | Nothing is gated by rank: `rankStanding` is read only by the display and the rank-up note, never by the engine (grep of `src/games/cloudline-couriers`). Ranks unlock titles only. |
+
+Open question for the owner (OQ-CLC-012-1): which mechanics, cosmetics and options ranks should unlock. The PRD names them, but they depend on features that do not exist yet (airship tree CLC-013, collections CLC-017, crew CLC-019, blueprints CLC-020), so ranks unlock titles only until the owner decides. The todo unlock-table box stays open for this reason.
+
+Evidence: 19 of 20 targeted mutations of the career engine, the v2 save and the workspace XP wiring were detected; the one survivor is an equivalent mutant (the game remounts on a save revision change, so the extra local XP reset never affects behavior). Unit, design-browser and Cloudline account-emulator suites pass locally. Limits: the rank-up note is not persisted across reload; the exactly-once check for Skip flight and reduced motion covers one delivery flight; ranks have no art beyond their titles.
+
+## Engine characterization evidence (2026-10-24)
+`tests/unit/cloudline-couriers-engine-characterization.test.ts` pins 18 previously unasserted behaviors of the schema-v1 engine before any campaign system is built on it: Dispatch reward, Workshop refuel and fuel cap, Beacon shield, Storm with and without shield, Windgate carry, Cargo Cache option range, circuit-completion reward and counter, delivery-streak route bonus and wrap, emergency reserve, cargo resolution and range error, completed-landmark errors, non-final upgrade, district-completion reward/fuel/advance, and seed-0 normalization. Mutation check: ten single-constant or single-rule changes to `engine.ts` (each reverted and confirmed identical to HEAD afterward) were all detected by at least one test, so the pins are not vacuous. Limit: seeds 1..5000 only produce first rolls of 1 or 2, so landing-tile scenarios start on tiles reachable by those rolls; Cargo Cache pod values are asserted by range. No engine, economy, save-schema or UI behavior changed.
+
 ## Development quality tooling
 Current repository gates already cover exact/latest dependency versions, TypeScript compilation, game documentation synchronization, Vitest unit tests, Firestore rules, Playwright browser/design regressions and both Firebase/Pages builds. A 2026-10-07 tooling review identified two non-duplicative gaps worth evaluating before broad progression implementation: static typed linting and unit-test coverage measurement. Official/current candidates are ESLint flat config with `@eslint/js` and `typescript-eslint` for typed linting, official `eslint-plugin-react-hooks`, Vite-oriented React Refresh linting, and `@vitest/coverage-v8` matching the installed Vitest major. Playwright itself already supplies ARIA snapshots and visual comparisons, so a separate browser snapshot/a11y assertion dependency is not justified solely to duplicate those capabilities. Any added package must remain an exact pin and pass `dependency:current` at the revision where it is introduced.
 
@@ -117,7 +135,7 @@ Motion-specific sources rechecked 2026-10-22: Apple HIG Motion requires purposef
 - [ ] Full five-region/twenty-district campaign target is authored and pacing/playtime measured; 20–40h target adjusted from evidence if needed.
 - [ ] Rank, permanent airship upgrades, contracts, milestones, collections, achievements/mastery and strategic loadouts produce durable earned progression.
 - [ ] Branching routes, weather/modifiers, expeditions, five region finales and post-campaign Sky Charter are implemented and verified.
-- [x] Schema-v1 durable guest/account-emulator save is verified; expanded schema migrations remain open and real Firebase remains TASK-003.
+- [x] Schema-v1 durable guest/account-emulator save is verified, and the schema-v2 save with its v1-to-v2 migration (CLC-012-A3) is verified locally; further expanded schema migrations remain open and real Firebase remains TASK-003.
 - [ ] Professional production art/VFX/motion and audio systems pass rendered quality review; no emoji/crude placeholder art remains.
 - [ ] Keyboard/touch/pointer, focus, non-color state, >=44px targets, 320px/200% reflow, reduced motion and challenge/assist behavior have rendered evidence for the completed expanded game.
 - [ ] Economy/progression playtest finds no dead progression, excessive grind wall, punitive absence or hidden difficulty manipulation.

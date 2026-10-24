@@ -178,11 +178,116 @@ async function checkClientTriage(browserInstance) {
   assert.deepEqual(failures, [], 'Client triage acceptance failures');
 }
 
+async function checkCareerRank(browserInstance) {
+  const contexts = [];
+  const openRun = async overrides => {
+    const { context, page } = await openSeededCloudline(browserInstance, overrides);
+    contexts.push(context);
+    return page;
+  };
+  const rankRegion = page => page.getByRole('region', { name: 'Courier rank', exact: true });
+  const rankProgress = page => page.getByRole('progressbar', { name: /Dock Runner/ });
+  const careerXp = async page => Number((await page.locator('.cl-rank').innerText()).match(/Career XP: (\d+)/)[1]);
+  const waitForCareerXp = (page, xp) => page.waitForFunction(expected => new RegExp(`Career XP: ${expected}(?!\\d)`).test(document.querySelector('.cl-rank')?.textContent ?? ''), xp);
+  const upgradeLandmark = (page, name) => page.locator('.cl-landmark').filter({ hasText: name }).getByRole('button', { name: /Upgrade for/ }).click();
+
+  const fresh = await openRun({});
+  assert.equal(await rankRegion(fresh).count(), 1, 'CLC-012 Courier rank must be a named region on the first screen.');
+  const freshText = await rankRegion(fresh).innerText();
+  assert.match(freshText, /Apprentice Courier/, 'CLC-012 a fresh career must show the Apprentice Courier rank.');
+  assert.match(freshText, /0 of 100 XP to Dock Runner/, 'CLC-012 a fresh career must state its XP distance to Dock Runner.');
+  assert.equal(await rankProgress(fresh).evaluate(element => element.value), 0, 'CLC-012 rank progress must start at 0.');
+  assert.equal(await rankProgress(fresh).evaluate(element => element.max), 100, 'CLC-012 rank progress must span 100 XP to Dock Runner.');
+
+  const migrated = await openRun({ deliveries: 7, circuits: 2, district: 3, landmarks: [1, 2, 0, 4], credits: 10000 });
+  const migratedText = await rankRegion(migrated).innerText();
+  assert.match(migratedText, /Windward Courier/, 'CLC-012 a migrated v1 run must derive its rank from run XP.');
+  assert.match(migratedText, /175 of 250 XP to Route Keeper/, 'CLC-012 migrated XP of 425 must place the career 175 XP into Windward Courier.');
+
+  const cargo = await openRun({ pendingCargo: { options: [40, 60, 100] }, position: 7 });
+  const cargoBefore = await rankProgress(cargo).evaluate(element => element.value);
+  await cargo.getByRole('button', { name: 'Choose pod 2', exact: true }).click();
+  await waitForCareerXp(cargo, 5);
+  assert.equal(await rankProgress(cargo).evaluate(element => element.value) - cargoBefore, 5, 'CLC-012 choosing a cargo pod must add exactly 5 XP.');
+
+  const aerieUpgrade = await openRun({});
+  await upgradeLandmark(aerieUpgrade, 'Aerie Post');
+  await waitForCareerXp(aerieUpgrade, 15);
+  const finalRun = await openRun({ landmarks: [4, 4, 4, 3], credits: 10000 });
+  const finalBefore = await careerXp(finalRun);
+  await upgradeLandmark(finalRun, 'Skyforge Hangar');
+  await waitForCareerXp(finalRun, finalBefore + 115);
+
+  const rankUp = await openRun({ deliveries: 9, landmarks: [0, 0, 0, 0], credits: 10000 });
+  await upgradeLandmark(rankUp, 'Aerie Post');
+  await waitForCareerXp(rankUp, 105);
+  const rankUpText = await rankRegion(rankUp).innerText();
+  assert.match(rankUpText, /Dock Runner/, 'CLC-012 crossing 100 XP must promote the rank title.');
+  assert.match(rankUpText, /5 of 150 XP to Windward Courier/, 'CLC-012 promoted rank must show progress toward the next rank.');
+  assert.equal(await rankUp.locator('[aria-live]').filter({ hasText: 'Rank up: Dock Runner.' }).count(), 1, 'CLC-012 rank-ups must be announced in an existing aria-live status element.');
+
+  const reducedUpgrade = await openRun({});
+  await reducedUpgrade.emulateMedia({ reducedMotion: 'reduce' });
+  await upgradeLandmark(reducedUpgrade, 'Aerie Post');
+  await waitForCareerXp(reducedUpgrade, 15);
+  const reduced = await openRun({ landmarks: [4, 4, 4, 3], credits: 10000 });
+  await reduced.emulateMedia({ reducedMotion: 'reduce' });
+  const reducedBefore = await careerXp(reduced);
+  await upgradeLandmark(reduced, 'Skyforge Hangar');
+  await waitForCareerXp(reduced, reducedBefore + 115);
+  await reduced.reload();
+  await waitForCloudlineSurface(reduced);
+  await waitForCareerXp(reduced, reducedBefore + 115);
+  const reducedFlight = await openRun({ rngState: 1 });
+  await reducedFlight.emulateMedia({ reducedMotion: 'reduce' });
+  await reducedFlight.getByRole('button', { name: 'Fly route', exact: true }).click();
+  await waitForCareerXp(reducedFlight, 10);
+  await delay(450);
+  assert.equal(await careerXp(reducedFlight), 10, 'CLC-012 a reduced-motion delivery flight must award its XP exactly once.');
+  const skipFlight = await openRun({ rngState: 1 });
+  await skipFlight.getByRole('button', { name: 'Fly route', exact: true }).click();
+  await skipFlight.locator('.cl[data-flight-state="flying"]').waitFor();
+  await skipFlight.getByRole('button', { name: 'Skip flight', exact: true }).click();
+  await skipFlight.locator('.cl[data-flight-state="idle"]').waitFor();
+  await delay(450);
+  assert.equal(await careerXp(skipFlight), 10, 'CLC-012 a skipped delivery flight must award its XP exactly once.');
+
+  const kept = await openRun({ deliveries: 9, landmarks: [0, 0, 0, 0], credits: 10000 });
+  await upgradeLandmark(kept, 'Aerie Post');
+  await waitForCareerXp(kept, 105);
+  await kept.getByText('Route options', { exact: true }).click();
+  kept.once('dialog', dialog => dialog.accept());
+  await kept.getByRole('button', { name: 'Start fresh route', exact: true }).click();
+  await kept.locator('.cl-landmark').filter({ hasText: 'Aerie Post' }).filter({ hasText: 'Stage 0/4' }).waitFor();
+  assert.match(await rankRegion(kept).innerText(), /Dock Runner/, 'CLC-012 starting a fresh route must keep career rank.');
+  await waitForCareerXp(kept, 105);
+  kept.once('dialog', dialog => dialog.accept());
+  await kept.getByRole('button', { name: 'Reset saved career', exact: true }).click();
+  await kept.locator('.cl-rank').filter({ hasText: 'Apprentice Courier' }).waitFor();
+  const resetText = await rankRegion(kept).innerText();
+  assert.match(resetText, /0 of 100 XP to Dock Runner/, 'CLC-012 resetting the saved career must clear rank XP.');
+  assert.match(resetText, /Career XP: 0(?!\d)/, 'CLC-012 resetting the saved career must clear Career XP.');
+
+  const narrow = await openRun({});
+  await narrow.setViewportSize({ width: 320, height: 900 });
+  await narrow.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+  await assertNoHorizontalOverflow(narrow, '320px Courier rank at 200% text');
+
+  const top = await openRun({ deliveries: 360, landmarks: [0, 0, 0, 0] });
+  const topText = await rankRegion(top).innerText();
+  assert.match(topText, /Master of the Aerie/, 'CLC-012 the top rank must show its title.');
+  assert.match(topText, /Top rank reached/, 'CLC-012 the top rank must state that no further rank exists.');
+  assert.equal(await rankRegion(top).locator('progress').count(), 0, 'CLC-012 the top rank must not show a progress element.');
+
+  for (const context of contexts) await context.close();
+}
+
 try {
   await waitForServer();
   await mkdir('test-results/cloudline-couriers', { recursive: true });
   browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || undefined });
   await checkClientTriage(browser);
+  await checkCareerRank(browser);
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(error.message));
@@ -303,7 +408,7 @@ try {
   await reducedContext.close();
 
   assert.deepEqual(errors, []);
-  console.log('Cloudline design checks passed: purpose/help and first-win guidance; streak-correct bonus; visible landmark stages; stepwise/skippable flight; live reduced-motion changes; animation-independent cargo settlement/reload; affordable boost recovery; reset cancellation; 320px/200%-text and 390/1024/1440 reflow; guest persistence.');
+  console.log('Cloudline design checks passed: purpose/help and first-win guidance; streak-correct bonus; visible landmark stages; stepwise/skippable flight; live reduced-motion changes; animation-independent cargo settlement/reload; affordable boost recovery; reset cancellation; 320px/200%-text and 390/1024/1440 reflow; guest persistence; Courier rank XP awards, migration, rank-up announcement, reduced-motion exactly-once awards, reset behavior and reflow.');
 } finally {
   await browser?.close();
   server.kill('SIGTERM');

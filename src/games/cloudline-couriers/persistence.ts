@@ -1,8 +1,10 @@
 import type { GameSaveDefinition } from '../../platform/saves/contracts';
 import { LANDMARK_COUNT, LANDMARK_STAGES, MAX_FUEL, SKYWAY_STOPS, type CargoCache, type CloudlineRun } from './engine';
+import { MAX_CAREER_XP, xpFromRun, type CloudlineCareer } from './career';
 
 export interface CloudlineSave {
   activeRun: CloudlineRun | null;
+  career: CloudlineCareer;
 }
 
 function isIntegerIn(value: unknown, min: number, max = Number.MAX_SAFE_INTEGER): value is number {
@@ -52,18 +54,35 @@ function decodeRun(value: unknown): CloudlineRun | null {
   };
 }
 
+function decodeCareer(value: unknown): CloudlineCareer | null {
+  if (!value || typeof value !== 'object') return null;
+  const xp = (value as { xp?: unknown }).xp;
+  return isIntegerIn(xp, 0, MAX_CAREER_XP) ? { xp } : null;
+}
+
 export function decodeCloudlineSave(value: unknown): CloudlineSave | null {
   if (!value || typeof value !== 'object') return null;
   const save = value as Partial<CloudlineSave>;
-  if (save.activeRun === null) return { activeRun: null };
+  const career = decodeCareer(save.career);
+  if (!career) return null;
+  if (save.activeRun === null) return { activeRun: null, career };
   const activeRun = decodeRun(save.activeRun);
-  return activeRun ? { activeRun } : null;
+  return activeRun ? { activeRun, career } : null;
 }
 
 export const cloudlineCouriersSaveDefinition: GameSaveDefinition<CloudlineSave> = {
   slug: 'cloudline-couriers',
-  schemaVersion: 1,
-  storageKey: 'inmogames:cloudline-couriers:v1',
-  initial: { activeRun: null },
+  schemaVersion: 2,
+  storageKey: 'inmogames:cloudline-couriers:v2',
+  priorStorageKeys: ['inmogames:cloudline-couriers:v1'],
+  initial: { activeRun: null, career: { xp: 0 } },
   decode: decodeCloudlineSave,
+  migrate(fromVersion, state) {
+    if (fromVersion !== 1 || !state || typeof state !== 'object') return null;
+    const save = state as Partial<CloudlineSave>;
+    if (save.activeRun === null) return { activeRun: null, career: { xp: 0 } };
+    const activeRun = decodeRun(save.activeRun);
+    // Clamp so an extreme but valid v1 run can never make decode reject (and so destroy) the whole save.
+    return activeRun ? { activeRun, career: { xp: Math.min(MAX_CAREER_XP, xpFromRun(activeRun)) } } : null;
+  },
 };

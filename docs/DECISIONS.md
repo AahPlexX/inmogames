@@ -1,11 +1,43 @@
 # Decision log
 
+## D-032 Rendering stack direction (2026-10-24)
+
+Owner direction, 2026-10-24: 3D games use Three.js `WebGPURenderer` (falls back to WebGL 2); 2D effects-heavy games use PixiJS v8; card and puzzle games stay on plain React/CSS; Blender (free, GPL tool, author owns its output) is the asset tool, exporting glTF/GLB. This is direction only. No rendering dependency is added and no existing game changes; no current game spec requires one.
+
+Adoption conditions for any game: its spec requires the renderer; the package is a direct dependency integrated under `docs/DEPENDENCY_POLICY.md` (exact pin to the stable npm `latest`, registry evidence, policy row, `.tasks/dependency-refresh-request.json`); it is lazy-loaded with the game (`src/games/workspaces.tsx`); game rules stay in pure engine modules and the renderer only reads state; per-frame work stays out of React state; reduced-motion equivalents, 320 CSS px reflow and animation-independent outcomes still apply; assets are original or licence-compatible and listed in the game's `TRACKER.md`; the WebGL 2 and WebGPU paths each have rendered test evidence.
+
+Registry facts, `npm view`, 2026-10-24: `three` latest `0.186.1` (published 2026-09-24; `0.186.0` published 2026-09-08), MIT, no peers, `exports` include `./webgpu` and `./tsl`. `@react-three/fiber` latest `9.8.2`, MIT, peers `react >=19 <19.4`, `react-dom >=19 <19.4`, `three >=0.156`; the repo's React `19.3.1` satisfies the React range, so a React 19.4 upgrade must recheck it. `@react-three/drei` latest `10.7.9`, MIT. `pixi.js` latest `8.22.0`, MIT, no peers. `@babylonjs/core` latest `9.32.0`, Apache-2.0 (considered, not chosen). Unpacked package sizes (not bundle sizes): three 20.4 MB, pixi.js 76.3 MB, `@babylonjs/core` 72.6 MB.
+
+Headless-browser evidence, this container's Chromium build 1243 on a loopback page: `navigator.gpu` exists; a default launch gets no WebGPU adapter (`requestAdapter()` returns null) while WebGL 2 works through software rendering; launching with `--enable-unsafe-webgpu` and software Vulkan flags yields an adapter. A default headless run therefore exercises the WebGL 2 path and a flagged run can exercise WebGPU. The CI Chromium build was not checked.
+
+Unverified, from the owner's memo or not tested: compatibility of React Three Fiber 9.x with `WebGPURenderer`; that `ShaderMaterial` and `onBeforeCompile` are unsupported on `WebGPURenderer` (custom materials in TSL); the Safari and iOS WebGPU support matrix; publish dates for `@react-three/fiber` and `pixi.js`; Blender glTF exporter feature claims (Draco, WebP, instancing). Verify each against the installed package or an authoritative source before relying on it in a game spec.
+
+## D-031 Owner removed every non-main branch (2026-10-24)
+
+The owner stated in-session that they deleted every branch other than `origin/main`. INTEGRATION-001 (reconcile the Mergrove v1.1 branch) is closed by that decision with no reconciliation; its shared-save audit point is superseded by D-030. The branch rule in `AGENTS.md` and `GOVERNANCE.md` (`origin/main` only) is unchanged. Source: owner message, 2026-10-24.
+
+## D-030 Shared save migration hook and downgrade protection (2026-10-24)
+
+Implements the platform half of Mergrove MER-020 (F02, F03, F05): `GameSaveDefinition.migrate` and `priorStorageKeys`, prior-version local key reads kept until the new write succeeds, a Firestore transactional save that refuses to overwrite a newer stored `schemaVersion`, a `firestore.rules` update guard that refuses to lower `schemaVersion`, and an actionable "refresh the page" message. Contract and limits: `docs/FIREBASE_ARCHITECTURE.md` section "Schema versions, migration and downgrade protection".
+
+Choices: migration runs on read and the migrated envelope is persisted by the next save. Account cache keys stay version-scoped so a stale older tab cannot overwrite a newer version's cache. The rules guard is the only protection against a stale older tab (it writes without a transaction) and takes effect only after the rules are published; live publishing is blocked by TASK-003, so the guard is verified in the emulator only. Platform unit tests no longer import game code, which keeps per-game documentation sync out of platform changes.
+
+Consequence: any game may now raise its `schemaVersion` without making existing saves unreadable. First consumer: Cloudline Couriers (CLC-009, CLC-012). Mergrove v2 game-side items (MER-020-F01, F04) remain roadmap work.
+
+## D-029 Pin patched transitive dependencies with scoped pnpm overrides (2026-10-24)
+
+The GitHub dependency-graph SBOM for `main` (SPDX, 665 unique npm package names, version-identical to the pre-change `pnpm-lock.yaml`) carries no advisory data. `pnpm audit` against that lockfile reported 17 advisories (6 high, 8 moderate, 3 low), all in transitive packages reached through `firebase` and `firebase-tools`; every direct dependency was already the exact npm `latest` release, so a direct bump could not fix them. D-017's latest-stable gate governs direct dependencies only.
+
+Decision: `package.json` carries a `pnpm.overrides` block. Every entry is a `name@vulnerable-range` selector mapped to one exact patched version, so only the vulnerable range is rewritten and other majors are untouched. A bare package name (a global pin) or a semver range as the target is rejected by `pnpm dependency:check`. The full table, with advisory IDs, lives in `docs/DEPENDENCY_POLICY.md` under "Transitive security overrides".
+
+Maintenance rule: an override is a temporary patch, not a permanent pin. At each dependency refresh, run `pnpm audit`, delete every override the upstream package now satisfies natively, and keep the table in `docs/DEPENDENCY_POLICY.md` in step with `package.json`. This supersedes the "no transitive override was performed" clause of D-028 and resolves SECURITY-001. Overrides never relax D-017: they are additive and do not replace exact pins or the `dependency:current` gate.
+
 ## D-028 Close the release repair with exact evidence (2026-10-23)
 
 Cloudline client fixes and Cascade CV-004/CV-005 are released in functional `2628ca27e8aa95778203f78848d30df31e60f25e`, CI/Pages run `40034775904`, with live Chromium smoke on 2026-10-23.
 Cascade’s required refreshed 10M acceptance passed unchanged in run `40036114157`; the game-local approved scope is verified.
 Cloudline’s expanded PRD remains implementing and human comprehension/art/motion approval awaits human testing.
-Node-only Firebase gRPC advisories and the preserved Mergrove branch remain separate backlog work (`.tasks/BACKLOG.md`); no transitive override, shared-history rewrite or branch deletion was performed.
+Node-only Firebase gRPC advisories and the preserved Mergrove branch remained separate backlog work (`.tasks/BACKLOG.md`); no transitive override, shared-history rewrite or branch deletion was performed at that time. *(Superseded in part by D-029 on 2026-10-24: the advisories were resolved with scoped overrides. The Mergrove branch review, INTEGRATION-001, is still open.)*
 
 ## D-027 Preserve the prototype console gate by repairing its icon (2026-10-23)
 

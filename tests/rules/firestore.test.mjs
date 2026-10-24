@@ -45,3 +45,27 @@ test('a game reset cannot delete a different game; writes must use a valid versi
   await assertFails(setDoc(own(db), { ...payload(), updatedAt: Timestamp.fromMillis(0) }));
   await assertFails(setDoc(own(db), { ...payload(), extra: true }));
 });
+const v = (schemaVersion) => ({ schemaVersion, state: { bestScore: 120 }, updatedAt: serverTimestamp() });
+test('an owner can create and update a save only without moving to an older schemaVersion', async () => {
+  const db = env.authenticatedContext('alice').firestore();
+  await assertSucceeds(setDoc(own(db), v(1)));
+  await assertSucceeds(setDoc(own(db), v(1)));
+  await assertSucceeds(setDoc(own(db), v(2)));
+  await assertFails(setDoc(own(db), v(1)));
+  await assertSucceeds(setDoc(own(db), v(2)));
+});
+test('an owner can create a v2 save on a fresh document', async () => {
+  const db = env.authenticatedContext('alice').firestore();
+  await assertSucceeds(setDoc(own(db), v(2)));
+});
+test('a non-owner or unauthenticated user cannot update a save even with a higher schemaVersion', async () => {
+  await assertSucceeds(setDoc(own(env.authenticatedContext('alice').firestore()), v(1)));
+  await assertFails(setDoc(own(env.authenticatedContext('bob').firestore()), v(2)));
+  await assertFails(setDoc(own(env.unauthenticatedContext().firestore()), v(2)));
+});
+test('after an owner deletes a save, a v1 create is accepted as the reset path', async () => {
+  const db = env.authenticatedContext('alice').firestore();
+  await assertSucceeds(setDoc(own(db), v(2)));
+  await assertSucceeds(deleteDoc(own(db)));
+  await assertSucceeds(setDoc(own(db), v(1)));
+});

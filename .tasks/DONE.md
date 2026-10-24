@@ -1,5 +1,9 @@
 # Done
 
+## SECURITY-001: Transitive dependency advisories from the GitHub SBOM
+
+Completed 2026-10-24 (decision D-029). The GitHub dependency-graph SBOM (SPDX, 665 unique npm names) matched the pre-change lockfile exactly; `pnpm audit` on that lockfile reported 17 advisories (6 high, 8 moderate, 3 low) in transitive packages under `firebase` and `firebase-tools`. Ten scoped, exact `pnpm.overrides` entries in `package.json` now resolve them (`@grpc/grpc-js`, `@opentelemetry/core`, `body-parser` ×2 ranges, `fast-uri`, `ip-address`, `undici` ×2 ranges, `uuid`, `zod`); `pnpm audit` reports no known vulnerabilities. `scripts/dependency-check.mjs` now rejects bare or non-exact overrides. Evidence, advisory IDs and per-override rationale: `docs/DEPENDENCY_POLICY.md` → "Transitive security overrides". Local gates passed on Node 22.22.0: frozen install, dependency:check, typecheck, game:check, 161 unit tests, Firestore rules emulator tests, both builds; browser suites need CI (Chromium build absent locally). Follow-up verification of GitHub's own alert list is SECURITY-002 in `.tasks/BACKLOG.md`.
+
 ## DEPENDENCY-REFRESH-008: Current stable dependency refresh
 
 Completed 2026-10-19. Request revision 8 corrected stale direct-package targets; maintenance run `39296252148` verified npm-latest versions, passed the repository's complete `pnpm validate` chain and created dependency-only commit `08c3506773d17eee3fed7554f211531141856386`. The automatically dispatched Pages run `39296638285` then passed frozen install/current-version checks, design lint, TypeScript, history-aware game governance, the full unit/rules/browser suites, both production builds, artifact upload and GitHub Pages deployment.

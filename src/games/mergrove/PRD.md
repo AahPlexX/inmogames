@@ -721,10 +721,10 @@ Planned Functional Features Specification:
       roadmap_status: "Planned — not implemented; blocked on a shared platform change (coordinate with TASK-003)"
       functional_requirements:
         - "MER-020-F01 migrateV1toV2(state): v1 run → classic-5 / ruleset 'v1'; never drops bestScore or bestTier; seeds stats from v1 counters where derivable."
-        - "MER-020-F02 Platform: GameSaveDefinition.migrate(fromVersion, state); LocalRepository reads the prior-version key and keeps it until the new write succeeds."
-        - "MER-020-F03 Platform: a transactional Firestore write rejects a save when the stored schemaVersion is newer than the client's, and tells the player to refresh."
+        - "MER-020-F02 Platform: GameSaveDefinition.migrate(fromVersion, state); LocalRepository reads the prior-version key and keeps it until the new write succeeds. Platform half implemented 2026-10-24 (D-030)."
+        - "MER-020-F03 Platform: a transactional Firestore write rejects a save when the stored schemaVersion is newer than the client's, and tells the player to refresh. Platform half implemented 2026-10-24 (D-030)."
         - "MER-020-F04 Compact history: last daily date + current/max streak + grace state, not an unbounded date list; bounded codex and achievement arrays."
-        - "MER-020-F05 Firestore rules validated against the v2 envelope in the rules test suite."
+        - "MER-020-F05 Firestore rules validated against the v2 envelope in the rules test suite. Rules suite covers v1 and v2 envelopes and the no-downgrade update guard (D-030); Mergrove v2 envelope content remains pending."
     - roadmap_feature: "Content Pack Pipeline"
       roadmap_id: "MER-021"
       scope: "Post-release species, sprites, layouts, levels and codex text ship as code-split, repository-authored, same-origin packs with permanent, append-only IDs."

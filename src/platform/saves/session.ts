@@ -1,5 +1,7 @@
-import { validateState, type AccountRepository, type GameSaveDefinition, type GameSaveRepository } from './contracts';
+import { NewerSaveVersionError, validateState, type AccountRepository, type GameSaveDefinition, type GameSaveRepository } from './contracts';
 import type { LocalRepository } from './local';
+
+const NEWER_VERSION_MESSAGE = 'This account’s progress was saved by a newer version of the game. Refresh the page to load it. Changes made on this page are not saved to the account.';
 
 export interface SaveSnapshot<T> {
   state: T;
@@ -59,8 +61,8 @@ export class SaveSession<T> implements GameSaveRepository<T> {
       this.pending = null;
       this.publish({ state: value, ready: true, revision: this.snapshot.revision + 1, status: 'Account progress loaded.', error: this.local.warning });
       return state;
-    } catch {
-      if (this.active && epoch === this.loadEpoch) this.publish({ ready: true, status: 'Playing with this account’s browser cache.', error: 'Cloud progress could not load. Check your connection and retry. If this continues, contact the site owner. Account progress will take precedence when it loads.' });
+    } catch (error) {
+      if (this.active && epoch === this.loadEpoch) this.publish({ ready: true, status: 'Playing with this account’s browser cache.', error: error instanceof NewerSaveVersionError ? NEWER_VERSION_MESSAGE : 'Cloud progress could not load. Check your connection and retry. If this continues, contact the site owner. Account progress will take precedence when it loads.' });
       return cached;
     } finally { clearTimeout(timer); }
   }
@@ -97,8 +99,10 @@ export class SaveSession<T> implements GameSaveRepository<T> {
           this.pending = null;
           this.publish({ status: operation === 'delete' ? 'Account game progress reset.' : 'Account progress saved.', error: this.local.warning });
         }
-      } catch {
-        if (sequence === this.sequence) this.publish({ status: 'Account progress is waiting to sync.', error: 'Cloud sync failed. This account’s changes remain in this browser session. Check your connection and retry before leaving. If this continues, contact the site owner.' });
+      } catch (error) {
+        if (sequence !== this.sequence) return;
+        if (error instanceof NewerSaveVersionError) this.publish({ status: 'Account progress was not saved.', error: NEWER_VERSION_MESSAGE });
+        else this.publish({ status: 'Account progress is waiting to sync.', error: 'Cloud sync failed. This account’s changes remain in this browser session. Check your connection and retry before leaving. If this continues, contact the site owner.' });
       }
     });
     return this.queue;

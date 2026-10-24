@@ -112,7 +112,7 @@ Planned Functional Features Specification:
     - name: "Courier Rank and Experience Progression"
       id: "CLC-012"
       details: "Meaningful completed play grants transparent career XP. Ranks unlock mechanics, cosmetics, titles and options at a paced cadence; rank never exists solely as an arbitrary grind gate."
-      feature_development_status: "Planned"
+      feature_development_status: "Started: XP awards, eight rank titles, schema-v2 persistence with v1 migration and the Courier rank panel are implemented and locally verified (spec CLC-012-A1..A6, 2026-10-24); mechanic and cosmetic rank unlocks await CLC-013/017/019/020 and an owner decision (OQ-CLC-012-1)"
     - name: "Airship Permanent Upgrade Tree"
       id: "CLC-013"
       details: "Earn permanent ship improvements through play: fuel capacity, cargo efficiency, storm resilience, boost control and utility branches with capped legible effects and visible ship-state changes."

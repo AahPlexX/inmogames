@@ -11,7 +11,12 @@ vi.mock('firebase/auth', () => ({
 vi.mock('firebase/firestore/lite', () => ({ doc: mocks.doc, getDoc: mocks.read, setDoc: mocks.write, deleteDoc: mocks.remove, runTransaction: mocks.transaction, serverTimestamp: mocks.timestamp }));
 import { firebaseAuthAdapter } from '../../../src/platform/auth/firebase';
 import { FirestoreRepository } from '../../../src/platform/saves/firestore';
-import { threefoldSaveDefinition } from '../../../src/games/threefold/persistence';
+import { NewerSaveVersionError, type GameSaveDefinition } from '../../../src/platform/saves/contracts';
+// A local definition keeps this platform test independent of any game's code (and of per-game documentation sync).
+const threefoldSaveDefinition: GameSaveDefinition<{ bestScore: number }> = {
+  slug: 'threefold', schemaVersion: 1, storageKey: 'test:threefold', initial: { bestScore: 0 },
+  decode: value => (value && typeof value === 'object' && Number.isInteger((value as { bestScore?: unknown }).bestScore) ? { bestScore: (value as { bestScore: number }).bestScore } : null),
+};
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore/lite';
 beforeEach(() => { vi.resetAllMocks(); mocks.doc.mockReturnValue('reference'); mocks.timestamp.mockReturnValue('server-time'); });
@@ -28,8 +33,18 @@ it('wires all email/password operations and observes the resolved Firebase user'
 });
 it('uses account-scoped document paths and a server timestamp; rejects writes after the account changes', async () => {
   const current=vi.fn(()=>true);const repo=new FirestoreRepository({} as Firestore,'alice',threefoldSaveDefinition,current);
-  await repo.save('threefold',1,{bestScore:120});expect(mocks.doc).toHaveBeenCalledWith({},'users','alice','games','threefold');expect(mocks.write).toHaveBeenCalledWith('reference',{schemaVersion:1,state:{bestScore:120},updatedAt:'server-time'});
-  current.mockReturnValue(false);await expect(repo.save('threefold',1,{bestScore:500})).rejects.toThrow(/session changed/);expect(mocks.write).toHaveBeenCalledTimes(1);
+  const tx={get:vi.fn(),set:vi.fn()};mocks.transaction.mockImplementation((_db,fn)=>fn(tx));
+  tx.get.mockResolvedValueOnce({exists:()=>false});
+  await repo.save('threefold',1,{bestScore:120});expect(mocks.doc).toHaveBeenCalledWith({},'users','alice','games','threefold');expect(tx.set).toHaveBeenCalledWith('reference',{schemaVersion:1,state:{bestScore:120},updatedAt:'server-time'});
+  current.mockReturnValue(false);await expect(repo.save('threefold',1,{bestScore:500})).rejects.toThrow(/session changed/);expect(tx.set).toHaveBeenCalledTimes(1);
+});
+it('writes over an equal or older stored version but refuses to overwrite a newer one', async () => {
+  const repo=new FirestoreRepository({} as Firestore,'alice',threefoldSaveDefinition,()=>true);
+  const tx={get:vi.fn(),set:vi.fn()};mocks.transaction.mockImplementation((_db,fn)=>fn(tx));
+  tx.get.mockResolvedValueOnce({exists:()=>true,data:()=>({schemaVersion:1,state:{bestScore:10}})});
+  await repo.save('threefold',1,{bestScore:120});expect(tx.set).toHaveBeenCalledTimes(1);
+  tx.get.mockResolvedValueOnce({exists:()=>true,data:()=>({schemaVersion:2,state:{bestScore:999}})});
+  await expect(repo.save('threefold',1,{bestScore:500})).rejects.toBeInstanceOf(NewerSaveVersionError);expect(tx.set).toHaveBeenCalledTimes(1);
 });
 it('atomically seeds only absent documents and never overwrites existing or unsupported account saves', async () => {
   const repo=new FirestoreRepository({} as Firestore,'alice',threefoldSaveDefinition,()=>true);

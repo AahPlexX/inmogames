@@ -75,6 +75,7 @@ Older chat messages, summaries or provider memory never override the current per
 - Before changing a dependency, verify the stable release against the package/project's authoritative release documentation and corroborate the exact version using the approved npm evidence sources in `docs/DEPENDENCY_POLICY.md`. Record the evidence in `docs/DEPENDENCY_POLICY.md` and update `.tasks/dependency-refresh-request.json`.
 - `pnpm dependency:check` enforces exact pins. `pnpm dependency:current` verifies the manifest matches `package.json` and rechecks every direct package against npm's live `latest` tag. Both are mandatory integration gates.
 - A prerelease (`alpha`, `beta`, `rc`, `next`, canary, experimental) is never substituted for stable `latest` unless a separate explicit repository decision changes this rule.
+- Vulnerable *transitive* packages are fixed with `pnpm.overrides` in `package.json` (D-029): each key is a `name@vulnerable-range` selector, each value one exact patched version; bare package names and ranges are rejected by `pnpm dependency:check`. Every override needs an advisory ID and a row in the "Transitive security overrides" table of `docs/DEPENDENCY_POLICY.md`. Run `pnpm audit` on every dependency refresh and remove overrides the upstream package now satisfies. Overrides never replace the direct-pin rules above.
 
 ## Design integration
 
@@ -96,6 +97,10 @@ Older chat messages, summaries or provider memory never override the current per
 - Durable gameplay, payouts, persistence and action readiness must not depend on cosmetic animation callbacks. Where lifecycle coupling is possible, add a regression proving animation suppression cannot duplicate, omit or strand game state.
 - Normal-motion and reduced-motion paths both need rendered evidence for significant new effect families. Human-only visual/comprehension gates remain explicitly awaiting human testing until performed.
 - A source-only audit is reconnaissance, not final quality approval.
+
+## Rendering stack
+
+Default is plain React/CSS. 3D games use Three.js `WebGPURenderer` (WebGL 2 fallback); 2D effects-heavy games use PixiJS v8. Neither may be added until a game's spec requires it. Adding either is a dependency integration (exact pin, registry evidence, `docs/DEPENDENCY_POLICY.md` row), is lazy-loaded with its game, keeps rules in pure engine modules, honors reduced motion and 320 CSS px, and never lets outcomes depend on animation callbacks. Assets are original or licence-compatible (Blender glTF/GLB is allowed) and listed in the game's `TRACKER.md`. Verified facts, adoption conditions and open questions: D-032 in `docs/DECISIONS.md`.
 
 ## Code standards
 
