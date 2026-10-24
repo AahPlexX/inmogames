@@ -53,7 +53,7 @@ Authority: D-029. Direct packages stay exact-pinned to npm `latest` (rules above
 
 | Override selector → exact version | Advisory | Severity | Reached through | Notes |
 | --- | --- | --- | --- | --- |
-| `@grpc/grpc-js@<1.13.6` → `1.13.6` | GHSA-m9gg-hp2v-232j, GHSA-f596-whhp-79r4 | high, low | `firebase` → `@firebase/firestore` (`~1.9.0`) | Node-only; the browser bundle uses `firebase/firestore/lite` and contains no gRPC code (SECURITY-001 evidence). Minor-line bump within 1.x. |
+| `@grpc/grpc-js@<1.13.6` → `1.14.5` | GHSA-m9gg-hp2v-232j, GHSA-f596-whhp-79r4 | high, low | `firebase` → `@firebase/firestore` (`~1.9.0`) | Node-only; the browser bundle uses `firebase/firestore/lite` and contains no gRPC code (SECURITY-001 evidence). Minor-line bump within 1.x. Target is 1.14.5, already patched and already in the tree via `google-gax`: pnpm matches overrides on the *requested* range, so a lower target (1.13.6) would also have downgraded `google-gax`. All consumers now resolve one version. |
 | `@opentelemetry/core@<2.8.0` → `2.8.0` | GHSA-8988-4f7v-96qf | moderate | `firebase-tools` → `@google-cloud/pubsub` | Major bump 1.x→2.x for a dev tool; `@opentelemetry/api` stays 1.9.1, inside core's `>=1.0.0 <1.10.0` peer range. Revisit if Pub/Sub emulation is ever used. |
 | `body-parser@<1.20.9` → `1.20.9` | GHSA-27r3-jxmh-p828 | high | `firebase-tools` | Same major. |
 | `body-parser@>=2.0.0 <2.4.0` → `2.4.0` | GHSA-27r3-jxmh-p828 | high | `firebase-tools` → `@modelcontextprotocol/sdk` → `express` | Same major. |
